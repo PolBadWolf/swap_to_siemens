@@ -1,0 +1,390 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8.CPP</ToolchainName>
+    <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
+    <avrdevice>ATmega128</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>CPP</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AssemblyName>test_1</AssemblyName>
+    <Name>test_1</Name>
+    <RootNamespace>test_1</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <ResetRule>0</ResetRule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <EraseKey />
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.40.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+    <avrtool>com.atmel.avrdbg.tool.simulator</avrtool>
+    <avrtoolserialnumber />
+    <avrdeviceexpectedsignature>0x1E9702</avrdeviceexpectedsignature>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+        <avrgcc.common.Device>-mmcu=atmega128 -B "%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\gcc\dev\atmega128"</avrgcc.common.Device>
+        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+            <Value>NDEBUG</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcccpp.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>NDEBUG</Value>
+            <Value>NDEBUG</Value>
+            <Value>NDEBUG</Value>
+          </ListValues>
+        </avrgcccpp.compiler.symbols.DefSymbols>
+        <avrgcccpp.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+          </ListValues>
+        </avrgcccpp.compiler.directories.IncludePaths>
+        <avrgcccpp.compiler.optimization.level>Optimize for size (-Os)</avrgcccpp.compiler.optimization.level>
+        <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+        <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+        <avrgcccpp.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcccpp.linker.libraries.Libraries>
+        <avrgcccpp.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+          </ListValues>
+        </avrgcccpp.assembler.general.IncludePaths>
+      </AvrGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <AvrGccCpp>
+  <avrgcc.common.Device>-mmcu=atmega128 -B "%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\gcc\dev\atmega128"</avrgcc.common.Device>
+  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+  <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+  <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+  <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>DEBUG</Value>
+      <Value>F_CPU=16000000L</Value>
+      <Value>DEBUG</Value>
+      <Value>DEBUG</Value>
+    </ListValues>
+  </avrgcc.compiler.symbols.DefSymbols>
+  <avrgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../system</Value>
+      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+    </ListValues>
+  </avrgcc.compiler.directories.IncludePaths>
+  <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
+  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+  <avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcccpp.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcccpp.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>DEBUG</Value>
+      <Value>F_CPU=16000000L</Value>
+      <Value>DEBUG</Value>
+      <Value>DEBUG</Value>
+    </ListValues>
+  </avrgcccpp.compiler.symbols.DefSymbols>
+  <avrgcccpp.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../system</Value>
+      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+      <Value>..</Value>
+    </ListValues>
+  </avrgcccpp.compiler.directories.IncludePaths>
+  <avrgcccpp.compiler.optimization.OtherFlags>-std=c++11</avrgcccpp.compiler.optimization.OtherFlags>
+  <avrgcccpp.compiler.optimization.PackStructureMembers>True</avrgcccpp.compiler.optimization.PackStructureMembers>
+  <avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcccpp.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcccpp.compiler.optimization.DebugLevel>Default (-g2)</avrgcccpp.compiler.optimization.DebugLevel>
+  <avrgcccpp.compiler.warnings.AllWarnings>True</avrgcccpp.compiler.warnings.AllWarnings>
+  <avrgcccpp.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </avrgcccpp.linker.libraries.Libraries>
+  <avrgcccpp.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\Atmel\ATmega_DFP\2.2.509\include\</Value>
+    </ListValues>
+  </avrgcccpp.assembler.general.IncludePaths>
+  <avrgcccpp.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcccpp.assembler.debugging.DebugLevel>
+</AvrGccCpp>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\rs232\RS232.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\rs232\RS232.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\Serial.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\Serial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\SPI.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\SPI.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\spi\Spi_Hard.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\spi\Spi_Hard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\spi\Spi_soft.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\communication\spi\Spi_soft.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\config_sys.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\bits.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\bits.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\core.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\core.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\core_def.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\core_timers.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\delay.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\delay.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\Fifo.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\Fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\New.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\New.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\TaskQueueUnit.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\core\TaskQueueUnit.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\indication\Lcd.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\indication\Lcd.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\indication\Lcd_hard.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\indication\Lcd_hard.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\Key.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\Key.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\Key4.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\keyboard\Key4.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\menu\menu.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\menu\menu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\Timer0.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\Timer0.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\watchdog.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\watchdog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\Timer2.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="system\timers\Timer2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\ReadData.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\ReadData.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\signal_pin.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\signal_pin.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\WriteData.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\WriteData.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\mainUser.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\mainUser.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\mainUserCore.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\menu\uMenu.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\menu\uMenu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\mx25L8005\MX25L8005.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\mx25L8005\MX25L8005.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\system\menuUser.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\system\menuUserTab.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\system\taskUserHigh.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\system\taskUserIdle.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\system\taskUserMidle.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\var.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\var.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="system\" />
+    <Folder Include="system\" />
+    <Folder Include="system\communication\" />
+    <Folder Include="system\communication\spi" />
+    <Folder Include="system\communication\rs232\" />
+    <Folder Include="system\core\" />
+    <Folder Include="system\indication\" />
+    <Folder Include="system\keyboard\" />
+    <Folder Include="system\menu" />
+    <Folder Include="system\timers\" />
+    <Folder Include="system\timers\" />
+    <Folder Include="user\" />
+    <Folder Include="user\menu" />
+    <Folder Include="user\mx25L8005" />
+    <Folder Include="user\line" />
+    <Folder Include="user\system\" />
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>
