@@ -21,6 +21,7 @@
 
 #include "user/line/signal_pin.h"
 #include "system/indication/Lcd_hard.h"
+#include <avr/wdt.h>
 
 // #define __MENU_DEBUG__
 
@@ -163,12 +164,18 @@ void	screen1_vmem(uint32_t adr)
 	}
 }
 
-void	screen1_view()
+uint16_t	count_check = 0;
+
+void	screen1_check()
 {
+	count_check++;
+	if (count_check < 100)		return;
+	count_check = 0;
+	//
 	uint16_t id = ns_user::flash->getID();
-#ifdef	__MENU_DEBUG__
+	#ifdef	__MENU_DEBUG__
 	id = 0xc213;
-#endif
+	#endif
 	if (id != ns_user::flash->idDev)
 	{
 		scr->Clear();
@@ -182,17 +189,25 @@ void	screen1_view()
 			{
 				Lcd_hard::Interrupt_static();
 				__delay_ms(1);
-				if (cx < 500)	continue;
+				cx++;
+				if (cx < 3000)	continue;
 				cx = 0;
-				if (id == ns_user::flash->idDev)
-				{
-					ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
-					return;
-				}
+// 				if (ns_user::flash->getID() == ns_user::flash->idDev)
+// 				{
+// 					ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+// 					break;
+// 				}
+				break;
 			}
 		}
-	} 
-	else
+		wdt_enable(1);
+		sei();
+		for(;;)	__delay_ms(1);
+	}
+}
+
+void	screen1_view()
+{
 	{
 		scr->SetPosition2(4, 0);
 		// номер программы
@@ -600,7 +615,8 @@ void	readParty_view()
 {
 	uint32_t	curAdr = ns_user::flash->get_wr_adr();
 	uint16_t	adr = curAdr - ns_var::ml_adr_base - ns_var::ml_adr_offset - OFFSET_WRITE;
-	if (ns_user::readData->getStatWork() == ReadData::EndRead)
+	uint8_t		statWork = ns_user::readData->getStatWork();
+	if (statWork == ReadData::EndRead)
 	{
 		readParty_endRead();
 		//
@@ -609,19 +625,26 @@ void	readParty_view()
 	scr->SetPosition2(0, 1);
 	scr->Hex(word_to_byte(adr).High);
 	scr->Hex(word_to_byte(adr).Low);
+	// ***********************
+// 	scr->PutChar(' ');
+// 	scr->Digit(4, ns_var::simRead_count_byte);
+// 	scr->PutChar(' ');
+// 	scr->Digit(4, ns_var::simRead_adr);
+	scr->PutChar(' ');
+	scr->Digit(6, ((uint32_t)curAdr) - ((uint32_t)ns_var::ml_adr_base) - ((uint32_t)OFFSET_WRITE) );
 	//
 // 	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_slewInc());
 // 	scr->PutChar('0' + ns_pins::transfer_startStop());
 // 	scr->PutChar('0' + ns_pins::transfer_spocket());
 	//
-	scr->PutChar(' ');
-	scr->DigitZ(3, ns_user::flash->wr_head);
-	scr->PutChar(' ');
-	scr->DigitZ(3, ns_user::flash->wr_tail);
+// 	scr->PutChar(' ');
+// 	scr->DigitZ(3, ns_user::flash->wr_head);
+// 	scr->PutChar(' ');
+// 	scr->DigitZ(3, ns_user::flash->wr_tail);
 	//
 	scr->SetPosition2(0, 0);
-	scr->DigitZ(2, ns_user::readData->getStatWork());
+	scr->DigitZ(2, statWork);
 }
 
 // завершение чтения
@@ -1028,6 +1051,8 @@ void	pins_k1()
 {
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
+
+// ------------------------------------------------------
 
 #endif // CONF_MENU
 

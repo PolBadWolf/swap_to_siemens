@@ -11,6 +11,8 @@
 
 #include <avr/eeprom.h>
 
+// #define		__DEBUG_SIMULYATION
+
 #define LIST_MOD_view	0
 #define LIST_MOD_save	1
 #define LIST_MOD_clr	2
@@ -19,11 +21,10 @@
 #define LIST_MOD_plus5	5
 #define LIST_MOD_eot	6
 #define LIST_MOD_pins	7
-//
+
 #define LIST_MOD__MAX	8
 
 #define		OFFSET_WRITE	0x40
-
 
 
 namespace	ns_var
@@ -70,6 +71,12 @@ namespace	ns_var
 	extern	const	ModStruct	listMod[];
 	extern	const char string_table[][10];
 
+#ifdef		__DEBUG_SIMULYATION
+	extern			unsigned	int				simRead_adr;				// адрес пам€ти дл€ симул€ции чтени€
+	extern			unsigned	int				simRead_count_byte;			// счетчик дл€ симул€ции чтени€
+	extern			unsigned	int				simRead_count_sproket;
+#define			___SIM_READ_MAX_SPROKET			6
+#endif
 
 }
 

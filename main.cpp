@@ -50,6 +50,12 @@ int main(void)
 // 	ochered[2] = (void (*)())main;
 	//ochered[0][0]();
 	Core::init();
+
+
+// ns_user::readData->readOn();
+// for(;;)	
+// ns_user::readData->timerFast();	
+	
 // 	ns_user::flash->fWr_init(0);
 // // 	ns_user::flash->fWr_dataSend(0x33);
 // 	ns_user::flash->mx_irq();

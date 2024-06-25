@@ -31,6 +31,12 @@ namespace	ns_var
 			unsigned	char			read_fistEnter;				// первый пуск на чтение
 			unsigned	long			sendAdr;					// адрес данных для передачи
 			unsigned	int				sendLenght;					// длина данных для передачи
+			
+#ifdef		__DEBUG_SIMULYATION
+			unsigned	int				simRead_adr;				// адрес памяти для симуляции чтения
+			unsigned	int				simRead_count_byte;				// счетчик для симуляции чтения
+			unsigned	int				simRead_count_sproket;
+#endif
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{

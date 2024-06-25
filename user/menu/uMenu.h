@@ -12,6 +12,8 @@
 #include "config_sys.h"
 #ifdef CONF_MENU
 
+#include "user/var.h"
+
 // ===============================
 void	user_menu_init();
 // ===============================
@@ -32,6 +34,10 @@ void	user_menu_init();
 #define		_M_EOT				10			// логический уровень выхода eot
 #define		_M_PINS				11
 
+#ifdef		__DEBUG_SIMULYATION
+#define		_M_SIMUL			12			// симуляция приема в сектор 3210 байт
+#endif
+
 
 //      0
 void	m1_init();
@@ -48,6 +54,7 @@ void	screen1_k1();
 void	screen1_k2();
 void	screen1_k3();
 void	screen1_k4();
+void	screen1_check();
 
 //	======= copy =======
 void	copy_init();

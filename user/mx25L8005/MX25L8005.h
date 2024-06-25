@@ -11,7 +11,11 @@
 
 #include "core/core.h"
 #define		MX_LEN_BUFFER		512
-#define		MX_THRESHOLD		128
+#define		MX_THRESHOLD		0
+
+#define		MX_TIME_WRITE_PAGE			5
+#define		MX_TIME_ERASE_SECTOR		120
+#define		MX_TIME_ERASE_BLOCK			2000
 
 typedef struct
 {

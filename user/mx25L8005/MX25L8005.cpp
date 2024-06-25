@@ -10,6 +10,7 @@
 #include "MX25L8005.h"
 #include "core/delay.h"
 #include "user/mainUser.h"
+#include "user/var.h"
 // --------
 #include "communication/spi/Spi_Hard.h"
 
@@ -60,7 +61,9 @@ MX25L8005*	MX25L8005::init()
 	obj->wr_work	= 0;
 	obj->wr_Flsend	= 0;
 	// -----------------------
+// #ifndef		__DEBUG_SIMULYATION
 	__delay_ms(100);
+// #endif
 	// -----------------------
 	return	obj;
 }
@@ -173,22 +176,22 @@ uint8_t	MX25L8005::writeArray(uint8_t	*mass, uint16_t	length, uint32_t	adr)
 {
 
 	uint8_t	stat = getStatus();
-	if (mx_fileds_status(stat).SRWD != 0)	return	3;	// проверка защита от записи
+	if (mx_fileds_status(stat).SRWD != 0)	return	3;		// проверка защита от записи
 
-	uint8_t		baseSubSector = ~((uint8_t)(adr / 0x100));	// базовый блок не равен текущему для первого пуска
-	uint8_t		currSubSector, flag = 0;					// флаг блока 256 байт в работе
+	uint8_t		basePage = ~((uint8_t)(adr / 0x100));		// базовый блок не равен текущему для первого пуска
+	uint8_t		currPage, flag = 0;							// флаг блока 256 байт в работе
 	
 	stat = 0;
 	for (uint16_t i = 0; i < length; i++, adr++)
 	{
-		currSubSector = (uint8_t)(adr / 0x100);
-		if (baseSubSector != currSubSector)
+		currPage = (uint8_t)(adr / 0x100);
+		if (basePage != currPage)
 		{
-			baseSubSector = currSubSector;
+			basePage = currPage;
 			if (flag != 0)
 			{
 				SPI_SS = 1;
-				__delay_us(1500);
+				__delay_ms(MX_TIME_WRITE_PAGE);
 				flag = 0;
 			}
 			// ----------
@@ -223,7 +226,7 @@ uint8_t	MX25L8005::writeArray(uint8_t	*mass, uint16_t	length, uint32_t	adr)
 		SPI_SS = 1;
 		writeDisable();
 // 		__delay_ms(1);
-		__delay_us(1500);
+		__delay_ms(MX_TIME_WRITE_PAGE);
 		flag = 0;
 	}
 	// ------------------------------------
@@ -263,7 +266,7 @@ uint8_t	MX25L8005::eraseSector(uint32_t	adr)
 	ns_user::spi_h->transferByte(dWord_to_byte(adr).Byte1);
 	SPI_SS = 1;
 	writeDisable();
-	__delay_ms(120);
+	__delay_ms(MX_TIME_ERASE_SECTOR);
 	do 
 	{
 		stat = getStatus();
@@ -290,7 +293,7 @@ uint8_t	MX25L8005::eraseBlock (uint32_t	adr)
 	ns_user::spi_h->transferByte(dWord_to_byte(adr).Byte1);
 	SPI_SS = 1;
 	writeDisable();
-	__delay_ms(100);
+	__delay_ms(MX_TIME_ERASE_BLOCK);
 	do
 	{
 		stat = getStatus();
@@ -306,22 +309,6 @@ void	MX25L8005::mx_irq()
 {
 	// передача данных на лету
 	obj->wr_mem();
-// 	CRITICAL_SECTION
-// 	{
-// 		if (obj->to > 0) (obj->to)--;
-// 	}
-// }
-// 
-// void	MX25L8005::waitTimeOut()
-// {
-// 	uint8_t	t;
-// 	do 
-// 	{
-// 		CRITICAL_SECTION
-// 		{
-// 			t = to;
-// 		}
-// 	} while (t != 0);
 }
 
 void	MX25L8005::transferNop()
@@ -368,7 +355,7 @@ void	MX25L8005::wr_mem()
 	// ------------------
 	if (wr_Flsend == 0)
 	{
-		uint8_t	head;
+		uint16_t	head;
 		// проверка заполнености буффера
 		CRITICAL_SECTION
 		{
@@ -417,13 +404,15 @@ void	MX25L8005::wr_mem()
 				break;
 			}
 			// +1
+			uint32_t wr_adr_tmp;
 			CRITICAL_SECTION
 			{
 				incIndxBuff(&wr_tail);
+				wr_adr++;
+				wr_adr_tmp = wr_adr;
 			}
-			wr_adr++;
-			// проверка на окончание суб сектора
-			if ((wr_tail & 0xff) == 0)	break;
+			// проверка на окончание страницы
+			if ((wr_adr_tmp & 0xff) == 0)	break;
 		}
 		SPI_SS = 1;
 		writeDisable();
@@ -450,16 +439,16 @@ void	MX25L8005::fWr_endSend()
 	{
 		wr_work	= 0;
 	}
-	uint8_t	sendSubSec = 0;
+	uint8_t	sendPage = 0;
 	uint8_t	dat;
 	for (;;)
 	{
 		// проверка буффера на опустошение
 		if (wr_head == wr_tail)	break;	// буффер выгружен
 		// проверка на начало передачи
-		if (sendSubSec == 0)
+		if (sendPage == 0)
 		{	// заголовок передачи
-			sendSubSec = 1;
+			sendPage = 1;
 			// разрешить запись
 			writeEnable();
 			transferNop();
@@ -474,28 +463,33 @@ void	MX25L8005::fWr_endSend()
 		dat = wr_buff[wr_tail];
 		ns_user::spi_h->transferByte(dat);
 		// инкримент указателя буфера и адреса
-		incIndxBuff(&wr_tail);
-		wr_adr++;
-		// проверка на окончание субсектора
-		if ((wr_adr & 0xff) == 0)
-		{	// завершение передачи субсектора
-			sendSubSec = 0;
+		uint32_t wr_adr_tmp;
+		CRITICAL_SECTION
+		{
+			incIndxBuff(&wr_tail);
+			wr_adr++;
+			wr_adr_tmp = wr_adr;
+		}
+		// проверка на окончание страницы
+		if ((wr_adr_tmp & 0xff) == 0)
+		{	// завершение передачи страницы
+			sendPage = 0;
 			SPI_SS = 1;
 			// запретить запись
 			writeDisable();
-			// время записи субсектора
-			__delay_ms(5);
+			// время записи страницы
+			__delay_ms(MX_TIME_WRITE_PAGE);
 		}
 	}
-	// провера на начатую запись субсектора
-	if (sendSubSec != 0)
-	{	// завершение записи субсектора
-		sendSubSec = 0;
+	// провера на начатую запись страницы
+	if (sendPage != 0)
+	{	// завершение записи страницы
+		sendPage = 0;
 		SPI_SS = 1;
 		// запретить запись
 		writeDisable();
-		// время записи субсектора
-		__delay_ms(120);
+		// время записи страницы
+		__delay_ms(MX_TIME_WRITE_PAGE);
 	}
 }
 
