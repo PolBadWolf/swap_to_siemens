@@ -204,6 +204,10 @@ void	screen1_check()
 		sei();
 		for(;;)	__delay_ms(1);
 	}
+	else
+	{
+		screen1_view();
+	}
 }
 
 void	screen1_view()

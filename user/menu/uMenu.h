@@ -55,6 +55,7 @@ void	screen1_k2();
 void	screen1_k3();
 void	screen1_k4();
 void	screen1_check();
+void	screen1_view();
 
 //	======= copy =======
 void	copy_init();
