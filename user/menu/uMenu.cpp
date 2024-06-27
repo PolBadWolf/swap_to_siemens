@@ -18,104 +18,97 @@
 #include "user\system\menuUser.h"
 #include "system\menu\menu.h"
 #include "user\var.h"
+#include "user\line\Simulyation.h"
 
 #include "user/line/signal_pin.h"
 #include "system/indication/Lcd_hard.h"
 #include <avr/wdt.h>
 
+uint16_t	startCount;
+
 // #define __MENU_DEBUG__
 
-void	m1_init()
+
+void menuUser_1Milisec()
+{
+	CRITICAL_SECTION
+	{
+		if (startCount > 0)		startCount--;
+	}
+}
+
+
+void	start_init()
 {
 	key->autoRepeatOn();
 	scr->Clear();
-	scr->String_P(PSTR("ADR = "));
-	m1_view();
+	//
+	startCount = 100;
 }
 
-/*namespace	ns_user
+void	start_count()
 {
-	extern	uint8_t		bufferRW[];
-// 	extern	uint8_t		result;
-}*/
-
-uint32_t	adr = 0x2000;
-
-// uint16_t	idf = 0;
-
-void	m1_view()
-{
-	scr->Hex(6, selectByte(adr, 2));
-	scr->Hex(8, selectByte(adr, 1));
-	scr->Hex(10, selectByte(adr, 0));
-
-// 	scr->Hex(12, ns_user::result);
-// 	for(uint8_t i = 0; i < 8; i++)
-// 	{
-// 		scr->Hex(25 + (i * 3), ns_user::bufferRW[adr + i]);
-// 	}
-// 	idf = ns_user::flash->getID();
-// 	scr->Hex(11, word_to_byte(idf).High);
-// 	scr->Hex(13, word_to_byte(idf).Low);
-	uint8_t	stat;
-	scr->Hex(16, ns_user::flash->getStatus());
-	stat = ns_user::flash->readArray(ns_user::flash->wr_buff, 8, adr);
-	if (stat != 0)
+	uint16_t	tmp;
+	CRITICAL_SECTION
 	{
-		scr->String_P(scr->SetPosition(0, 1), PSTR("ошибка св€зи"));
+		tmp = startCount;
 	}
+	if (tmp == 0)	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	start_setCount()
+{
+	CRITICAL_SECTION
+	{
+		startCount	= 4000;
+	}
+}
+
+void	start_view()
+{
+	scr->Clear();
+	if (ns_var::simulOn)
+	{
+		scr->String_P(PSTR("режим симул€ции"));
+		scr->SetPosition2(0, 1);
+		scr->String_P( PSTR("размер= ") );
+		scr->Digit(5, ns_var::simulLenght);
+	} 
 	else
 	{
-		for (uint8_t i = 0; i < 8; i++)
-		{
-			scr->Hex(25 + (i * 3), ns_user::flash->wr_buff[i]);
-		}
+		scr->String_P(PSTR("рабочий режим"));
 	}
 }
 
-void	m1_key2()
+void	start_key1()
 {
-// 	adr = (adr & 0xfff8) - 8;
-	adr--;
-	m1_view();
+	start_setCount();
+	ns_var::simulOn		= 0;
+	start_view();
 }
 
-void	m1_key3()
+void	start_key2()
 {
-// 	adr = (adr & 0xfff8) + 8;
-	adr++;
-	m1_view();
+	start_setCount();
+	ns_var::simulOn		= 1;
+	ns_var::simulLenght	= 200;
+	start_view();
 }
 
-void	m1_key1()
+void	start_key3()
 {
-	ns_user::flash->eraseSector(adr);
-	m1_view();
+	start_setCount();
+	ns_var::simulOn		= 1;
+	ns_var::simulLenght	= 2000;
+	start_view();
 }
 
-void	m1_key4()
+void	start_key4()
 {
-	uint8_t	stat = 0;
-	ns_user::flash->wr_buff[0] = 0x55;
-	ns_user::flash->wr_buff[1] = 0xaa;
-	ns_user::flash->wr_buff[2] = 0x19;
-	ns_user::flash->wr_buff[3] = 0xe6;
-	do 
-	{
-		stat = ns_user::flash->readArray(&ns_user::flash->wr_buff[4], 200, 0x1f00);
-		if (stat != 0)	break;
-		
-		stat = ns_user::flash->writeArray(ns_user::flash->wr_buff, 200, adr);
-		if (stat != 0)	break;
-	} while (false);
-	if (stat == 0)
-	{
-		m1_view();
-	}
-	else
-	{
-		scr->String_P(scr->SetPosition(0, 1), PSTR("ошибка св€зи"));
-	}
+	start_setCount();
+	ns_var::simulOn		= 1;
+	ns_var::simulLenght	= 37200;
+	start_view();
 }
 
 // -----------------------------------------------------------------
@@ -136,11 +129,13 @@ uint32_t	adrRender(uint8_t	nProg)
 // **************** старт меню *********************
 void	user_menu_init()
 {
+	ns_var::simulOn		= 0;
+	//
 	ns_var::n_prog		= 0;
 	ns_var::adrProg		= adrRender(ns_var::n_prog);
 	ns_var::mxMod		= LIST_MOD_load;
 	//
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_menu::functMenu_aft(_M_START, MENU_SETMODE);
 }
 // =================================================================
 const	uint8_t		progMax = 255 - (ns_var::blockBoundary * 15);
@@ -542,6 +537,12 @@ void	reqeRead_k3()
 
 void	reqeRead_begin()
 {
+	if (ns_var::simulOn)
+	{
+		ns_simul::read_avr_adr		= ns_simul::flsh_avr_startAdr;
+		ns_simul::read_lenght		= ns_var::simulLenght;
+	}
+	//
 	ns_var::ml_adr_n = 0;								// номер текущей части программы 0
 	ns_var::ml_adr_base = adrRender(ns_var::n_prog);	// базовый адрес программы
 	ns_var::read_fistEnter = 1;							// первый запуск
@@ -581,6 +582,7 @@ void	readParty_init()
 	// инициализаци€ последовательной записи во флэш
 	ns_user::flash->fWr_init(curAdr);
 	// старт чтени€ с ленты
+	if (ns_var::simulOn)	ns_simul::read_On();
 	ns_user::readData->readOn();
 	// --------------------------
 	scr->Clear();

@@ -319,6 +319,12 @@
     <Compile Include="user\line\signal_pin.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\line\Simulyation.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\Simulyation.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="user\line\WriteData.cpp">
       <SubType>compile</SubType>
     </Compile>

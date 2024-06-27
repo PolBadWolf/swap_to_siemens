@@ -61,9 +61,7 @@ MX25L8005*	MX25L8005::init()
 	obj->wr_work	= 0;
 	obj->wr_Flsend	= 0;
 	// -----------------------
-// #ifndef		__DEBUG_SIMULYATION
 	__delay_ms(100);
-// #endif
 	// -----------------------
 	return	obj;
 }

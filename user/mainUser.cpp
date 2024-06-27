@@ -9,6 +9,8 @@
 #include "mainUser.h"
 
 #include "core/core.h"
+#include "user/var.h"
+#include "user/line/Simulyation.h"
 
 
 
@@ -22,6 +24,11 @@ namespace	ns_user
 
 void	ns_user::init()
 {
+	if (ns_var::simulOn)
+	{
+		ns_simul::read_init();
+	}
+	
 	// работа с spi
 	spi_h = Spi_Hard::init();
 	// работа с флеш mx8005

@@ -12,7 +12,7 @@
 // 7		:	timeout
 
 //				view				key1				key2				key3				key4				m key				init			timeout
-{				dump,			 m1_key1,			 m1_key2,			 m1_key3,			 m1_key4,				dump,			 m1_init,				dump},
+{		 start_count,		  start_key1,		  start_key2,		  start_key3,		  start_key4,				dump,		  start_init,				dump},
 	// screen1
 {	   screen1_check,		  screen1_k1,		  screen1_k2,		  screen1_k3,		  screen1_k4,				dump,		screen1_init,				dump},
 	// copy

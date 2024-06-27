@@ -99,6 +99,7 @@ void	ns_menu::interrupt()
 	{
 		if (timeout != 0)	timeout--;
 	}
+	menuUser_1Milisec();
 }
 
 const	TypeFunctionMenu	ns_menu::massFunct[][8] PROGMEM =

@@ -11,7 +11,7 @@
 
 #include "core/core.h"
 #define		MX_LEN_BUFFER		512
-#define		MX_THRESHOLD		0
+#define		MX_THRESHOLD		16
 
 #define		MX_TIME_WRITE_PAGE			5
 #define		MX_TIME_ERASE_SECTOR		120

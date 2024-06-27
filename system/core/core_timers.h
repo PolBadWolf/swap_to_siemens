@@ -12,8 +12,8 @@
 #include "timers/Timer0.h"
 #include "timers/Timer2.h"
 
-#define	timer0_FEQ	4000
-#define	timer2_FEQ	2000
+#define	timer0_FEQ	3000
+#define	timer2_FEQ	1000
 
 // system obj
 namespace	Core

@@ -20,7 +20,7 @@ void	user_menu_init();
 
 
 
-#define		_M_M1				0
+#define		_M_START			0
 #define		_M_SCREEN1			1			// начальный экран
 #define		_M_COPY				2			// копирование программы с одного сектора в другой
 #define		_M_CLEAR			3			// стирание сектора/блока
@@ -34,18 +34,16 @@ void	user_menu_init();
 #define		_M_EOT				10			// логический уровень выхода eot
 #define		_M_PINS				11
 
-#ifdef		__DEBUG_SIMULYATION
-#define		_M_SIMUL			12			// симуляция приема в сектор 3210 байт
-#endif
 
+void	menuUser_1Milisec();
 
 //      0
-void	m1_init();
-void	m1_view();
-void	m1_key2();
-void	m1_key3();
-void	m1_key1();
-void	m1_key4();
+void	start_init();
+void	start_count();
+void	start_key1();
+void	start_key2();
+void	start_key3();
+void	start_key4();
 
 
 //        1
