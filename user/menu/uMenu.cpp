@@ -600,11 +600,11 @@ void	readParty_init()
 		uint32_t	freeSize = 0;
 		if (ns_var::s_prog == 0)
 		{ // sector
-			freeSize = ((uint32_t)0x1000) - ns_var::ml_adr_offset + OFFSET_WRITE;
+			freeSize = ((uint32_t)0x1000) - ns_var::ml_adr_offset - OFFSET_WRITE;
 		} 
 		else
 		{
-			freeSize = ((uint32_t)0x10000) - ns_var::ml_adr_offset + OFFSET_WRITE;
+			freeSize = ((uint32_t)0x10000) - ns_var::ml_adr_offset - OFFSET_WRITE;
 		}
 		ns_user::readData->readOn(freeSize);
 	}
@@ -663,7 +663,8 @@ void	readParty_view()
 // 	scr->PutChar(' ');
 // 	scr->Digit(4, ns_var::simRead_adr);
 	scr->PutChar(' ');
-	scr->Digit(6, ((uint32_t)curAdr) - ((uint32_t)ns_var::ml_adr_base) - ((uint32_t)OFFSET_WRITE) );
+// 	scr->Digit(6, ((uint32_t)curAdr) - ((uint32_t)ns_var::ml_adr_base) - ((uint32_t)OFFSET_WRITE) );
+	scr->Digit(6, (ns_user::readData->getWrFreeSize()));
 	//
 // 	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_slewInc());
@@ -675,8 +676,8 @@ void	readParty_view()
 // 	scr->PutChar(' ');
 // 	scr->DigitZ(3, ns_user::flash->wr_tail);
 	//
-	scr->SetPosition2(0, 0);
-	scr->DigitZ(2, statWork);
+// 	scr->SetPosition2(0, 0);
+// 	scr->DigitZ(2, statWork);
 }
 
 // завершение чтения
