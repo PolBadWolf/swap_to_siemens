@@ -33,6 +33,7 @@ void	user_menu_init();
 #define		_M_PLUS5			9			// подтяжка входов вкл/выкл
 #define		_M_EOT				10			// логический уровень выхода eot
 #define		_M_PINS				11
+#define		_M_WT_SCR1			12			// ожидание и переход на скрин1
 
 
 void	menuUser_1Milisec();
@@ -115,6 +116,7 @@ void	pins_init();
 void	pins_view();
 void	pins_k1();
 
+void wt_scr1_go();
 
 #endif // CONF_MENU
 #endif //__UMENU_H__

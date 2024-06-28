@@ -15,8 +15,8 @@
 
 #define TIMER_X		timer0_FEQ
 
-#define		__read_sprocket_down	(1 * TIMER_X / 1000)
-#define		__read_sprocket_up		(2 * TIMER_X / 1000)
+#define		__read_sprocket_down	(uint8_t)(((double)0.7) * ((double)TIMER_X) / ((double)1000))
+#define		__read_sprocket_up		(uint8_t)(((double)1.5) * ((double)TIMER_X) / ((double)1000))
 
 #define		__ADR_TO_DATA
 

@@ -60,7 +60,7 @@ void	start_setCount()
 {
 	CRITICAL_SECTION
 	{
-		startCount	= 4000;
+		startCount	= 2000;
 	}
 }
 
@@ -499,6 +499,7 @@ void	reqeRead_init()
 
 void	reqeRead_save()
 {
+	uint16_t curAdr, curLenght, lenghtBD;
 	// если принята хоть одна часть, то сохранить.
 	if (ns_var::ml_adr_n > 0)
 	{
@@ -506,7 +507,6 @@ void	reqeRead_save()
 		ns_user::flash->wr_buff[1] = 0xff;
 		ns_user::flash->wr_buff[2] = 0xff;
 		ns_user::flash->wr_buff[3] = 0xff;
-		uint16_t curAdr, curLenght;
 		uint8_t	bi;
 		for (uint8_t i = 0; i < ns_var::ml_adr_n; i++)
 		{
@@ -518,11 +518,23 @@ void	reqeRead_save()
 			ns_user::flash->wr_buff[bi + 2] = word_to_byte(curLenght).Low;
 			ns_user::flash->wr_buff[bi + 3] = word_to_byte(curLenght).High;
 		}
-		curLenght = (ns_var::ml_adr_n + 1) * 4;
-		ns_user::flash->writeArray(ns_user::flash->wr_buff, curLenght, ns_var::ml_adr_base);
+		lenghtBD = (ns_var::ml_adr_n + 1) * 4;
+		ns_user::flash->writeArray(ns_user::flash->wr_buff, lenghtBD, ns_var::ml_adr_base);
 	}
 	//
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	if (ns_var::s_prog != 0)	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	else
+	{
+		scr->Clear();
+		scr->String_P( PSTR("Принято ") );
+		scr->Digit(4, curLenght);
+		scr->String_P( PSTR(" байт") );
+		if (ns_var::error_party != 0)
+		{
+			scr->String_P(scr->SetPosition(0, 1), PSTR("ошибка четности") );
+		}
+		ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
+	}
 }
 
 void	reqeRead_k2()
@@ -1058,6 +1070,11 @@ void	pins_k1()
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
 
+// ------------------------------------------------------
+void wt_scr1_go()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
 // ------------------------------------------------------
 
 #endif // CONF_MENU

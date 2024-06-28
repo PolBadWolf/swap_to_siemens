@@ -130,12 +130,13 @@ void	ReadData::initPorts()
 
 void	ReadData::int_Wait_InitialState()
 {
-	if (
-	(ns_pins::transfer_slewInc() != 0)
+// 	if (
+// 	(ns_pins::transfer_slewInc() != 0)
 	// 	&&	(ns_pins::transfer_startStop() == 0)
 	//	&&	(ns_pins::transfer_spocket() != 0)
-	)
+// 	)
 	{
+		ns_var::error_party = 0;
 		statWork = Wait_StartRead;
 	}
 }
@@ -143,9 +144,9 @@ void	ReadData::int_Wait_InitialState()
 void	ReadData::int_Wait_StartRead()
 {
 	if (
-	(ns_pins::transfer_slewInc() != 0)
-	&&	(ns_pins::transfer_startStop() != 0)
-	&&	(ns_pins::transfer_sprocket() == 0)
+// 		(ns_pins::transfer_slewInc() != 0)		&&
+		(ns_pins::transfer_startStop() != 0)	&&
+		(ns_pins::transfer_sprocket() == 0)
 	)
 	{
 		statWork = Wait_ByteRead;
@@ -171,12 +172,27 @@ void	ReadData::int_Wait_ByteCompletion()
 	statWork  = Wait_ByteRead;
 }
 
+uint8_t	ReadData::checkErrorParty(uint8_t dat)
+{
+	uint8_t stat = 0;
+	uint8_t bc = bit_is_byte(dat).bit7;
+	uint8_t cc = 0;
+	for (uint8_t i = 0; i < 7; i++)
+	{
+		if ((dat & 1) != 0)	cc++;
+		dat >>= 1;
+	}
+	stat = bc ^ (cc & 1);
+	return	stat;
+}
+
 void	ReadData::int_Wait_ByteRead()
 {
 	if (ns_pins::transfer_sprocket() != 0)
 	{
 		uint8_t dat = ns_pins::transfer_data();
 		ns_user::flash->fWr_dataSend(dat);
+		ns_var::error_party |= checkErrorParty(dat);
 		statWork = Wait_ByteCompletion;
 	}
 	if (ns_pins::transfer_startStop() == 0)

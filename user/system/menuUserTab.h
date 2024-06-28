@@ -35,4 +35,9 @@
 {				dump,			  eot_k1,			  eot_k2,			  eot_k3,			  eot_k4,				dump,			eot_init,				dump},
 	
 {				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},
+	
+{				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},
+	
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},

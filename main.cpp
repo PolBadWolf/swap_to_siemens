@@ -51,6 +51,16 @@ int main(void)
 	//ochered[0][0]();
 	Core::init();
 
+// 	yy = ns_user::readData->checkErrorParty(0x82);
+// 	scr->PutChar('0' + yy);
+// 	yy = ns_user::readData->checkErrorParty(0x02);
+// 	scr->PutChar('0' + yy);
+// 	yy = ns_user::readData->checkErrorParty(0x8d);
+// 	scr->PutChar('0' + yy);
+// 	yy = ns_user::readData->checkErrorParty(0x8a);
+// 	scr->PutChar('0' + yy);
+// 	yy = ns_user::readData->checkErrorParty(0x8b);
+// 	scr->PutChar('0' + yy);
 
 // ns_user::readData->readOn();
 // for(;;)	

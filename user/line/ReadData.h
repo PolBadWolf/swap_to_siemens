@@ -48,6 +48,7 @@ public:
 	uint8_t readOff();
 	void	cancel();					// отмена приема
 	void	reset();					// сброс ошибки или отмены
+	uint8_t	checkErrorParty(uint8_t dat);	// проверка четности
 protected:
 private:
 	ReadData();
