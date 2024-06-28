@@ -32,7 +32,8 @@ namespace	ns_var
 			unsigned	long			sendAdr;					// адрес данных для передачи
 			unsigned	int				sendLenght;					// длина данных для передачи
 			
-			unsigned	char			error_party;
+			unsigned	char			error_parity;
+			unsigned	char			fl_puskRead;
 			
 			unsigned	char			simulOn;
 			unsigned	int				simulLenght;

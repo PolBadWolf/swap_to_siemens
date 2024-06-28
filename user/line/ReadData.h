@@ -35,6 +35,8 @@ private:
 	static	ReadData	*obj;
 	uint8_t			blockRead;			// блокировка функции приема
 	StatWork		statWork;			// текущий статус приема
+	uint32_t		wr_freeSize;
+	uint8_t			wr_overSize;
 
 //functions
 public:
@@ -44,11 +46,13 @@ public:
 	void	initPorts();				// настройка портов на прием
 	// -----------
 	uint8_t	getStatWork();				// статус работы программы приема
-	uint8_t	readOn();					// включение приема
+	uint8_t	readOn(uint32_t freeSize);	// включение приема
 	uint8_t readOff();
 	void	cancel();					// отмена приема
 	void	reset();					// сброс ошибки или отмены
-	uint8_t	checkErrorParty(uint8_t dat);	// проверка четности
+	uint8_t	checkErrorParity(uint8_t dat);	// проверка четности
+	uint16_t	getWrFreeSize();
+	uint8_t		getWrOverSize();
 protected:
 private:
 	ReadData();
@@ -60,6 +64,7 @@ private:
 	void	int_Wait_StartRead();		// ожидание сигнала старт приема
 	void	int_Wait_ByteCompletion();	// ожидание завершение приема байта
 	void	int_Wait_ByteRead();		// ожидание фронта для приема байта
+	void	serialDataSend(uint8_t dat);
 }; //ReadData
 
 #endif //__READDATA_H__

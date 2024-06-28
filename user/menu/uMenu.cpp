@@ -528,8 +528,8 @@ void	reqeRead_save()
 		scr->Clear();
 		scr->String_P( PSTR("Принято ") );
 		scr->Digit(4, curLenght);
-		scr->String_P( PSTR(" байт") );
-		if (ns_var::error_party != 0)
+		scr->String_P( PSTR("байт") );
+		if (ns_var::error_parity != 0)
 		{
 			scr->String_P(scr->SetPosition(0, 1), PSTR("ошибка четности") );
 		}
@@ -595,7 +595,19 @@ void	readParty_init()
 	ns_user::flash->fWr_init(curAdr);
 	// старт чтения с ленты
 	if (ns_var::simulOn)	ns_simul::read_On();
-	ns_user::readData->readOn();
+	// ===========================
+	{
+		uint32_t	freeSize = 0;
+		if (ns_var::s_prog == 0)
+		{ // sector
+			freeSize = ((uint32_t)0x1000) - ns_var::ml_adr_offset + OFFSET_WRITE;
+		} 
+		else
+		{
+			freeSize = ((uint32_t)0x10000) - ns_var::ml_adr_offset + OFFSET_WRITE;
+		}
+		ns_user::readData->readOn(freeSize);
+	}
 	// --------------------------
 	scr->Clear();
 	scr->SetPosition2(3, 0);
@@ -625,8 +637,10 @@ void	readParty_endRead()
 		return;
 	}
 	// в сектор можно писать только одну часть
-	if (ns_var::s_prog == 0)	reqeRead_save();	// сразу сохранить и выйти
-	else						ns_menu::functMenu_pre(_M_REQE_READ, MENU_SETMODE);
+	if (ns_var::s_prog == 0)
+		reqeRead_save();	// сразу сохранить и выйти
+	else
+		ns_menu::functMenu_pre(_M_REQE_READ, MENU_SETMODE);
 }
 
 void	readParty_view()

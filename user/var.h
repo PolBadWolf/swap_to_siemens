@@ -59,7 +59,8 @@ namespace	ns_var
 	extern			unsigned	char			flag_eot_m;
 	extern			unsigned	char			pins_uk;
 	//===========================================================
-	extern			unsigned	char			error_party;
+	extern			unsigned	char			error_parity;
+	extern			unsigned	char			fl_puskRead;
 	
 	struct ModStruct
 	{

@@ -72,7 +72,7 @@ void	ReadData::timerFast_irq()
 	obj->timerFast();
 }
 
-uint8_t	ReadData::readOn()
+uint8_t	ReadData::readOn(uint32_t freeSize)
 {
 	uint8_t	stat;
 	CRITICAL_SECTION
@@ -83,8 +83,10 @@ uint8_t	ReadData::readOn()
 	CRITICAL_SECTION
 	{
 		initPorts();
+		this->wr_freeSize = freeSize;
 		statWork = Wait_InitialState;
 		blockRead	= 0;
+		wr_overSize	= 0;
 	}
 	return 0;
 }
@@ -136,7 +138,8 @@ void	ReadData::int_Wait_InitialState()
 	//	&&	(ns_pins::transfer_spocket() != 0)
 // 	)
 	{
-		ns_var::error_party = 0;
+		ns_var::error_parity = 0;
+		ns_var::fl_puskRead = 0;
 		statWork = Wait_StartRead;
 	}
 }
@@ -172,7 +175,7 @@ void	ReadData::int_Wait_ByteCompletion()
 	statWork  = Wait_ByteRead;
 }
 
-uint8_t	ReadData::checkErrorParty(uint8_t dat)
+uint8_t	ReadData::checkErrorParity(uint8_t dat)
 {
 	uint8_t stat = 0;
 	uint8_t bc = bit_is_byte(dat).bit7;
@@ -191,9 +194,39 @@ void	ReadData::int_Wait_ByteRead()
 	if (ns_pins::transfer_sprocket() != 0)
 	{
 		uint8_t dat = ns_pins::transfer_data();
-		ns_user::flash->fWr_dataSend(dat);
-		ns_var::error_party |= checkErrorParty(dat);
+		if (ns_var::fl_puskRead)
+		{
+			serialDataSend(dat);
+			ns_var::error_parity |= checkErrorParity(dat);
+		} 
+		else
+		{
+			if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))
+			{	//системная программа
+				if (dat != 0)
+				{
+					ns_var::fl_puskRead = 1;
+					serialDataSend(0);
+					serialDataSend(dat);
+				}
+			}
+			else
+			{	// короткая рабочая программа
+				if ((dat & 0x7f) == '%')
+				{
+					ns_var::fl_puskRead = 1;
+					serialDataSend(0);
+					serialDataSend(dat);
+				}
+			}
+		}
 		statWork = Wait_ByteCompletion;
+	}
+	if (wr_freeSize == 0)
+	{
+		blockRead	= 1;
+		wr_overSize	= 1;
+		statWork	= EndRead;
 	}
 	if (ns_pins::transfer_startStop() == 0)
 	{
@@ -201,6 +234,33 @@ void	ReadData::int_Wait_ByteRead()
 		statWork	= EndRead;
 	}
 }
+
+void	ReadData::serialDataSend(uint8_t dat)
+{
+	ns_user::flash->fWr_dataSend(dat);
+	wr_freeSize--;
+}
+
+uint16_t	ReadData::getWrFreeSize()
+{
+	uint16_t len;
+	CRITICAL_SECTION
+	{
+		len = wr_freeSize;
+	}
+	return	len;
+}
+
+uint8_t		ReadData::getWrOverSize()
+{
+	uint8_t	stat;
+	CRITICAL_SECTION
+	{
+		stat = wr_overSize;
+	}
+	return	stat;
+}
+
 
 uint8_t	ReadData::getStatWork()
 {
