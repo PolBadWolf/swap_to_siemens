@@ -870,20 +870,22 @@ void	writeParty_init()
 
 void	writeParty_end()
 {
-	// если только одна чать в программе, то в главное меню
-	if (ns_var::ml_adr_n_max == 1)
+	if ( (ns_var::ml_adr_n_max > 1) && (ns_var::ml_adr_n < ns_var::ml_adr_n_max) )
 	{
-		ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
-		return;
+		// ожидание разрешения следущей части
+		ns_menu::functMenu_pre(_M_REQE_WRITE, MENU_SETMODE);
 	}
-	// передана послядняя часть - завершено
-	if (ns_var::ml_adr_n >= ns_var::ml_adr_n_max)
+	else
 	{
-		ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
-		return;
+		if (ns_var::simulOn == 0)
+		{
+			ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
+		}
+		else
+		{
+			// проверка на  флаг ошибки при симуляции
+		}
 	}
-	// ожидание разрешения следущей части
-	ns_menu::functMenu_pre(_M_REQE_WRITE, MENU_SETMODE);
 }
 
 void	writeParty_view()

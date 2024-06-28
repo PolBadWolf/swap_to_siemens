@@ -18,8 +18,6 @@
 #define		__read_sprocket_down	(uint16_t)(((double)1) * ((double)TIMER_X) / ((double)1000))
 #define		__read_sprocket_up		(uint16_t)(((double)2) * ((double)TIMER_X) / ((double)1000))
 
-#define		__ADR_TO_DATA
-
 // private metods
 namespace	ns_simul
 {
@@ -29,7 +27,7 @@ namespace	ns_simul
 // public vars
 namespace	ns_simul
 {
-	const	uint16_t	flsh_avr_startAdr	= 0x40;
+	const	uint16_t	flsh_avr_startAdr	= 0x41;
 	uint16_t	read_avr_adr;
 	uint16_t	read_lenght;
 	//

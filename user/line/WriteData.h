@@ -37,6 +37,9 @@ public:
 	};
 //variables
 public:
+	uint8_t					error_sim;
+	uint8_t					sim_starDat;
+	uint16_t				sim_adr;
 protected:
 private:
 	static	WriteData		*obj;

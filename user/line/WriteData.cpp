@@ -10,6 +10,9 @@
 #include "signal_pin.h"
 #include "core/delay.h"
 #include "user/mainUser.h"
+#include "user/line/Simulyation.h"
+#include "user/var.h"
+#include <avr/pgmspace.h>
 
 //#include "core/core_timers.h"
 
@@ -146,6 +149,7 @@ void		WriteData::sendOn()
 			// обнуление количества переданных байт
 			sendCountByte	= 0;
 			countTikDelay	= 0;
+			error_sim		= 0;
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
 		}
@@ -219,7 +223,7 @@ void	WriteData::mode_delay()
 
 void	WriteData::mode_phaze1()
 {
-	if (transfer_startStop() == 0)		return;
+	if ( (transfer_startStop() == 0) && (ns_var::simulOn == 0) )		return;
 	// ------------
 	__delay_us(WR_PRE_START_UP);
 	transfer_readyBusy(0);
@@ -239,10 +243,6 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	uint8_t	dat, stat;
 	stat = 
 	ns_user::flash->fRd_readByte(&dat);
-// 	scr->Hex(22, dat);
-// 	scr->Hex(42, DDRF);
-// 	scr->Hex(44, PORTF);
-// 	scr->Hex(46, PINF);
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);
 	//импульс строба
@@ -251,6 +251,32 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	transfer_strobe(0);
 	// sproket фронт
 	transfer_sprocket(1);
+	//
+	if (ns_var::simulOn != 0)
+	{
+		if (sim_starDat == 0)
+		{
+			if (dat == 0x00)
+			{
+				sim_starDat = 1;
+				sim_adr		= ns_simul::flsh_avr_startAdr;
+			}
+		} 
+		else
+		{
+			uint8_t dat_chk;
+#ifdef	__ADR_TO_DATA
+			dat_chk = word_to_byte(sim_adr).Low;
+#else
+			dat_chk = pgm_read_byte(sim_adr);
+#endif
+			if (dat != dat_chk)
+			{
+				error_sim = 1;
+			}
+			sim_adr++;
+		}
+	}
 	//
 	sendCountByte++;
 	//

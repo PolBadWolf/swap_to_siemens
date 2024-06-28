@@ -9,6 +9,8 @@
 #ifndef __SIMULYATION_H__
 #define __SIMULYATION_H__
 
+// #define		__ADR_TO_DATA
+
 #include "core/core.h"
 
 namespace	ns_simul
