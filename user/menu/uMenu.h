@@ -82,15 +82,17 @@ void	readParty_k4();
 // ====== view block =======
 void	viewBlock_init();
 void	viewBlock_view();
+void	viewBlock_view_1();
 void	viewBlock_k1();
 void	viewBlock_k2();
 void	viewBlock_k3();
-
+void	viewBlock_k4();
 // ==== reqe write ========
 void	reqeWrite_begin();
 void	reqeWrite_init();
 void	reqeWrite_k2();
 void	reqeWrite_k3();
+void	reqeWrite_check();
 
 // ==== write party =======
 void	writeParty_init();

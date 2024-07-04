@@ -170,6 +170,26 @@ uint8_t	MX25L8005::readArray(uint8_t	*mass, uint16_t	length, uint32_t	adr)
 	return stat;
 }
 
+void	MX25L8005::serialRead_begin(uint32_t adr)
+{
+	waitReady(1500);
+	SPI_SS = 0;
+	ns_user::spi_h->transferByte(MX_READ);
+	ns_user::spi_h->transferByte(dWord_to_byte(adr).Byte3);
+	ns_user::spi_h->transferByte(dWord_to_byte(adr).Byte2);
+	ns_user::spi_h->transferByte(dWord_to_byte(adr).Byte1);
+}
+
+uint8_t	MX25L8005::serialReadByte()
+{
+	return	ns_user::spi_h->transferByte(0);
+}
+
+void	MX25L8005::serialRead_end()
+{
+	SPI_SS = 1;
+}
+
 uint8_t	MX25L8005::writeArray(uint8_t	*mass, uint16_t	length, uint32_t	adr)
 {
 

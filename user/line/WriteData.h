@@ -38,6 +38,8 @@ public:
 //variables
 public:
 	uint8_t					error_sim;
+	uint16_t				error_sim_adr;
+	uint8_t					error_sim_dat;
 	uint8_t					sim_starDat;
 	uint16_t				sim_adr;
 protected:

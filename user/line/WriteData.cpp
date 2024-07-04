@@ -14,7 +14,9 @@
 #include "user/var.h"
 #include <avr/pgmspace.h>
 
-//#include "core/core_timers.h"
+#include "core/core_timers.h"
+
+#define		TIMER_FEQ	timer2_FEQ
 
 using namespace ns_pins;
 
@@ -36,8 +38,10 @@ using namespace ns_pins;
 #define		WR_PRE_BUSY_DN		500		// / 2	mili sec
 #define		WR_PRE_START_UP		300		// micro sec
 
-#define		WR_OUT_SPR_DN		2		// / 2	mili sec
-#define		WR_OUT_SPR_UP		4		// / 2	mili sec
+#define		WR_OUT_SPR_DN		(uint8_t)(((double)0.5) * ((double)TIMER_FEQ) / ((double)1000))		// 1 mili sec
+#define		WR_OUT_SPR_UP		(uint8_t)(((double)1.0) * ((double)TIMER_FEQ) / ((double)1000))		// 2 mili sec
+// #define		WR_OUT_SPR_DN		2		// 1 mili sec
+// #define		WR_OUT_SPR_UP		4		// 2 mili sec
 #define		WR_OUT_DATA			200		// micro sec
 #define		WR_OUT_STROBE		200		// micro sec
 
@@ -150,6 +154,7 @@ void		WriteData::sendOn()
 			sendCountByte	= 0;
 			countTikDelay	= 0;
 			error_sim		= 0;
+			sim_starDat		= 0;
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
 		}
@@ -272,6 +277,11 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 #endif
 			if (dat != dat_chk)
 			{
+				if (error_sim == 0)
+				{
+					error_sim_adr = sim_adr;
+					error_sim_dat = dat_chk;
+				}
 				error_sim = 1;
 			}
 			sim_adr++;

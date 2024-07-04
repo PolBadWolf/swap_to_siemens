@@ -24,9 +24,9 @@
 	// чтение части программы
 {	  readParty_view,				dump,				dump,				dump,		readParty_k4,				dump,	  readParty_init,				dump},
 	// просмотр блока/сектора памяти
-{				dump,		viewBlock_k1,		viewBlock_k2,		viewBlock_k3,				dump,				dump,	  viewBlock_init,				dump},
+{	  viewBlock_view,		viewBlock_k1,		viewBlock_k2,		viewBlock_k3,		viewBlock_k4,				dump,	  viewBlock_init,				dump},
 	// выбор части программы для записи
-{				dump,				dump,		reqeWrite_k2,		reqeWrite_k3,				dump,				dump,	  reqeWrite_init,				dump},
+{	 reqeWrite_check,				dump,		reqeWrite_k2,		reqeWrite_k3,				dump,				dump,	  reqeWrite_init,				dump},
 	// запись(отправка) части программы
 {	 writeParty_view,	   writeParty_k1,				dump,				dump,				dump,				dump,	 writeParty_init,				dump},
 	

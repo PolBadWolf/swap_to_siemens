@@ -118,7 +118,7 @@ TaskQueueUnit::crTask(Key4::interrupt, 1 * ((double)timer2_FEQ / 1000.0), 0),
 #endif // CONF_KEY4
 
 #ifdef CONF_MENU
-TaskQueueUnit::crTask(ns_menu::interrupt, (uint8_t)(1 * ((double)timer0_FEQ / 1000.0)), 0),
+TaskQueueUnit::crTask(ns_menu::interrupt, (uint8_t)(1 * ((double)timer2_FEQ / 1000.0)), 0),
 #endif // CONF_MENU
 
 #include "user/system/taskUserMidle.h"

@@ -76,6 +76,10 @@ public:
 	void		fRd_init(uint32_t adr, uint16_t lenght);
 	uint8_t		fRd_readByte(uint8_t	*dat);
 	void		fRd_end();
+	// ---
+	void		serialRead_begin(uint32_t adr);
+	void		serialRead_end();
+	uint8_t		serialReadByte();
 protected:
 private:
 	MX25L8005();

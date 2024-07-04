@@ -12,10 +12,10 @@
 #include <avr/eeprom.h>
 
 #define LIST_MOD_view	0
-#define LIST_MOD_save	1
-#define LIST_MOD_clr	2
-#define LIST_MOD_copy	3
-#define LIST_MOD_load	4
+#define LIST_MOD_send	1
+#define LIST_MOD_read	2
+#define LIST_MOD_clr	3
+#define LIST_MOD_copy	4
 #define LIST_MOD_plus5	5
 #define LIST_MOD_eot	6
 #define LIST_MOD_pins	7
@@ -61,6 +61,7 @@ namespace	ns_var
 	//===========================================================
 	extern			unsigned	char			error_parity;
 	extern			unsigned	char			fl_puskRead;
+	extern			unsigned	char			fl_viewHex;
 	
 	struct ModStruct
 	{
@@ -74,6 +75,11 @@ namespace	ns_var
 
 	extern			unsigned	char			simulOn;
 	extern			unsigned	int				simulLenght;
+	
+	extern			unsigned	char			buf_string[];
+	extern			unsigned	char			buf_string_adr;
+	extern			unsigned	char			buf_string_lenght;
+	
 
 }
 

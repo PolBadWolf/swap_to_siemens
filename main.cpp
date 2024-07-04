@@ -16,6 +16,7 @@
 #include "user/line/signal_pin.h"
 #include "indication/Lcd_hard.h"
 #include <avr/pgmspace.h>
+#include "user/menu/uMenu.h"
 
 
 // Spi_Hard	*tt;
@@ -42,6 +43,11 @@ void fgh()
 	{
 		fgh
 	};
+void	read_string(uint32_t adr);
+void	viewBlock_view_1();
+void	viewBlock_init();
+void	view_read_forward();
+void	view_read_back();
 
 int main(void)
 {
@@ -50,6 +56,14 @@ int main(void)
 // 	ochered[2] = (void (*)())main;
 	//ochered[0][0]();
 	Core::init();
+
+//	eot_k4();
+// 	viewBlock_init();
+// 	view_read_back();
+// 	viewBlock_view();
+// 	ns_var::ml_adr_offset += ns_var::buf_string_lenght;
+// 	view_read_forward();
+// 	viewBlock_view_1();
 
 // 	yy = ns_user::readData->checkErrorParty(0x82);
 // 	scr->PutChar('0' + yy);

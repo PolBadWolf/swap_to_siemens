@@ -4,6 +4,7 @@
 * Created: 23.04.2024 10:26:20
 * Author: User
 */
+#pragma GCC optimize("O0")
 
 #include "uMenu.h"
 
@@ -26,7 +27,22 @@
 
 uint16_t	startCount;
 
+#define		LENGHT_RUN_STRING	0x10
+
 // #define __MENU_DEBUG__
+
+	const volatile uint8_t ms[] PROGMEM =
+	{
+		0xa5, 0x8d, 0x0a,
+		0x28, 0xd2, 0x78, 0xbd, 0x35, 0xb7, 0x35, 0xa0,
+		0x42, 0x41, 0xd4, 0xd4, 0xd2, 0xc5, 0x53, 0x53, 0x2d, 0x33, 0xb2, 0xb4, 0xaf, 0xb1, 0x30, 0xa0,
+		0xeb, 0x2e, 0xb1, 0x2d, 0x35, 0x30, 0xa0,
+		0xb2, 0xb7, 0xaf, 0xb1, 0xb2, 0xaf, 0xb2, 0x30, 0xb1, 0xb2, 0xa9, 0x8d, 0x0a,
+		0x4e, 0xb1, 0x30, 0x30, 0x30, 0xa0, 0x47, 0x39, 0x30, 0x8d, 0x0a,
+		0x4e, 0xb1, 0x30, 0xb1, 0x30, 0xa0, 0x47, 0x30, 0x30, 0xa0, 0xd8, 0x30, 0xa0, 0x5a, 0x30, 0xa0, 0x4d, 0x30, 0x33, 0x8d, 0x0a,
+		0x4e, 0xb1, 0x30, 0xb2, 0x30, 0xa0, 0x47, 0x39, 0xb1, 0x8d, 0x0a,
+		0x8d, 0x0a
+	};
 
 
 void menuUser_1Milisec()
@@ -37,6 +53,32 @@ void menuUser_1Milisec()
 	}
 }
 
+void	read_string(uint32_t adr)
+{
+	uint8_t e, sim;
+	uint8_t indx = 0;
+	uint8_t fl = 0;
+	ns_user::flash->serialRead_begin(adr);
+	for (e = 0; e <63; e++, indx++)
+	{
+		sim = ns_user::flash->serialReadByte();
+		sim &= 0x7f;
+		if ((sim == 0) || (sim == 0x0d) || (sim == 0x10))
+		{
+			if (fl == 2)
+			{
+				ns_var::buf_string[indx] = 0;
+				break;
+			}
+		} 
+		else
+		{
+			ns_var::buf_string[indx] = sim;
+			fl = 2;
+		}
+	}
+	ns_user::flash->serialRead_end();
+}
 
 void	start_init()
 {
@@ -131,9 +173,9 @@ void	user_menu_init()
 {
 	ns_var::simulOn		= 0;
 	//
-	ns_var::n_prog		= 0;
+	ns_var::n_prog		= 10; //0;
 	ns_var::adrProg		= adrRender(ns_var::n_prog);
-	ns_var::mxMod		= LIST_MOD_load;
+	ns_var::mxMod		= LIST_MOD_read;
 	//
 	ns_menu::functMenu_aft(_M_START, MENU_SETMODE);
 }
@@ -147,22 +189,107 @@ void	screen1_vmod()
 	scr->String_P(ns_var::listMod[ns_var::mxMod].name);
 }
 
-void	screen1_vmem(uint32_t adr)
+void	string_findBeginWord()
 {
-	uint8_t	sb[5];
-	ns_user::flash->readArray(sb, 5, adr);
+	uint8_t adr = ns_var::buf_string_adr;
+	uint8_t sim;
+	for (;;)
+	{
+		sim = ns_var::buf_string[adr];
+		if ((sim == 0) || (adr >= 63))
+		{
+			adr = 0;
+			continue;
+		}
+		if (sim <= ' ')
+		{
+			adr++;
+			continue;
+		}
+		ns_var::buf_string_adr = adr;
+		break;
+	}
+}
+
+
+void	screen1_vmem(uint32_t adr_f)
+{
+	if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::buf_string[0] == 0) )
+	{
+		uint8_t	sb[5];
+		ns_user::flash->readArray(sb, 5, adr_f);
+		scr->SetPosition2(0, 1);
+		for (uint8_t i = 0; i < 5; i++)
+		{
+			scr->PutChar(' ');
+			scr->Hex(sb[i]);
+		}
+	}
+	else
+	{
+		uint16_t count;
+		CRITICAL_SECTION
+		{
+			count = startCount;
+		}
+		if (count == 0)
+		{
+			CRITICAL_SECTION
+			{
+				startCount = 400;
+			}
+			uint8_t i, sim;
+			uint8_t fl_end = 0;
+			uint8_t adr = ns_var::buf_string_adr;
+			scr->SetPosition2(0, 1);
+			for (i = 0; i < LENGHT_RUN_STRING; i++)
+			{
+				if (adr >= 64)		adr = 0;
+				sim = ns_var::buf_string[adr];
+				if ((sim == 0) || (sim == 0x0d) || (sim == 0x0a))
+				{
+					scr->PutChar(' ');
+					fl_end = 1;
+					continue;
+				}
+				if (sim >= ' ')
+				{
+					scr->PutChar(sim);
+					adr++;
+				}
+				else
+				{
+					scr->PutChar(' ');
+				}
+			}
+			if (fl_end != 0)
+			{
+				ns_var::buf_string_adr  = 0;
+				CRITICAL_SECTION
+				{
+					startCount = 2000;
+				}
+			}
+			else				ns_var::buf_string_adr += 1;
+		}
+	}
+	
+	/*
 	scr->SetPosition2(0, 1);
-	for (uint8_t i = 0; i < 5; i++)
+	for (uint8_t i = 0; i < 3; i++)
 	{
 		scr->PutChar(' ');
-		scr->Hex(sb[i]);
+		scr->Hex(ns_var::buf_string[i]);
 	}
+	scr->Digit(3, ns_var::s_prog);
+	*/
 }
 
 uint16_t	count_check = 0;
 
 void	screen1_check()
 {
+	if (ns_var::fl_viewHex != 0)	screen1_vmem(ns_var::adrProg);
 	count_check++;
 	if (count_check < 100)		return;
 	count_check = 0;
@@ -233,6 +360,52 @@ void	screen1_view()
 	}
 }
 
+int32_t	screen1_findName(uint32_t adr)
+{
+	uint8_t e;
+	uint8_t sim;
+	do 
+	{
+		ns_user::flash->serialRead_begin(adr);
+		for (e = 0; ; e++, adr++)
+		{
+			if (e >= 64) break;
+			sim = ns_user::flash->serialReadByte() & 0x7f;
+			if (sim != '%')	continue;
+			adr++;	e++;
+			sim = ns_user::flash->serialReadByte() & 0x7f;
+			if (sim != 0x0d)	continue;
+			adr++;	e++;
+			sim = ns_user::flash->serialReadByte() & 0x7f;
+			if (sim != 0x0a)	continue;
+			adr++;
+			break;
+		}
+	} while (false);
+	ns_user::flash->serialRead_end();
+	if (e >= 64)	return -1;
+	return	adr;
+}
+
+void	screen1_name(uint32_t adr)
+{
+	if (ns_var::n_prog < ns_var::blockBoundary)
+	{
+		ns_var::buf_string[0] = 0;
+		return;
+	}
+	ns_var::buf_string_adr = 0;
+	ns_var::buf_string_lenght = 0;
+	int32_t	adr_name;
+	adr_name = screen1_findName(adr);
+	if (adr_name < 0)
+	{
+		ns_var::buf_string[0] = 0;
+		return;
+	}
+	read_string(adr_name);
+}
+
 void	screen1_init()
 {
 	// настройка портов на чтение
@@ -242,6 +415,8 @@ void	screen1_init()
 	scr->Clear();
 	key->autoRepeatOn();
 	scr->String_P(PSTR("Nпр:"));
+	ns_var::adrProg = adrRender(ns_var::n_prog);
+	screen1_name(ns_var::adrProg + OFFSET_WRITE);
 	screen1_view();
 }
 
@@ -250,10 +425,11 @@ void	screen1_k2()
 	if (ns_var::n_prog > 0)
 	{
 		ns_var::n_prog--;
-		ns_var::adrProg = adrRender(ns_var::n_prog);
 		ns_var::mxMod = 0;
-		screen1_view();
 	}
+	ns_var::adrProg = adrRender(ns_var::n_prog);
+	screen1_name(ns_var::adrProg + OFFSET_WRITE);
+	screen1_view();
 }
 
 void	screen1_k3()
@@ -261,10 +437,11 @@ void	screen1_k3()
 	if (ns_var::n_prog < progMax)
 	{
 		ns_var::n_prog++;
-		ns_var::adrProg = adrRender(ns_var::n_prog);
 		ns_var::mxMod = 0;
-		screen1_view();
 	}
+	ns_var::adrProg = adrRender(ns_var::n_prog);
+	screen1_name(ns_var::adrProg + OFFSET_WRITE);
+	screen1_view();
 }
 
 void	screen1_k1()
@@ -283,13 +460,13 @@ void	screen1_k4()
 	{
 		case LIST_MOD_view:		ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);
 		break;
-		case LIST_MOD_save:		reqeWrite_begin();
+		case LIST_MOD_send:		reqeWrite_begin();
 		break;
 		case LIST_MOD_clr:		ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);
 		break;
 		case LIST_MOD_copy:		ns_menu::functMenu_aft(_M_COPY, MENU_SETMODE);
 		break;
-		case LIST_MOD_load:		reqeRead_begin();
+		case LIST_MOD_read:		reqeRead_begin();
 		break;
 		case LIST_MOD_plus5:	ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);
 		break;
@@ -687,46 +864,220 @@ void	readParty_k4()
 	//
 }
 // ==============================================================
+void	view_read_forward()
+{
+	uint8_t	lenght = 0;
+	uint8_t sim;
+	uint8_t fl_st = 0;
+	uint16_t		adr_offset = ns_var::ml_adr_offset;
+
+// 	uint16_t		offset_max;
+// 	ns_user::flash->readArray(ns_user::flash->wr_buff, 4, adrRender(ns_var::n_prog) + 4);
+// 	word_to_byte(offset_max).Low = ns_user::flash->wr_buff[2];
+// 	word_to_byte(offset_max).High = ns_user::flash->wr_buff[3];
+
+	
+	ns_user::flash->serialRead_begin(ns_var::adrProg + adr_offset);
+	adr_offset--;
+	__delay_us(100);
+	for(;lenght < 63;)
+	{
+		sim = ns_user::flash->serialReadByte();
+		sim &= 0x7f;
+		adr_offset++;
+		if (fl_st == 2)	ns_var::buf_string[lenght] = sim;
+		if ((sim == 0) || (sim == 0x7f))
+		{
+			break;	// конец данных
+		}
+		if ((sim == 0x0d) || (sim == 0x0a))
+		{
+			//lenght++;
+			if (fl_st == 2)
+			{
+				break;
+			}
+			fl_st = 1;
+			continue;
+		}
+		if (fl_st < 2)	ns_var::buf_string[lenght] = sim;
+		lenght++;
+		//ns_var::ml_adr_offset++;
+		if (fl_st == 1)		ns_var::ml_adr_offset = adr_offset;
+		fl_st = 2;
+	}
+	ns_user::flash->serialRead_end();
+	ns_var::buf_string_lenght	= lenght;
+	ns_var::buf_string_adr		= 0;
+}
+
+void	view_read_back()
+{
+	uint8_t sim;
+	uint16_t	adr_offset = ns_var::ml_adr_offset;
+	uint8_t		statFind = 0;
+	uint32_t	adr_f;
+	for(;adr_offset > OFFSET_WRITE; adr_offset--)
+	{
+		adr_f = adr_offset + ns_var::adrProg;
+		ns_user::flash->readArray(ns_user::flash->wr_buff, 1, adr_f);
+		sim = ns_user::flash->wr_buff[0];
+		sim &= 0x7f;
+		if (statFind == 0)
+		{
+			if ((sim != 0x0d) && (sim != 0x0a))	continue;
+			statFind = 1;
+		}
+		if (statFind == 1)
+		{
+			if ((sim == 0x0d) || (sim == 0x0a))	continue;
+			statFind = 2;
+		}
+		if (statFind == 2)
+		{
+			if ((sim != 0x0d) && (sim != 0x0a))	continue;
+			break;
+		}
+	}
+//	if ((sim == 0x0d) || (sim == 0x0a)) adr_offset++; // *** не обезательно
+	ns_var::ml_adr_offset = adr_offset;
+	view_read_forward();
+}
+
 // просмотр блока
 void	viewBlock_init()
 {
-	ns_var::ml_adr_offset = 0;
 	scr->Clear();
 	scr->String_P(PSTR("Nпр:"));
 	scr->DigitZ(3, ns_var::n_prog);
-	if (ns_var::s_prog == 0)
+	if (ns_var::n_prog >= ns_var::blockBoundary)
 	{
 		scr->PutChar('S');
 		ns_var::ml_adr_offset_max = 4096 - 5;
+		ns_var::ml_adr_offset = OFFSET_WRITE;
+		ns_var::fl_viewHex = 0;
+		view_read_forward();
 	}
 	else
 	{
 		scr->PutChar('B');
 		ns_var::ml_adr_offset_max = 65536 - 5;
+		ns_var::ml_adr_offset = 0;
+		ns_var::fl_viewHex = 1;
 	}
-	scr->PutChar(' ');
-	viewBlock_view();
+	//scr->PutChar(' ');
+	view_read_forward();
+	viewBlock_view_1();
+}
+
+void	viewBlock_view_2()
+{
+	if (ns_var::fl_viewHex != 0)	return;
+	uint16_t countTmp;
+	CRITICAL_SECTION
+	{
+		countTmp = startCount;
+	}
+	if (countTmp > 0)	return;
+	CRITICAL_SECTION
+	{
+		startCount = 250;
+	}
+	
+	scr->SetPosition2(0, 1);
+	for (uint8_t i = 0; i < LENGHT_RUN_STRING; i++) scr->PutChar(' ');
+	scr->SetPosition2(0, 1);
+	uint8_t lenght = ns_var::buf_string_lenght;
+	scr->Hex(14, ns_var::buf_string_lenght);
+	if (lenght == 0)
+	{
+		scr->String_P( PSTR("нет данных") );
+		return;
+	}
+	uint8_t fl_shift = (lenght >= LENGHT_RUN_STRING)?1:0;
+	uint8_t fl_end = 0;
+	uint8_t adr;
+	uint8_t sim;
+	if (fl_shift != 0)	adr = ns_var::buf_string_adr;
+	else				adr = 0;
+	// --
+	for (uint8_t i = 0; i < LENGHT_RUN_STRING; i++)
+	{
+		if (fl_end == 0)
+		{
+			sim = ns_var::buf_string[adr];
+			if ((sim == 0x00) || (sim == 0x0d) || (sim == 0x0a) || (sim == 0x7f))	fl_end = 1;
+			else
+			{
+				if (sim >= ' ')
+				{
+					scr->PutChar(sim);
+					adr++;
+					continue;
+				}
+			}
+		}
+		scr->PutChar(' ');
+	}
+	if (fl_shift != 0)
+	{
+		if (ns_var::buf_string[ns_var::buf_string_adr] == ' ')
+		{
+			CRITICAL_SECTION
+			{
+				startCount = 800;
+			}
+		}
+		if (fl_end != 0)
+		{
+			ns_var::buf_string_adr  = 0;
+		}
+		else	ns_var::buf_string_adr += 1;
+		if (ns_var::buf_string_adr <= 1)
+		{
+			CRITICAL_SECTION
+			{
+				startCount = 2000;
+			}
+		}
+	}
+	// --
 }
 
 void	viewBlock_view()
 {
+	uint8_t lenght = ns_var::buf_string_lenght;
+	if (lenght <= LENGHT_RUN_STRING)	return;
+	viewBlock_view_2();
+}
+
+void	viewBlock_view_1()
+{
 	scr->SetPosition2(9, 0);
-	scr->Hex(word_to_byte(ns_var::ml_adr_offset).High);
+	scr->Hex(word_to_byte(ns_var::ml_adr_offset).High); // ***************************************************************************************
 	scr->Hex(word_to_byte(ns_var::ml_adr_offset).Low);
 	//
-	scr->SetPosition2(0, 1);
-	ns_user::flash->readArray(ns_user::flash->wr_buff, 5, ns_var::adrProg + ns_var::ml_adr_offset);
-	for (uint8_t i = 0; i < 5; i++)
+	if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
 	{
-		if ( (ns_var::ml_adr_offset & 0x01) == (i & 0x01))
+		scr->SetPosition2(0, 1);
+		ns_user::flash->readArray(ns_user::flash->wr_buff, 5, ns_var::adrProg + ns_var::ml_adr_offset);
+		for (uint8_t i = 0; i < 5; i++)
 		{
-			scr->PutChar('.');
+			if ( (ns_var::ml_adr_offset & 0x01) == (i & 0x01))
+			{
+				scr->PutChar('.');
+			}
+			else
+			{
+				scr->PutChar(' ');
+			}
+			scr->Hex(ns_user::flash->wr_buff[i]);
 		}
-		else
-		{
-			scr->PutChar(' ');
-		}
-		scr->Hex(ns_user::flash->wr_buff[i]);
+		scr->PutChar(' ');
+	}
+	else
+	{
+		viewBlock_view_2();
 	}
 }
 
@@ -739,8 +1090,23 @@ void	viewBlock_k2()
 {
 	if (ns_var::ml_adr_offset > 0)
 	{
-		ns_var::ml_adr_offset--;
-		viewBlock_view();
+// 		ns_var::ml_adr_offset--;
+// 		//view_read_forward();
+// 		viewBlock_view_1();
+		if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
+		{
+			ns_var::ml_adr_offset--;
+			viewBlock_view_1();
+		}
+		else
+		{
+			CRITICAL_SECTION
+			{
+				startCount = 0;
+			}
+			view_read_back();
+			viewBlock_view_1();
+		}
 	}
 }
 
@@ -748,9 +1114,33 @@ void	viewBlock_k3()
 {
 	if ((ns_var::ml_adr_offset + 1) < ns_var::ml_adr_offset_max)
 	{
-		ns_var::ml_adr_offset++;
-		viewBlock_view();
+		if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
+		{
+			ns_var::ml_adr_offset++;
+			viewBlock_view_1();
+		}
+		else
+		{
+			CRITICAL_SECTION
+			{
+				startCount = 0;
+			}
+			ns_var::ml_adr_offset += ns_var::buf_string_lenght;
+			view_read_forward();
+			viewBlock_view_1();
+		}
 	}
+}
+
+void	viewBlock_k4()
+{
+	if (ns_var::fl_viewHex == 0)	ns_var::fl_viewHex = 1;
+	else
+	{
+		ns_var::fl_viewHex = 0;
+		view_read_forward();
+	}
+	viewBlock_view_1();
 }
 // ====================================================================
 // подготовка к запуску
@@ -824,6 +1214,7 @@ void	reqeWrite_init()
 	scr->Digit(2, ns_var::ml_adr_n_max);
 	scr->SetPosition2(0, 1);
 	scr->String_P(PSTR("дальше ?"));
+	startCount = 5 * 1000;
 }
 
 void	reqeWrite_k2()
@@ -839,6 +1230,19 @@ void	reqeWrite_k3()
 	ns_menu::functMenu_pre(_M_WRITE_PART, MENU_SETMODE);
 }
 
+void	reqeWrite_check()
+{
+	uint16_t count_tmp;
+	CRITICAL_SECTION
+	{
+		count_tmp = startCount;
+	}
+	scr->Digit(scr->SetPosition(14, 1), 2, count_tmp / 1000);
+	if (count_tmp == 0)
+	{
+		ns_menu::functMenu_pre(_M_WRITE_PART, MENU_SETMODE);
+	}
+}
 
 // ====================================================================
 // -------------------- WRITE PARTY -----------------------------------
@@ -884,6 +1288,21 @@ void	writeParty_end()
 		else
 		{
 			// проверка на  флаг ошибки при симуляции
+			scr->Clear();
+			if (ns_user::writeData->error_sim == 0)
+			{	// символы/коды совпадают
+				scr->String_P( PSTR("Коды совпадают") );
+			}
+			else
+			{	// символы/коды не совпадают
+				scr->String_P( PSTR("Коды не совпадают") );
+				scr->SetPosition2(0, 1);
+				scr->Hex(word_to_byte(ns_user::writeData->error_sim_adr).High);
+				scr->Hex(word_to_byte(ns_user::writeData->error_sim_adr).Low);
+				scr->PutChar(' ');
+				scr->Hex(ns_user::writeData->error_sim_dat);
+			}
+			ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
 		}
 	}
 }
@@ -997,19 +1416,38 @@ void	eot_k1()
 
 void	eot_k2()
 {
-	ns_var::flag_eot_m = 0;
-	eot_view();
+// 	ns_var::flag_eot_m = 0;
+// 	eot_view();
 }
 
 void	eot_k3()
 {
-	ns_var::flag_eot_m = 1;
-	eot_view();
+// 	ns_var::flag_eot_m = 1;
+// 	eot_view();
 }
 
 void	eot_k4()
 {
-	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
+// 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
+	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
+	uint8_t cod;
+	for (uint8_t i = 0; i < 92; i++)
+	{
+		cod = pgm_read_byte(&ms[i]);
+		ns_user::flash->wr_buff[i] = cod;
+	}
+	ns_user::flash->writeArray(ns_user::flash->wr_buff, 92, adr + OFFSET_WRITE);
+	ns_user::flash->wr_buff[0] = 1;
+	ns_user::flash->wr_buff[1] = 0xff;
+	ns_user::flash->wr_buff[2] = 0xff;
+	ns_user::flash->wr_buff[3] = 0xff;
+	ns_user::flash->wr_buff[4] = 0;
+	ns_user::flash->wr_buff[5] = 0;
+	ns_user::flash->wr_buff[6] = 92;
+	ns_user::flash->wr_buff[7] = 0;
+	ns_user::flash->wr_buff[8] = 0xff;
+	ns_user::flash->wr_buff[9] = 0xff;
+	ns_user::flash->writeArray(ns_user::flash->wr_buff, 10, adr);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
 // ------------------------------
@@ -1079,7 +1517,7 @@ void	pins_view()
 
 	}
 	ns_var::pins_uk++;
-	if (ns_var::pins_uk >= 16)	ns_var::pins_uk = 0;
+	if (ns_var::pins_uk >= LENGHT_RUN_STRING)	ns_var::pins_uk = 0;
 }
 
 void	pins_k1()

@@ -15,8 +15,9 @@
 
 #define TIMER_X		timer0_FEQ
 
-#define		__read_sprocket_down	(uint16_t)(((double)1) * ((double)TIMER_X) / ((double)1000))
-#define		__read_sprocket_up		(uint16_t)(((double)2) * ((double)TIMER_X) / ((double)1000))
+// dn : 1/ up : 2 mSec
+#define		__read_sprocket_down	(uint16_t)(((double)0.5) * ((double)TIMER_X) / ((double)1000))
+#define		__read_sprocket_up		(uint16_t)(((double)1) * ((double)TIMER_X) / ((double)1000))
 
 // private metods
 namespace	ns_simul
@@ -27,7 +28,7 @@ namespace	ns_simul
 // public vars
 namespace	ns_simul
 {
-	const	uint16_t	flsh_avr_startAdr	= 0x41;
+	const	uint16_t	flsh_avr_startAdr	= 0x40;
 	uint16_t	read_avr_adr;
 	uint16_t	read_lenght;
 	//

@@ -37,29 +37,27 @@ namespace	ns_var
 			
 			unsigned	char			simulOn;
 			unsigned	int				simulLenght;
+			
+			unsigned	char			buf_string[64];
+			unsigned	char			buf_string_adr;
+			unsigned	char			buf_string_lenght;
+			unsigned	char			fl_viewHex;
+			unsigned	char			back_lenght;
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{
 		{	0, "view"	},
-		{	1, "save"	},
-		{	2, "clr "	},
-		{	3, "copy"	},
-		{	4, "load"	},
+		{	1, "send"	},
+		{	2, "read"	},
+		{	3, "clr "	},
+		{	4, "copy"	},
 		{	5, "R+5 "	},
 		{	6, "EOT "	},
 		{	7, "PINS"	},
 	};
-	/*const char string_table[][10] PROGMEM =
-	{
-		"String 1",
-		"String 2",
-		"String 3",
-		"String 4",
-		"String 5"
-	};*/
 	
-	unsigned char	flag_plus5 EEMEM = 1;
-	unsigned char	flag_eot   EEMEM = 1;
+	unsigned char	flag_plus5 EEMEM = 0;
+	unsigned char	flag_eot   EEMEM = 0;
 	unsigned char	flag_plus5_m;
 	unsigned char	flag_eot_m;
 	unsigned char	pins_uk;
