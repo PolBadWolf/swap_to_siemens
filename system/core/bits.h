@@ -68,4 +68,7 @@ typedef struct
 void	bit_set_byte(volatile	void	*byte, const unsigned char bit, const bool z);
 void	bit_xor_byte(volatile	unsigned char	*byte, const unsigned char bit);
 
+uint8_t	odd_from_7bit(uint8_t dat);
+uint8_t odd_plus_7bit(uint8_t dat);
+
 #endif /* BITS_H_ */

@@ -108,10 +108,6 @@ void	ReadData::initPorts()
 		ns_pins::init_dataOut();
 		ns_pins::init_sprocketOut();
 		ns_pins::init_strobeInp();
-		ns_pins::init_dataEnableInp();
-		ns_pins::init_readyBusyInp();
-		ns_pins::init_slewIncOut();
-		ns_pins::init_leftRightInp();
 		ns_pins::init_startStopOut();
 		ns_pins::init_eotOrRhuInp();
 	} 
@@ -121,10 +117,6 @@ void	ReadData::initPorts()
 		ns_pins::init_dataInp();
 		ns_pins::init_sprocketInp();
 		ns_pins::init_strobeInp();
-		ns_pins::init_dataEnableInp();
-		ns_pins::init_readyBusyInp();
-		ns_pins::init_slewIncInp();
-		ns_pins::init_leftRightInp();
 		ns_pins::init_startStopInp();
 		ns_pins::init_eotOrRhuInp();
 	}
@@ -180,11 +172,14 @@ uint8_t	ReadData::checkErrorParity(uint8_t dat)
 	uint8_t stat = 0;
 	uint8_t bc = bit_is_byte(dat).bit7;
 	uint8_t cc = 0;
+	/*
 	for (uint8_t i = 0; i < 7; i++)
 	{
 		if ((dat & 1) != 0)	cc++;
 		dat >>= 1;
 	}
+	*/
+	cc = odd_from_7bit(dat);
 	stat = bc ^ (cc & 1);
 	return	stat;
 }
@@ -206,7 +201,7 @@ void	ReadData::int_Wait_ByteRead()
 				if (dat != 0)
 				{
 					ns_var::fl_puskRead = 1;
-					serialDataSend(0);
+// 					serialDataSend(0);
 					serialDataSend(dat);
 				}
 			}
@@ -215,7 +210,7 @@ void	ReadData::int_Wait_ByteRead()
 				if ((dat & 0x7f) == '%')
 				{
 					ns_var::fl_puskRead = 1;
-					serialDataSend(0);
+// 					serialDataSend(0);
 					serialDataSend(dat);
 				}
 			}

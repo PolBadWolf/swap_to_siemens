@@ -81,7 +81,6 @@ void	ns_simul::read_cycle()
 	{
 		case Init:
 			ns_pins::transfer_startStop(0);
-			ns_pins::transfer_slewInc(1);
 			ns_pins::transfer_sprocket(1);
 			statRead = StartInit;
 		break;

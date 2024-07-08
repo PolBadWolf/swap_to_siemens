@@ -68,30 +68,6 @@
 #define		strobe_out			bit_is_byte(PORTD).strobe_bit
 #define		strobe_inp			bit_is_byte(PIND).strobe_bit
 
-// ============== dataEnable ==================
-#define		dataEnable_bit		bit3
-#define		dataEnable_ddr		bit_is_byte(DDRD).dataEnable_bit
-#define		dataEnable_out		bit_is_byte(PORTD).dataEnable_bit
-#define		dataEnable_inp		bit_is_byte(PIND).dataEnable_bit
-
-// ============== readyBusy ===================
-#define		readyBusy_bit		bit4
-#define		readyBusy_ddr		bit_is_byte(DDRD).readyBusy_bit
-#define		readyBusy_out		bit_is_byte(PORTD).readyBusy_bit
-#define		readyBusy_inp		bit_is_byte(PIND).readyBusy_bit
-
-// ============== slewInc ======================
-#define		slewInc_bit			bit6
-#define		slewInc_ddr			bit_is_byte(DDRD).slewInc_bit
-#define		slewInc_out			bit_is_byte(PORTD).slewInc_bit
-#define		slewInc_inp			bit_is_byte(PIND).slewInc_bit
-
-// ============== Left/Right ===================
-#define		leftRight_bit		bit5
-#define		leftRight_ddr		bit_is_byte(DDRD).leftRight_bit
-#define		leftRight_out		bit_is_byte(PORTD).leftRight_bit
-#define		leftRight_inp		bit_is_byte(PIND).leftRight_bit
-
 // ================= startStop ==================
 #define		startStop_bit		bit7
 #define		startStop_ddr		bit_is_byte(DDRD).startStop_bit
@@ -158,30 +134,6 @@
 #define		strobe_ddr			bit_is_byte(DDRE).strobe_bit
 #define		strobe_out			bit_is_byte(PORTE).strobe_bit
 #define		strobe_inp			bit_is_byte(PINE).strobe_bit
-
-// ============== dataEnable ==================
-#define		dataEnable_bit		bit6
-#define		dataEnable_ddr		bit_is_byte(DDRD).dataEnable_bit
-#define		dataEnable_out		bit_is_byte(PORTD).dataEnable_bit
-#define		dataEnable_inp		bit_is_byte(PIND).dataEnable_bit
-
-// ============== readyBusy ===================
-#define		readyBusy_bit		bit7
-#define		readyBusy_ddr		bit_is_byte(DDRD).readyBusy_bit
-#define		readyBusy_out		bit_is_byte(PORTD).readyBusy_bit
-#define		readyBusy_inp		bit_is_byte(PIND).readyBusy_bit
-
-// ============== slewInc ======================
-#define		slewInc_bit			bit4
-#define		slewInc_ddr			bit_is_byte(DDRE).slewInc_bit
-#define		slewInc_out			bit_is_byte(PORTE).slewInc_bit
-#define		slewInc_inp			bit_is_byte(PINE).slewInc_bit
-
-// ============== Left/Right ===================
-#define		leftRight_bit		bit5
-#define		leftRight_ddr		bit_is_byte(DDRE).leftRight_bit
-#define		leftRight_out		bit_is_byte(PORTE).leftRight_bit
-#define		leftRight_inp		bit_is_byte(PINE).leftRight_bit
 
 // ================= startStop ==================
 #define		startStop_bit		bit6
@@ -298,86 +250,6 @@ namespace	ns_pins
 		strobe_out = dat;
 	}
 
-	// ===================== dataEnable ==================
-	void	init_dataEnableInp()
-	{
-		dataEnable_out = eeprom_read_byte(&ns_var::flag_plus5);
-		dataEnable_ddr = 0;
-	}
-	void	init_dataEnableOut()
-	{
-		dataEnable_out = 1;
-		dataEnable_ddr = 1;
-	}
-	uint8_t	transfer_dataEnable()
-	{
-		return	dataEnable_inp;
-	}
-	void	transfer_dataEnable(uint8_t dat)
-	{
-		dataEnable_out = dat;
-	}
-	
-	// ====================== readyBusy =======================
-	void	init_readyBusyInp()
-	{
-		readyBusy_out = eeprom_read_byte(&ns_var::flag_plus5);
-		readyBusy_ddr = 0;
-	}
-	void	init_readyBusyOut()
-	{
-		readyBusy_out = 1;
-		readyBusy_ddr = 1;
-	}
-	uint8_t	transfer_readyBusy()
-	{
-		return	readyBusy_inp;
-	}
-	void	transfer_readyBusy(uint8_t dat)
-	{
-		readyBusy_out = dat;
-	}
-
-	// ============ slewInc ======================
-	void	init_slewIncInp()
-	{
-		slewInc_out = eeprom_read_byte(&ns_var::flag_plus5);
-		slewInc_ddr = 0;
-	}
-	void	init_slewIncOut()
-	{
-		slewInc_out = 1;
-		slewInc_ddr = 1;
-	}
-	uint8_t	transfer_slewInc()
-	{
-		return	slewInc_inp;
-	}
-	void	transfer_slewInc(uint8_t dat)
-	{
-		slewInc_out = dat;
-	}
-
-	// ============ left/right ======================
-	void	init_leftRightInp()
-	{
-		leftRight_out	= eeprom_read_byte(&ns_var::flag_plus5);
-		leftRight_ddr	= 0;
-	}
-	void	init_leftRightOut()
-	{
-		leftRight_out	= 1;
-		leftRight_ddr	= 1;
-	}
-	uint8_t	transfer_leftRight()
-	{
-		return	leftRight_inp;
-	}
-	void	transfer_leftRight(uint8_t dat)
-	{
-		leftRight_out	= dat;
-	}
-	
 	// ================== startStop ==================
 	void	init_startStopInp()
 	{

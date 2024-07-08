@@ -52,7 +52,7 @@ namespace	ns_var
 		{	3, "clr "	},
 		{	4, "copy"	},
 		{	5, "R+5 "	},
-		{	6, "EOT "	},
+		{	6, "test"	},
 		{	7, "PINS"	},
 	};
 	

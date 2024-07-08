@@ -86,14 +86,6 @@ void	WriteData::initPorts()
 	init_sprocketOut();
 	// =================== strobe ======================
 	init_strobeOut();
-	// =================== dataEnable ==================
-	init_dataEnableInp();
-	// =================== readyBusy ===================
-	init_readyBusyOut();
-	// =================== slewInc =====================
-	init_slewIncInp();
-	// ============ leftRight ======================
-	init_leftRightInp();
 	// ================== startStop ==================
 	init_startStopInp();
 	// ================== eot or rhu ==================
@@ -155,6 +147,7 @@ void		WriteData::sendOn()
 			countTikDelay	= 0;
 			error_sim		= 0;
 			sim_starDat		= 0;
+			startHeaderCount = 50;
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
 		}
@@ -231,7 +224,6 @@ void	WriteData::mode_phaze1()
 	if ( (transfer_startStop() == 0) && (ns_var::simulOn == 0) )		return;
 	// ------------
 	__delay_us(WR_PRE_START_UP);
-	transfer_readyBusy(0);
 //	transfer_startStop(1);
 	modeDelay(phaze2_1, WR_OUT_SPR_DN);
 }
@@ -246,8 +238,12 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
 	// очередной байт
 	uint8_t	dat, stat;
-	stat = 
-	ns_user::flash->fRd_readByte(&dat);
+	if (startHeaderCount > 0) stat = ns_user::flash->fRd_readByte(&dat);
+	else
+	{
+		stat = 1;
+		dat  = 0;
+	}
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);
 	//импульс строба
@@ -288,7 +284,8 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 		}
 	}
 	//
-	sendCountByte++;
+	if (startHeaderCount > 0)	startHeaderCount --;
+	else						sendCountByte++;
 	//
 	if (
 	(stat == 0)
@@ -318,7 +315,6 @@ void	WriteData::mode_phaze3_1()
 
 void	WriteData::mode_phaze3_2()
 {
-	transfer_readyBusy(1);
 	modeDelay(sendEnd, WR_AFT_BUSY_UP);
 }
 

@@ -31,7 +31,7 @@ uint16_t	startCount;
 
 // #define __MENU_DEBUG__
 
-	const volatile uint8_t ms[] PROGMEM =
+/*	const volatile uint8_t ms[] PROGMEM =
 	{
 		0xa5, 0x8d, 0x0a,
 		0x28, 0xd2, 0x78, 0xbd, 0x35, 0xb7, 0x35, 0xa0,
@@ -42,6 +42,59 @@ uint16_t	startCount;
 		0x4e, 0xb1, 0x30, 0xb1, 0x30, 0xa0, 0x47, 0x30, 0x30, 0xa0, 0xd8, 0x30, 0xa0, 0x5a, 0x30, 0xa0, 0x4d, 0x30, 0x33, 0x8d, 0x0a,
 		0x4e, 0xb1, 0x30, 0xb2, 0x30, 0xa0, 0x47, 0x39, 0xb1, 0x8d, 0x0a,
 		0x8d, 0x0a
+	};*/
+// 	const volatile uint8_t ms[1057] PROGMEM = {
+	const volatile uint8_t ms[] PROGMEM = {
+		"%\r\n"
+		"Rx=575 BATTRESS-324/10 k.1-50 27/12/2012)\r\n"
+		"N1000 G90\r\n"
+		"N1010 G00 X0 Z0 M03\r\n"
+		"N1020 G91\r\n"
+		"N1030 G95 M35-r\n"
+		"N1040 G04 X2000 S11 T101 M08\r\n"
+		"N1050 G00 X-131315 Z-171255\r\n"
+		"N1052 G01 X-5000 F1200\r\n"
+		"N1054 X-1312 Z4100 F1000\r\n"
+		"N1056 G00 X5192\r\n"
+		"N1058 Z-131000\r\n"
+		"N1060 G01 X-2000 F1000\r\n"
+		"N1070 X-4162 Z130000 F1200\r\n"
+		"N1090 G00 X722\r\n"
+		"N1100 Z-8964\r\n"
+		"N1110 G01 X-4147 Z8964 F500\r\n"
+		"N1120 G00 X35100\r\n"
+		"N1130 Z90500\r\n"
+		"N1140 G04 X2000 S12 T202\r\n"
+		"N1150 G00 X-60774\r\n"
+		"N1160 Z-47509\r\n"
+		"N1170 G01 X-8371 Z-23000 F1000\r\n"
+		"N1180 G00 Z4407\r\n"
+		"N1190 G01 X589 F1000\r\n"
+		"N1200 X8000 Z13857\r\n"
+		"N1210 X15928\r\n"
+		"N1220 G00 X53889 Z29000\r\n"
+		"N1230 G04 X2000 S08 T505\r\n"
+		"N1240 G00 X-42905 Z-54000 M29\r\n"
+		"N1250 G33 X4881 Z-152500 I163 K5080\r\n"
+		"N1260 G00 X2000\r\n"
+		"N1270 Z152500\r\n"
+		"N1280 X-7451\r\n"
+		"N1290 G33 X4881 Z-152500 I163 K5080\r\n"
+		"N1300 G00 X2000\r\n"
+		"N1310 Z152500\r\n"
+		"N1320 X-7361\r\n"
+		"N1330 G33 X4881 Z-152500 I163 K5080\r\n"
+		"N1340 G00 X2000\r\n"
+		"N1350 Z152500\r\n"
+		"N1360 X-7031\r\n"
+		"N1370 G33 X4881 Z-152500 I163 K5080\r\n"
+		"N1380 G00 X2000\r\n"
+		"N1390 G00 X87876 Z172500 S00 M09\r\n"
+		"N1470 G04 X1000 T000\r\n"
+		"N1480 G00 X47009 Z98000\r\n"
+		"N1485 G04 X2000 T101\r\n"
+		"N1490 M30\r\n"
+		"\r\n"
 	};
 
 
@@ -1431,11 +1484,22 @@ void	eot_k4()
 // 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
 	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
 	uint8_t cod;
-	for (uint8_t i = 0; i < 92; i++)
+	uint16_t lenght_array = sizeof(ms);
+	/*for (uint8_t i = 0; i < 92; i++)
 	{
 		cod = pgm_read_byte(&ms[i]);
+		cod = odd_plus_7bit(cod);
 		ns_user::flash->wr_buff[i] = cod;
+	}*/
+	ns_user::flash->fWr_init(adr + OFFSET_WRITE);
+	for (uint16_t i = 0; i < lenght_array; i++)
+	{
+		cod = pgm_read_byte(&ms[i]);
+		cod = odd_plus_7bit(cod);
+		ns_user::flash->fWr_dataSend(cod);
 	}
+	ns_user::flash->fWr_endSend();
+	__delay_ms(500);
 	ns_user::flash->writeArray(ns_user::flash->wr_buff, 92, adr + OFFSET_WRITE);
 	ns_user::flash->wr_buff[0] = 1;
 	ns_user::flash->wr_buff[1] = 0xff;
@@ -1443,8 +1507,8 @@ void	eot_k4()
 	ns_user::flash->wr_buff[3] = 0xff;
 	ns_user::flash->wr_buff[4] = 0;
 	ns_user::flash->wr_buff[5] = 0;
-	ns_user::flash->wr_buff[6] = 92;
-	ns_user::flash->wr_buff[7] = 0;
+	ns_user::flash->wr_buff[6] = word_to_byte(lenght_array).High;
+	ns_user::flash->wr_buff[7] = word_to_byte(lenght_array).Low;
 	ns_user::flash->wr_buff[8] = 0xff;
 	ns_user::flash->wr_buff[9] = 0xff;
 	ns_user::flash->writeArray(ns_user::flash->wr_buff, 10, adr);
@@ -1495,18 +1559,6 @@ void	pins_view()
 		break;
 		case 9:
 		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_strobe());
-		break;
-		case 10:
-		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_dataEnable());
-		break;
-		case 11:
-		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_readyBusy());
-		break;
-		case 12:
-		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_slewInc());
-		break;
-		case 13:
-		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_leftRight());
 		break;
 		case 14:
 		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_startStop());

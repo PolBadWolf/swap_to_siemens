@@ -32,30 +32,6 @@ namespace	ns_pins
 	uint8_t	transfer_strobe();
 	void	transfer_strobe(uint8_t dat);
 	
-	// ===================== dataEnable ==================
-	void	init_dataEnableInp();
-	void	init_dataEnableOut();
-	uint8_t	transfer_dataEnable();
-	void	transfer_dataEnable(uint8_t dat);
-
-	// ====================== readyBusy =======================
-	void	init_readyBusyInp();
-	void	init_readyBusyOut();
-	uint8_t	transfer_readyBusy();
-	void	transfer_readyBusy(uint8_t dat);
-
-	// ============ slewInc ======================
-	void	init_slewIncInp();
-	void	init_slewIncOut();
-	uint8_t	transfer_slewInc();
-	void	transfer_slewInc(uint8_t dat);
-
-	// ============ leftRight ======================
-	void	init_leftRightInp();
-	void	init_leftRightOut();
-	uint8_t	transfer_leftRight();
-	void	transfer_leftRight(uint8_t dat);
-	
 	// ================== startStop ==================
 	void	init_startStopInp();
 	void	init_startStopOut();

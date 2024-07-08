@@ -20,7 +20,7 @@
 
 
 // Spi_Hard	*tt;
-uint8_t	yy;
+uint8_t	yy, x;
 uint8_t	a1 = 1, a2 = 2, a3= 3, a4 = 4;
 
 
@@ -57,7 +57,7 @@ int main(void)
 	//ochered[0][0]();
 	Core::init();
 
-//	eot_k4();
+// 	eot_k4();
 // 	viewBlock_init();
 // 	view_read_back();
 // 	viewBlock_view();
