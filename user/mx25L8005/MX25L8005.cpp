@@ -4,6 +4,7 @@
 * Created: 26.04.2024 14:26:11
 * Author: User
 */
+#pragma GCC optimize("O0")
 
 #include <avr\pgmspace.h>
 
@@ -337,32 +338,73 @@ void	MX25L8005::transferNop()
 	}
 }
 
-void	MX25L8005::fWr_init(uint32_t	adr)
+void	MX25L8005::fWr_init(uint32_t	adr, uint8_t offset)
 {
 	CRITICAL_SECTION
 	{
 		wr_adr		= adr;
-		wr_head		= 0;
-		wr_tail		= 0;
+		wr_head		= 0; //offset;	// *
+		wr_tail		= 0; //offset;	// *
 		wr_error	= 0;
 		wr_Flsend	= 0;
 		wr_work		= 1;
 		wr_timeCount_pp = 0;
+		fistBf_i	= 0;
 	}
 }
 
-void	MX25L8005::fWr_dataSend(uint8_t	dat)
+uint8_t	MX25L8005::fWr_dataSend(uint8_t	dat)
 {
-	if (wr_work == 0)	return;
+	if (wr_work == 0)	return	2;
+	uint16_t	head;
+	uint8_t	stat = 1;
 	CRITICAL_SECTION
 	{
-		wr_buff[wr_head] = dat;
-		incIndxBuff(&wr_head);
+		head = wr_head;
+		incIndxBuff(&head);
+		if (head == wr_tail)
+		{
+			stat = 1;
+		} 
+		else
+		{
+			wr_buff[wr_head] = dat;
+			wr_head = head;
+			stat = 0;
+		}
 	}
+	return	stat;
 }
 
 void	MX25L8005::wr_mem()
 {
+	/*
+	if (wr_work == 0)	return;
+	if (wr_Flsend != 0)	return;
+	wr_Flsend = 1;
+	uint8_t head;
+	CRITICAL_SECTION
+	{
+		head = wr_head;
+	}
+	if (head < wr_tail)	head += MX_LEN_BUFFER;
+	
+	if ((head - wr_tail) > MX_THRESHOLD)
+	{
+		uint16_t lenght = head - wr_tail;
+		writeArray(&wr_buff[wr_tail], lenght, wr_adr);
+		CRITICAL_SECTION
+		{
+			wr_tail = (wr_tail + lenght) & 0x1ff;
+			wr_adr += lenght;
+		}
+		__delay_ms(5);
+	}
+	
+	wr_Flsend = 0;
+	
+	*/
+	
 	if (wr_work == 0)	return;
 	// ------------------
 	if (wr_timeCount_pp > 0)
@@ -383,6 +425,9 @@ void	MX25L8005::wr_mem()
 		if (head < wr_tail)		head += MX_LEN_BUFFER;
 		// преодоление порога
 		if ((head - wr_tail) < MX_THRESHOLD)	return;
+		
+// 		if (word_to_byte(head).High == word_to_byte(wr_tail).High)	return;
+		
 		// включить флаг передачи
 		wr_Flsend = 1;
 		// команда записи
@@ -395,16 +440,17 @@ void	MX25L8005::wr_mem()
 			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 1; break; }
 		
 			ns_user::spi_h->transferByte(dWord_to_byte(wr_adr).Byte3);
-			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 1; break; }
+			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 2; break; }
 		
 			ns_user::spi_h->transferByte(dWord_to_byte(wr_adr).Byte2);
-			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 1; break; }
+			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 3; break; }
 		
 			ns_user::spi_h->transferByte(dWord_to_byte(wr_adr).Byte1);
-			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 1; break; }
+			if (ns_user::spi_h->statTransferByte != 0)	{ wr_error = 4; break; }
 		} while (false);
+		if (wr_error !=0) scr->PutChar(31, '0' + wr_error);
 		// --
-		uint8_t dat;
+		uint8_t dat, stat_d;
 		for (;;)
 		{
 			// проверка буффера на опустошение
@@ -415,14 +461,26 @@ void	MX25L8005::wr_mem()
 			if (head == wr_tail)	break;
 			// отправка байта на запись
 			dat = wr_buff[wr_tail];
-			ns_user::spi_h->transferByte(dat);
+			stat_d = ns_user::spi_h->transferByte(dat);
+			
+			if (fistBf_i < 16)
+			{
+				fistBf[fistBf_i] = dat;
+				fistBf_i++;
+			}
+			
+			if (stat_d != 0) scr->PutChar(24,'!');
+			
+// 		scr->Hex(scr->SetPosition(0, 1), dat);
+// 		scr->PutChar(scr->SetPosition(3, 1), dat);
+		
 			if (ns_user::spi_h->statTransferByte != 0)
 			{	// ошибка отправки
 				wr_error = 1;
 				break;
 			}
 			// +1
-			uint32_t wr_adr_tmp;
+			uint32_t volatile wr_adr_tmp;
 			CRITICAL_SECTION
 			{
 				incIndxBuff(&wr_tail);
@@ -442,16 +500,17 @@ void	MX25L8005::wr_mem()
 // 				wr_work		= 0;
 			}
 // 		}
-		wr_timeCount_pp = 5 - 1;
+		wr_timeCount_pp = 6 * 1; //6 - 1;
 	}
+	
 }
 
 void	MX25L8005::fWr_endSend()
 {
 	do 
 	{
-		scr->String_P(1, PSTR("wr_fl="));
-		scr->DigitZ(7, 3, wr_Flsend);
+// 		scr->String_P(1, PSTR("wr_fl="));
+// 		scr->DigitZ(7, 3, wr_Flsend);
 	} while (wr_Flsend != 0);
 	CRITICAL_SECTION
 	{
@@ -514,8 +573,13 @@ void	MX25L8005::fWr_endSend()
 
 void	MX25L8005::incIndxBuff(uint16_t *indx)
 {
-	(*indx)++;
-	if (*indx >= MX_LEN_BUFFER)	*indx = 0;
+	CRITICAL_SECTION
+	{
+		uint16_t x = *indx;
+		x++;
+		if (x >= MX_LEN_BUFFER)	x = 0;
+		*indx = x;
+	}
 }
 
 uint32_t	MX25L8005::get_wr_adr()
@@ -528,7 +592,7 @@ void	MX25L8005::fRd_init(uint32_t adr, uint16_t lenght)
 {
 	rd_adr		= adr;
 	rd_lenght	= lenght;
-	rd_point	= 128;
+	rd_point	= 128; // ********************
 }
 
 uint8_t	MX25L8005::fRd_readByte(uint8_t	*dat)

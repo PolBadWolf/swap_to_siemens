@@ -120,7 +120,7 @@ uint8_t	Spi_Hard::getInByte()
 
 uint8_t	Spi_Hard::transferByte(uint8_t byte)
 {
-	uint32_t	timeOut = 5000;
+	uint32_t	timeOut = 100000;
 	SPDR	= byte;
 	while(!SPI_SPIF)
 	{

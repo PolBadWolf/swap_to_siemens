@@ -17,6 +17,7 @@
 #include "indication/Lcd_hard.h"
 #include <avr/pgmspace.h>
 #include "user/menu/uMenu.h"
+#include "core/delay.h"
 
 
 // Spi_Hard	*tt;
@@ -48,6 +49,7 @@ void	viewBlock_view_1();
 void	viewBlock_init();
 void	view_read_forward();
 void	view_read_back();
+void	writeParty_init();
 
 int main(void)
 {
@@ -57,7 +59,15 @@ int main(void)
 	//ochered[0][0]();
 	Core::init();
 
-// 	eot_k4();
+// writeParty_init();
+// for(;;)
+// {
+// 	ns_user::writeData->timerFast_irq();
+// }
+
+
+// 	__delay_ms(1000);
+//  	eot_k4();
 // 	viewBlock_init();
 // 	view_read_back();
 // 	viewBlock_view();

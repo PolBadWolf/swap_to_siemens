@@ -136,13 +136,13 @@
 #define		strobe_inp			bit_is_byte(PINE).strobe_bit
 
 // ================= startStop ==================
-#define		startStop_bit		bit6
+#define		startStop_bit		bit5
 #define		startStop_ddr		bit_is_byte(DDRE).startStop_bit
 #define		startStop_out		bit_is_byte(PORTE).startStop_bit
 #define		startStop_inp		bit_is_byte(PINE).startStop_bit
 
 // ================= eotOrRhu ===================
-#define		eotOrRhu_bit		bit7
+#define		eotOrRhu_bit		bit4
 #define		eotOrRhu_ddr		bit_is_byte(DDRE).eotOrRhu_bit
 #define		eotOrRhu_out		bit_is_byte(PORTE).eotOrRhu_bit
 #define		eotOrRhu_inp		bit_is_byte(PINE).eotOrRhu_bit

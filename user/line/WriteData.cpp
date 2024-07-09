@@ -34,12 +34,13 @@ using namespace ns_pins;
 #define		WR_AFT_SPR_UP		1		// / 2	mili sec
 #define		WR_AFT_START_DN		1		// / 2	mili sec
 #define		WR_AFT_BUSY_UP		1		// / 2	mili sec
+// -------------------------------------------------------------------------------------------------------------------------
 #else
 #define		WR_PRE_BUSY_DN		500		// / 2	mili sec
 #define		WR_PRE_START_UP		300		// micro sec
 
-#define		WR_OUT_SPR_DN		(uint8_t)(((double)0.5) * ((double)TIMER_FEQ) / ((double)1000))		// 1 mili sec
-#define		WR_OUT_SPR_UP		(uint8_t)(((double)1.0) * ((double)TIMER_FEQ) / ((double)1000))		// 2 mili sec
+#define		WR_OUT_SPR_DN		(uint8_t)(((double)1.0) * ((double)TIMER_FEQ) / ((double)1000))		// 1 mili sec
+#define		WR_OUT_SPR_UP		(uint8_t)(((double)2.0) * ((double)TIMER_FEQ) / ((double)1000))		// 2 mili sec
 // #define		WR_OUT_SPR_DN		2		// 1 mili sec
 // #define		WR_OUT_SPR_UP		4		// 2 mili sec
 #define		WR_OUT_DATA			200		// micro sec
@@ -221,7 +222,9 @@ void	WriteData::mode_delay()
 
 void	WriteData::mode_phaze1()
 {
-	if ( (transfer_startStop() == 0) && (ns_var::simulOn == 0) )		return;
+	uint8_t	startStop	= transfer_startStop();
+	uint8_t simulOn		= ns_var::simulOn;
+	if ( (startStop == 0) && (simulOn == 0) )		return;
 	// ------------
 	__delay_us(WR_PRE_START_UP);
 //	transfer_startStop(1);
@@ -238,11 +241,16 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
 	// очередной байт
 	uint8_t	dat, stat;
-	if (startHeaderCount > 0) stat = ns_user::flash->fRd_readByte(&dat);
-	else
+	
+	if (startHeaderCount > 0)
 	{
 		stat = 1;
 		dat  = 0;
+	}
+	else
+	{
+	
+		stat = ns_user::flash->fRd_readByte(&dat);
 	}
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);

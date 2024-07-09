@@ -201,7 +201,7 @@ void	ReadData::int_Wait_ByteRead()
 				if (dat != 0)
 				{
 					ns_var::fl_puskRead = 1;
-// 					serialDataSend(0);
+					serialDataSend(0);
 					serialDataSend(dat);
 				}
 			}
@@ -210,7 +210,7 @@ void	ReadData::int_Wait_ByteRead()
 				if ((dat & 0x7f) == '%')
 				{
 					ns_var::fl_puskRead = 1;
-// 					serialDataSend(0);
+					serialDataSend(0);
 					serialDataSend(dat);
 				}
 			}

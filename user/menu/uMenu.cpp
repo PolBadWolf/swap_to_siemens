@@ -50,7 +50,7 @@ uint16_t	startCount;
 		"N1000 G90\r\n"
 		"N1010 G00 X0 Z0 M03\r\n"
 		"N1020 G91\r\n"
-		"N1030 G95 M35-r\n"
+		"N1030 G95 M35\r\n"
 		"N1040 G04 X2000 S11 T101 M08\r\n"
 		"N1050 G00 X-131315 Z-171255\r\n"
 		"N1052 G01 X-5000 F1200\r\n"
@@ -226,7 +226,7 @@ void	user_menu_init()
 {
 	ns_var::simulOn		= 0;
 	//
-	ns_var::n_prog		= 10; //0;
+	ns_var::n_prog		= 4;
 	ns_var::adrProg		= adrRender(ns_var::n_prog);
 	ns_var::mxMod		= LIST_MOD_read;
 	//
@@ -822,7 +822,7 @@ void	readParty_init()
 	// расчет адреса
 	uint32_t curAdr = ns_var::ml_adr_base + ns_var::ml_adr_offset + OFFSET_WRITE;
 	// инициализация последовательной записи во флэш
-	ns_user::flash->fWr_init(curAdr);
+	ns_user::flash->fWr_init(curAdr, OFFSET_WRITE);
 	// старт чтения с ленты
 	if (ns_var::simulOn)	ns_simul::read_On();
 	// ===========================
@@ -1483,36 +1483,41 @@ void	eot_k4()
 {
 // 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
 	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
-	uint8_t cod;
+	uint8_t cod, status;
 	uint16_t lenght_array = sizeof(ms);
-	/*for (uint8_t i = 0; i < 92; i++)
-	{
-		cod = pgm_read_byte(&ms[i]);
-		cod = odd_plus_7bit(cod);
-		ns_user::flash->wr_buff[i] = cod;
-	}*/
-	ns_user::flash->fWr_init(adr + OFFSET_WRITE);
+// 	lenght_array = 0x280;
+	ns_user::flash->fWr_init(adr + OFFSET_WRITE, OFFSET_WRITE);
 	for (uint16_t i = 0; i < lenght_array; i++)
 	{
 		cod = pgm_read_byte(&ms[i]);
 		cod = odd_plus_7bit(cod);
-		ns_user::flash->fWr_dataSend(cod);
+		status = ns_user::flash->fWr_dataSend(cod);
+// 		scr->Hex(scr->SetPosition(0, 1), cod);
+		scr->PutChar(scr->SetPosition(3, 1), cod);
+		__delay_ms(1);
+		if (status != 0)
+		scr->PutChar(30, '@');
 	}
-	ns_user::flash->fWr_endSend();
+// 	ns_user::flash->fWr_endSend();
 	__delay_ms(500);
-	ns_user::flash->writeArray(ns_user::flash->wr_buff, 92, adr + OFFSET_WRITE);
 	ns_user::flash->wr_buff[0] = 1;
 	ns_user::flash->wr_buff[1] = 0xff;
 	ns_user::flash->wr_buff[2] = 0xff;
 	ns_user::flash->wr_buff[3] = 0xff;
 	ns_user::flash->wr_buff[4] = 0;
 	ns_user::flash->wr_buff[5] = 0;
-	ns_user::flash->wr_buff[6] = word_to_byte(lenght_array).High;
-	ns_user::flash->wr_buff[7] = word_to_byte(lenght_array).Low;
+	ns_user::flash->wr_buff[6] = word_to_byte(lenght_array).Low;
+	ns_user::flash->wr_buff[7] = word_to_byte(lenght_array).High;
 	ns_user::flash->wr_buff[8] = 0xff;
 	ns_user::flash->wr_buff[9] = 0xff;
 	ns_user::flash->writeArray(ns_user::flash->wr_buff, 10, adr);
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+// 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
+	
+	for (uint8_t i = 0; i < 16; i++)
+	{
+		scr->PutChar(scr->SetPosition(i, 1), ns_user::flash->fistBf[i]);
+	}
 }
 // ------------------------------
 void	pins_init()
