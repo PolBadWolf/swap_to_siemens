@@ -1336,7 +1336,16 @@ void	writeParty_end()
 	{
 		if (ns_var::simulOn == 0)
 		{
-			ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
+			if (ns_var::error_parity == 0)
+			{
+				ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
+			} 
+			else
+			{
+				scr->Clear();
+				scr->String_P( PSTR("ошибка четности") );
+				ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
+			}
 		}
 		else
 		{
