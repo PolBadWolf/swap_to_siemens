@@ -513,7 +513,7 @@ void	screen1_k4()
 	{
 		case LIST_MOD_view:		ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);
 		break;
-		case LIST_MOD_send:		reqeWrite_begin();
+		case LIST_MOD_send:		reqeSend_begin();
 		break;
 		case LIST_MOD_clr:		ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);
 		break;
@@ -1197,8 +1197,8 @@ void	viewBlock_k4()
 }
 // ====================================================================
 // подготовка к запуску
-// -------------------- REQE WRITE ------------------------------------
-void	reqeWrite_begin()
+// -------------------- REQE SEND ------------------------------------
+void	reqeSend_begin()
 {
 	// настройка портов
 	ns_user::writeData->initPorts();
@@ -1258,7 +1258,7 @@ void	reqeWrite_begin()
 	ns_menu::functMenu_pre(_M_WRITE_PART, MENU_SETMODE);
 }
 
-void	reqeWrite_init()
+void	reqeSend_init()
 {
 	scr->Clear();
 	scr->String_P(PSTR("часть "));
@@ -1270,7 +1270,7 @@ void	reqeWrite_init()
 	startCount = 5 * 1000;
 }
 
-void	reqeWrite_k2()
+void	reqeSend_k2()
 {
 	scr->Clear();
 	scr->String_P(PSTR("отмена"));
@@ -1278,12 +1278,12 @@ void	reqeWrite_k2()
 	ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
 }
 
-void	reqeWrite_k3()
+void	reqeSend_k3()
 {	// дальше
 	ns_menu::functMenu_pre(_M_WRITE_PART, MENU_SETMODE);
 }
 
-void	reqeWrite_check()
+void	reqeSend_check()
 {
 	uint16_t count_tmp;
 	CRITICAL_SECTION
@@ -1300,7 +1300,7 @@ void	reqeWrite_check()
 // ====================================================================
 // -------------------- WRITE PARTY -----------------------------------
 
-void	writeParty_init()
+void	sendParty_init()
 {
 	// адрес и длина текущей части
 	ns_var::sendAdr		=	adrRender(ns_var::n_prog) + ns_var::ml_adr_bd[ns_var::ml_adr_n].offSet_adr + OFFSET_WRITE;
@@ -1360,7 +1360,7 @@ void	writeParty_end()
 	}
 }
 
-void	writeParty_view()
+void	sendParty_view()
 {
 	// количество отправленных байт
 	scr->SetPosition2(0, 1);
@@ -1382,7 +1382,7 @@ void	writeParty_view()
 // 	scr->Digit(20, 3, ns_user::writeData->getStatusWork());
 }
 
-void	writeParty_k1()
+void	sendParty_k1()
 {	// отмена
 	// сброс статуса модуля передачи
 	ns_user::writeData->sendOff();

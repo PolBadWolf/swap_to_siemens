@@ -149,6 +149,7 @@ void		WriteData::sendOn()
 			error_sim		= 0;
 			sim_starDat		= 0;
 			startHeaderCount = 50;
+			ns_var::error_parity = 0;
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
 		}
@@ -241,7 +242,8 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
 	// очередной байт
 	uint8_t	dat, stat;
-	
+	uint8_t parity_b, parity_r;
+	/*
 	if (startHeaderCount > 0)
 	{
 		stat = 1;
@@ -249,9 +251,9 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	}
 	else
 	{
-	
+	*/
 		stat = ns_user::flash->fRd_readByte(&dat);
-	}
+/*	}	*/
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);
 	//импульс строба
@@ -260,7 +262,11 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	transfer_strobe(0);
 	// sproket фронт
 	transfer_sprocket(1);
-	//
+	// -----------------------
+	parity_b = bit_is_byte(dat).bit7;
+	parity_r = odd_from_7bit(dat);
+	if (parity_b != parity_r)	ns_var::error_parity = 1;
+	// -----------------------
 	if (ns_var::simulOn != 0)
 	{
 		if (sim_starDat == 0)

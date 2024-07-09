@@ -26,9 +26,9 @@
 	// просмотр блока/сектора памяти
 {	  viewBlock_view,		viewBlock_k1,		viewBlock_k2,		viewBlock_k3,		viewBlock_k4,				dump,	  viewBlock_init,				dump},
 	// выбор части программы для записи
-{	 reqeWrite_check,				dump,		reqeWrite_k2,		reqeWrite_k3,				dump,				dump,	  reqeWrite_init,				dump},
+{	  reqeSend_check,				dump,		 reqeSend_k2,		 reqeSend_k3,				dump,				dump,	   reqeSend_init,				dump},
 	// запись(отправка) части программы
-{	 writeParty_view,	   writeParty_k1,				dump,				dump,				dump,				dump,	 writeParty_init,				dump},
+{	  sendParty_view,	    sendParty_k1,				dump,				dump,				dump,				dump,	  sendParty_init,				dump},
 	
 {				dump,			plus5_k1,			plus5_k2,			plus5_k3,			plus5_k4,				dump,		  plus5_init,				dump},
 	

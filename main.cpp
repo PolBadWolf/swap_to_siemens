@@ -49,7 +49,7 @@ void	viewBlock_view_1();
 void	viewBlock_init();
 void	view_read_forward();
 void	view_read_back();
-void	writeParty_init();
+void	sendParty_init();
 
 int main(void)
 {
@@ -58,13 +58,15 @@ int main(void)
 // 	ochered[2] = (void (*)())main;
 	//ochered[0][0]();
 	Core::init();
-
-// writeParty_init();
-// for(;;)
-// {
-// 	ns_user::writeData->timerFast_irq();
-// }
-
+/*	
+ns_var::simulLenght = 5;
+ns_var::simulOn = 1;
+writeParty_init();
+for(;;)
+{
+	ns_user::writeData->timerFast_irq();
+}
+*/
 
 // 	__delay_ms(1000);
 //  	eot_k4();

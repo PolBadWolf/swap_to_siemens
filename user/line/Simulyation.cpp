@@ -28,7 +28,7 @@ namespace	ns_simul
 // public vars
 namespace	ns_simul
 {
-	const	uint16_t	flsh_avr_startAdr	= 0x40;
+	const	uint16_t	flsh_avr_startAdr	= 0x41;
 	uint16_t	read_avr_adr;
 	uint16_t	read_lenght;
 	//

@@ -74,7 +74,7 @@ void	reqeRead_init();
 void	reqeRead_k2();
 void	reqeRead_k3();
 
-// ======== read party ======
+// ======== send party ======
 void	readParty_init();
 void	readParty_view();
 void	readParty_k4();
@@ -87,17 +87,17 @@ void	viewBlock_k1();
 void	viewBlock_k2();
 void	viewBlock_k3();
 void	viewBlock_k4();
-// ==== reqe write ========
-void	reqeWrite_begin();
-void	reqeWrite_init();
-void	reqeWrite_k2();
-void	reqeWrite_k3();
-void	reqeWrite_check();
+// ==== reqe send ========
+void	reqeSend_begin();
+void	reqeSend_init();
+void	reqeSend_k2();
+void	reqeSend_k3();
+void	reqeSend_check();
 
-// ==== write party =======
-void	writeParty_init();
-void	writeParty_view();
-void	writeParty_k1();
+// ==== send party =======
+void	sendParty_init();
+void	sendParty_view();
+void	sendParty_k1();
 
 // === plus5 ====
 void	plus5_init();
