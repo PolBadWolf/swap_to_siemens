@@ -46,7 +46,7 @@ uint16_t	startCount;
 // 	const volatile uint8_t ms[1057] PROGMEM = {
 	const volatile uint8_t ms[] PROGMEM = {
 		"%\r\n"
-		"Rx=575 BATTRESS-324/10 k.1-50 27/12/2012)\r\n"
+		"(Rx=575 BATTRESS-324/10 k.1-50 27/12/2012)\r\n"
 		"N1000 G90\r\n"
 		"N1010 G00 X0 Z0 M03\r\n"
 		"N1020 G91\r\n"
@@ -423,13 +423,16 @@ int32_t	screen1_findName(uint32_t adr)
 		for (e = 0; ; e++, adr++)
 		{
 			if (e >= 64) break;
-			sim = ns_user::flash->serialReadByte() & 0x7f;
+			sim = ns_user::flash->serialReadByte();
+			sim &= 0x7f;
 			if (sim != '%')	continue;
 			adr++;	e++;
-			sim = ns_user::flash->serialReadByte() & 0x7f;
+			sim = ns_user::flash->serialReadByte();
+			sim &= 0x7f;
 			if (sim != 0x0d)	continue;
 			adr++;	e++;
-			sim = ns_user::flash->serialReadByte() & 0x7f;
+			sim = ns_user::flash->serialReadByte();
+			sim &= 0x7f;
 			if (sim != 0x0a)	continue;
 			adr++;
 			break;
