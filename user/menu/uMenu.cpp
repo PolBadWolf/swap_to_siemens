@@ -116,7 +116,9 @@ void	read_string(uint32_t adr)
 	{
 		sim = ns_user::flash->serialReadByte();
 		sim &= 0x7f;
-		if ((sim == 0) || (sim == 0x0d) || (sim == 0x10))
+		if (
+//		(sim == 0) || 
+		(sim == 0x0d) || (sim == 0x10))
 		{
 			if (fl == 2)
 			{
@@ -728,6 +730,21 @@ void	reqeRead_init()
 		scr->PutChar('/');
 		scr->DigitZ(3, ns_var::ml_adr_bd[ns_var::ml_adr_n - 1].lenght_adr);
 	}
+	startCount = 4 * 1000;
+}
+
+void	reqeRead_check()
+{
+	uint16_t count_tmp;
+	CRITICAL_SECTION
+	{
+		count_tmp = startCount;
+	}
+	if (count_tmp == 0)
+	{
+		// включение чтения части программы
+		ns_menu::functMenu_aft(_M_READ_PART, MENU_SETMODE);
+	}
 }
 
 void	reqeRead_save()
@@ -843,12 +860,43 @@ void	readParty_init()
 	}
 	// --------------------------
 	scr->Clear();
-	scr->SetPosition2(3, 0);
-	scr->String_P(PSTR("приём данных"));
+	//scr->SetPosition2(3, 0);
+	
+	scr->String_P(PSTR("Nпр:"));
+	// номер программы
+	scr->DigitZ(3, ns_var::n_prog);
+	
+	scr->String_P(PSTR(" приём"));
 }
 
 void	readParty_endRead()
 {
+	// ------------------------------------
+	if ( (ns_var::s_prog == 0) && (ns_var::simulOn == 0)  )
+	{
+		uint8_t wc = ns_var::waitEndCount;
+		if (wc == 0)
+		{
+			ns_user::flash->fWr_dataSend(0x0d);
+			wc++;
+		}
+		if (wc == 1)
+		{
+			ns_user::flash->fWr_dataSend(0x0a);
+			wc++;
+		}
+		if (wc == 2)
+		{
+			ns_user::flash->fWr_dataSend(0x0d);
+			wc++;
+		}
+		if (wc == 3)
+		{
+			ns_user::flash->fWr_dataSend(0x0a);
+			wc++;
+		}
+	}
+	// ------------------------------------
 	ns_user::flash->fWr_endSend();
 	uint32_t	curAdr = ns_user::flash->get_wr_adr();
 	uint16_t	adrOff = curAdr - ns_var::ml_adr_base - OFFSET_WRITE;
@@ -1100,10 +1148,17 @@ void	viewBlock_view_2()
 	// --
 }
 
+uint16_t fl_step = 0;
+uint16_t fl_step_stop = 50;
+
 void	viewBlock_view()
 {
+	if (fl_step_stop > 0) fl_step_stop--;
+	else	fl_step = 0;
+	scr->Hex(14, fl_step);
 	uint8_t lenght = ns_var::buf_string_lenght;
 	if (lenght <= LENGHT_RUN_STRING)	return;
+	view_read_forward();
 	viewBlock_view_2();
 }
 
@@ -1142,16 +1197,41 @@ void	viewBlock_k1()
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
 
+uint16_t step;
+
 void	viewBlock_k2()
 {
-	if (ns_var::ml_adr_offset > 0)
+	fl_step_stop = 50;
+
+			if (fl_step < 100)
+			{
+				step = 1;
+			}
+			else
+			if (fl_step < 200)
+			{
+				step = 0x05;
+			}
+			else
+			if (fl_step < 300)
+			{
+				step = 0x50;
+			}
+			else
+			{
+				step = 0x100;
+				fl_step = 15;
+			}
+
+	if (ns_var::ml_adr_offset > (step - 1) )
 	{
+			fl_step++;
 // 		ns_var::ml_adr_offset--;
 // 		//view_read_forward();
 // 		viewBlock_view_1();
 		if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
 		{
-			ns_var::ml_adr_offset--;
+			ns_var::ml_adr_offset -= step;
 			viewBlock_view_1();
 		}
 		else
@@ -1164,6 +1244,7 @@ void	viewBlock_k2()
 			viewBlock_view_1();
 		}
 	}
+	else fl_step = 1;
 }
 
 void	viewBlock_k3()
@@ -1172,7 +1253,28 @@ void	viewBlock_k3()
 	{
 		if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
 		{
-			ns_var::ml_adr_offset++;
+			fl_step_stop = 50;
+			fl_step++;
+			if (fl_step < 100)
+			{
+				step = 1;
+			}
+			else
+			if (fl_step < 200)
+			{
+				step = 0x05;
+			}
+			else
+			if (fl_step < 300)
+			{
+				step = 0x50;
+			}
+			else
+			{
+				step = 0x100;
+				fl_step = 15;
+			}
+			ns_var::ml_adr_offset += step;
 			viewBlock_view_1();
 		}
 		else

@@ -20,7 +20,7 @@
 	// clear
 {				dump,			clear_no,			clear_no,		   clear_yes,				dump,				dump,		  clear_init,				dump},
 	// reqeRead запуск чтения части программы (чтение с ленты)
-{				dump,				dump,		 reqeRead_k2,		 reqeRead_k3,				dump,				dump,	   reqeRead_init,				dump},
+{	  reqeRead_check,				dump,		 reqeRead_k2,		 reqeRead_k3,				dump,				dump,	   reqeRead_init,				dump},
 	// чтение части программы
 {	  readParty_view,				dump,				dump,				dump,		readParty_k4,				dump,	  readParty_init,				dump},
 	// просмотр блока/сектора памяти

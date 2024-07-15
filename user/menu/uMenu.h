@@ -73,6 +73,7 @@ void	reqeRead_begin();
 void	reqeRead_init();
 void	reqeRead_k2();
 void	reqeRead_k3();
+void	reqeRead_check();
 
 // ======== send party ======
 void	readParty_init();
