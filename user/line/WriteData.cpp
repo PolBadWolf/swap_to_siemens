@@ -147,8 +147,16 @@ void		WriteData::sendOn()
 			sendCountByte	= 0;
 			countTikDelay	= 0;
 			error_sim		= 0;
-			sim_starDat		= 0;
-			startHeaderCount = 50;
+			sim_adr			= ns_simul::flsh_avr_startAdr;
+			if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0)) // системна€ программа или симул€ци€
+			{
+				startHeaderCount = 0;
+			} 
+			else
+			{
+				startHeaderCount = 0x300;
+			}
+			
 			ns_var::error_parity = 0;
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
@@ -242,18 +250,25 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
 	// очередной байт
 	uint8_t	dat, stat;
-	uint8_t parity_b, parity_r;
-	/*
-	if (startHeaderCount > 0)
+	
+	if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
 	{
-		stat = 1;
-		dat  = 0;
+		stat = ns_user::flash->fRd_readByte(&dat);
 	}
 	else
 	{
-	*/
-		stat = ns_user::flash->fRd_readByte(&dat);
-/*	}	*/
+		if (startHeaderCount > 0)
+		{
+			stat = 1;
+			dat  = 0;
+		}
+		else
+		{
+			stat = ns_user::flash->fRd_readByte(&dat);
+			dat = odd_plus_7bit(dat);
+		}
+	}
+	
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);
 	//импульс строба
@@ -263,21 +278,8 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	// sproket фронт
 	transfer_sprocket(1);
 	// -----------------------
-	parity_b = bit_is_byte(dat).bit7;
-	parity_r = odd_from_7bit(dat);
-	if (parity_b != parity_r)	ns_var::error_parity = 1;
-	// -----------------------
 	if (ns_var::simulOn != 0)
 	{
-		if (sim_starDat == 0)
-		{
-			if (dat == 0x00)
-			{
-				sim_starDat = 1;
-				sim_adr		= ns_simul::flsh_avr_startAdr;
-			}
-		} 
-		else
 		{
 			uint8_t dat_chk;
 #ifdef	__ADR_TO_DATA
