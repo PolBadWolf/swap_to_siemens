@@ -16,7 +16,6 @@
 #include "core/core_def.h"
 #include "core/core.h"
 #include "user/system/menuUser.h"
-#include "user/system/menuUser.h"
 #include "user/menu/uMenu.h"
 
 #include "user/line/signal_pin.h"
