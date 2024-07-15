@@ -43,6 +43,8 @@ namespace	ns_var
 			unsigned	char			buf_string_lenght;
 			unsigned	char			fl_viewHex;
 			unsigned	char			back_lenght;
+			
+			unsigned	char			waitEndCount;
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{

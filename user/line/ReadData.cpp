@@ -83,10 +83,11 @@ uint8_t	ReadData::readOn(uint32_t freeSize)
 	CRITICAL_SECTION
 	{
 		initPorts();
-		this->wr_freeSize = freeSize;
+		this->wr_freeSize = freeSize - 4;
 		statWork = Wait_InitialState;
 		blockRead	= 0;
 		wr_overSize	= 0;
+		ns_var::waitEndCount = 0;
 	}
 	return 0;
 }
@@ -186,37 +187,6 @@ uint8_t	ReadData::checkErrorParity(uint8_t dat)
 
 void	ReadData::int_Wait_ByteRead()
 {
-	if (ns_pins::transfer_sprocket() != 0)
-	{
-		uint8_t dat = ns_pins::transfer_data();
-		if (ns_var::fl_puskRead)
-		{
-			serialDataSend(dat);
-			ns_var::error_parity |= checkErrorParity(dat);
-		} 
-		else
-		{
-			if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))
-			{	//системна€ программа
-				if (dat != 0)
-				{
-					ns_var::fl_puskRead = 1;
-					serialDataSend(0);
-					serialDataSend(dat);
-				}
-			}
-			else
-			{	// коротка€ рабоча€ программа
-				if ((dat & 0x7f) == '%')
-				{
-					ns_var::fl_puskRead = 1;
-					serialDataSend(0);
-					serialDataSend(dat);
-				}
-			}
-		}
-		statWork = Wait_ByteCompletion;
-	}
 	if (wr_freeSize == 0)
 	{
 		blockRead	= 1;
@@ -227,6 +197,58 @@ void	ReadData::int_Wait_ByteRead()
 	{
 		blockRead	= 1;
 		statWork	= EndRead;
+	}
+	//
+	if (ns_pins::transfer_sprocket() != 0)
+	{
+		uint8_t dat = ns_pins::transfer_data();
+		if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
+		{
+			serialDataSend(dat);
+			statWork = Wait_ByteCompletion;
+			return;
+		}
+		if (ns_var::fl_puskRead != 0)	// рабоча€ программа
+		{
+			ns_var::error_parity |= checkErrorParity(dat);
+			uint8_t dt = dat & 0x7f;
+			serialDataSend(dt);
+			statWork = Wait_ByteCompletion;
+			switch (ns_var::waitEndCount)
+			{
+				case 0:
+					if (dt == 0x0d)		ns_var::waitEndCount = 1;
+					else				ns_var::waitEndCount = 0;
+					break;
+				case 1:
+					if (dt == 0x0a)		ns_var::waitEndCount = 2;
+					else				ns_var::waitEndCount = 0;
+					break;
+				case 2:
+					if (dt == 0x0d)		ns_var::waitEndCount = 3;
+					else				ns_var::waitEndCount = 0;
+					break;
+				case 3:
+					if (dt == 0x0a)		ns_var::waitEndCount = 4;
+					else				ns_var::waitEndCount = 0;
+					break;
+				case 4:
+					if (dt == 0x0d)		ns_var::waitEndCount = 3;
+					else				ns_var::waitEndCount = 0;
+					break;
+				default:
+				ns_var::waitEndCount = 0;
+			}
+			return;
+		}
+		dat &= 0x7f;
+		if (dat == '%')	// ожидание начала рабочей программы
+		{
+			ns_var::fl_puskRead = 1;
+			serialDataSend(dat);
+		}
+		statWork = Wait_ByteCompletion;
+		return;
 	}
 }
 

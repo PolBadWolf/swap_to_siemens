@@ -80,6 +80,8 @@ namespace	ns_var
 	extern			unsigned	char			buf_string_adr;
 	extern			unsigned	char			buf_string_lenght;
 	
+	extern			unsigned	char			waitEndCount;
+	
 
 }
 
