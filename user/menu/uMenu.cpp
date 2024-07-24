@@ -24,6 +24,7 @@
 #include "user/line/signal_pin.h"
 #include "system/indication/Lcd_hard.h"
 #include <avr/wdt.h>
+#include "core/core_timers.h"
 
 uint16_t	startCount;
 
@@ -516,24 +517,35 @@ void	screen1_k4()
 {
 	switch (ns_var::mxMod)
 	{
-		case LIST_MOD_view:		ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);
-		break;
-		case LIST_MOD_send:		reqeSend_begin();
-		break;
-		case LIST_MOD_clr:		ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);
-		break;
-		case LIST_MOD_copy:		ns_menu::functMenu_aft(_M_COPY, MENU_SETMODE);
-		break;
-		case LIST_MOD_read:		reqeRead_begin();
-		break;
-		case LIST_MOD_plus5:	ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);
-		break;
-		case LIST_MOD_eot:		ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);
-		break;
-		case LIST_MOD_pins:		ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);
-		break;
+		case LIST_MOD_view:		ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_send:		reqeSend_begin();													break;
+		//
+		case LIST_MOD_clr:		ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);						break;
+		//
+		case LIST_MOD_copy:		ns_menu::functMenu_aft(_M_COPY, MENU_SETMODE);						break;
+		//
+		case LIST_MOD_read:		reqeRead_begin();													break;
+		//
+		case LIST_MOD_plus5:	ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);						break;
+		//
+		case LIST_MOD_eot:		ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);						break;
+		//
+		case LIST_MOD_pins:		ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);						break;
+		// ------------------------------------------------------------------------------------------------
+		case LIST_MOD_sd_minINT:	ns_menu::functMenu_aft(_M_SD_minINT, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_sd_minSD:		ns_menu::functMenu_aft(_M_SD_minSD, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_sd_plsINT:	ns_menu::functMenu_aft(_M_SD_plsINT, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_sd_plsFD:		ns_menu::functMenu_aft(_M_SD_plsFD, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_sd_plsSD:		ns_menu::functMenu_aft(_M_SD_plsSD, MENU_SETMODE);				break;
+		//
 		default:
-		break;
+			ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+			break;
 	}
 
 }
@@ -872,7 +884,7 @@ void	readParty_init()
 void	readParty_endRead()
 {
 	// ------------------------------------
-	if ( (ns_var::s_prog == 0) && (ns_var::simulOn == 0)  )
+	if ( (ns_var::s_prog == 0) && (ns_var::simulOn == 0)  && (ns_user::readData->wr_lenght >0))
 	{
 		uint8_t wc = ns_var::waitEndCount;
 		if (wc == 0)
@@ -914,7 +926,10 @@ void	readParty_endRead()
 	&&	(lenght == 0)
 		)
 	{
-		ns_menu::functMenu_pre(_M_SCREEN1, MENU_SETMODE);
+		scr->Clear();
+		scr->String_P( PSTR("данные не приняты") );
+		startCount = 2000;
+		ns_menu::functMenu_pre(_M_WT_SCR1, MENU_SETMODE);
 		return;
 	}
 	// в сектор можно писать только одну часть
@@ -926,8 +941,8 @@ void	readParty_endRead()
 
 void	readParty_view()
 {
-	uint32_t	curAdr = ns_user::flash->get_wr_adr();
-	uint16_t	adr = curAdr - ns_var::ml_adr_base - ns_var::ml_adr_offset - OFFSET_WRITE;
+// 	uint32_t	curAdr = ns_user::flash->get_wr_adr();
+// 	uint16_t	adr = curAdr - ns_var::ml_adr_base - ns_var::ml_adr_offset - OFFSET_WRITE;
 	uint8_t		statWork = ns_user::readData->getStatWork();
 	if (statWork == ReadData::EndRead)
 	{
@@ -936,21 +951,22 @@ void	readParty_view()
 		return;
 	}
 	scr->SetPosition2(0, 1);
-	scr->Hex(word_to_byte(adr).High);
-	scr->Hex(word_to_byte(adr).Low);
+// 	scr->Hex(word_to_byte(adr).High);
+// 	scr->Hex(word_to_byte(adr).Low);
 	// ***********************
 // 	scr->PutChar(' ');
 // 	scr->Digit(4, ns_var::simRead_count_byte);
 // 	scr->PutChar(' ');
 // 	scr->Digit(4, ns_var::simRead_adr);
-	scr->PutChar(' ');
+// 	scr->PutChar(' ');
 // 	scr->Digit(6, ((uint32_t)curAdr) - ((uint32_t)ns_var::ml_adr_base) - ((uint32_t)OFFSET_WRITE) );
 	scr->Digit(6, (ns_user::readData->getWrFreeSize()));
 	//
-// 	scr->PutChar(' ');
+	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_slewInc());
-// 	scr->PutChar('0' + ns_pins::transfer_startStop());
-// 	scr->PutChar('0' + ns_pins::transfer_spocket());
+	scr->PutChar('0' + ns_pins::transfer_startStop());
+	scr->PutChar(' ');
+	scr->PutChar('0' + ns_pins::transfer_sprocket());
 	//
 // 	scr->PutChar(' ');
 // 	scr->DigitZ(3, ns_user::flash->wr_head);
@@ -1215,12 +1231,12 @@ void	viewBlock_k2()
 			else
 			if (fl_step < 300)
 			{
-				step = 0x50;
+				step = 0x10;
 			}
 			else
 			{
-				step = 0x100;
-				fl_step = 15;
+				step = 0x30;
+				fl_step = 300;
 			}
 
 	if (ns_var::ml_adr_offset > (step - 1) )
@@ -1267,12 +1283,12 @@ void	viewBlock_k3()
 			else
 			if (fl_step < 300)
 			{
-				step = 0x50;
+				step = 0x10;
 			}
 			else
 			{
-				step = 0x100;
-				fl_step = 15;
+				step = 0x30;
+				fl_step = 300;
 			}
 			ns_var::ml_adr_offset += step;
 			viewBlock_view_1();
@@ -1598,21 +1614,21 @@ void	eot_k4()
 // 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
 	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
 	uint8_t cod, status;
-	uint16_t lenght_array = sizeof(ms);
+	uint16_t lenght_array = sizeof(ms) - 1;
 // 	lenght_array = 0x280;
 	ns_user::flash->fWr_init(adr + OFFSET_WRITE, OFFSET_WRITE);
 	for (uint16_t i = 0; i < lenght_array; i++)
 	{
 		cod = pgm_read_byte(&ms[i]);
-		cod = odd_plus_7bit(cod);
+// 		cod = odd_plus_7bit(cod);
 		status = ns_user::flash->fWr_dataSend(cod);
 // 		scr->Hex(scr->SetPosition(0, 1), cod);
 		scr->PutChar(scr->SetPosition(3, 1), cod);
-		__delay_ms(1);
+// 		__delay_ms(1);
 		if (status != 0)
 		scr->PutChar(30, '@');
 	}
-// 	ns_user::flash->fWr_endSend();
+	ns_user::flash->fWr_endSend();
 	__delay_ms(500);
 	ns_user::flash->wr_buff[0] = 1;
 	ns_user::flash->wr_buff[1] = 0xff;
@@ -1701,6 +1717,199 @@ void wt_scr1_go()
 {
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
+// ------------------------------------------------------
+void	sd_view2_2()
+{
+	uint8_t pos = scr->SetPosition(0, 1);
+	uint16_t k = 100;
+	uint32_t dig = ((uint32_t)k) * ((uint32_t)1000) * ((uint32_t)ns_var::edit8_tmp) / ((uint32_t)timer0_FEQ);
+	uint8_t  cel = dig / k;
+	uint8_t  drb = dig % k;
+	scr->Digit(&pos, 2, cel);
+	scr->PutChar(&pos, '.');
+	scr->DigitZ(&pos, 2, drb);
+}
+
+// ------------------------------------------------------
+//			safe delay complite
+void	sd_minInt_init()
+{
+// 	ns_var::edit8_tmp = ns_var::safeDelay_minINT;
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_minINT_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("sd minus integr") );
+	scr->SetPosition2(0, 1);
+	scr->String_P( PSTR("  .   mSec") );
+	sd_view2_2();
+}
+
+void	sd_minInt_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	sd_minInt_k2()
+{
+	if (ns_var::edit8_tmp > 0)	ns_var::edit8_tmp--;
+	sd_view2_2();
+}
+
+void	sd_minINT_k3()
+{
+	if (ns_var::edit8_tmp < ns_var::safeDelay_minINT_max)	ns_var::edit8_tmp++;
+	sd_view2_2();
+}
+
+void	sd_minINT_k4()
+{
+	ns_var::safeDelay_minINT = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::safeDelay_minINT_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+// ------------------------------------------------------
+void	sd_minSD_init()
+{
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_minSD_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("sd minus sDelay") );
+	scr->SetPosition2(0, 1);
+	scr->String_P( PSTR("  .   mSec") );
+	sd_view2_2();
+}
+
+void	sd_minSD_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	sd_minSD_k2()
+{
+	if (ns_var::edit8_tmp > 0)	ns_var::edit8_tmp--;
+	sd_view2_2();
+}
+
+void	sd_minSD_k3()
+{
+	if (ns_var::edit8_tmp < ns_var::safeDelay_minSD_max)	ns_var::edit8_tmp++;
+	sd_view2_2();
+}
+
+void	sd_minSD_k4()
+{
+	ns_var::safeDelay_minSD = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::safeDelay_minSD_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+// ------------------------------------------------------
+//			safe delay fix data
+void	sd_plsINT_init()
+{
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("sd plus integr") );
+	scr->SetPosition2(0, 1);
+	scr->String_P( PSTR("  .   mSec") );
+	sd_view2_2();
+}
+
+void	sd_plsINT_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	sd_plsINT_k2()
+{
+	if (ns_var::edit8_tmp > 0)	ns_var::edit8_tmp--;
+	sd_view2_2();
+}
+
+void	sd_plsINT_k3()
+{
+	if (ns_var::edit8_tmp < ns_var::safeDelay_plsINT_max)	ns_var::edit8_tmp++;
+	sd_view2_2();
+}
+
+void	sd_plsINT_k4()
+{
+	ns_var::safeDelay_plsINT = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::safeDelay_plsINT_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+// ------------------------------------------------------
+//			safe delay read
+void	sd_plsFD_init()
+{
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("sd plus FixDt") );
+	scr->SetPosition2(0, 1);
+	scr->String_P( PSTR("  .   mSec") );
+	sd_view2_2();
+}
+
+void	sd_plsFD_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+void	sd_plsFD_k2()
+{
+	if (ns_var::edit8_tmp > 0)	ns_var::edit8_tmp--;
+	sd_view2_2();
+}
+void	sd_plsFD_k3()
+{
+	if (ns_var::edit8_tmp < ns_var::safeDelay_plsFD_max)	ns_var::edit8_tmp++;
+	sd_view2_2();
+}
+void	sd_plsFD_k4()
+{
+	ns_var::safeDelay_plsFD = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::safeDelay_plsFD_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+// ------------------------------------------------------
+//			safe delay minus lenght
+void	sd_plsSD_init()
+{
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("sd plus sDelay") );
+	scr->SetPosition2(0, 1);
+	scr->String_P( PSTR("  .   mSec") );
+	sd_view2_2();
+}
+
+void	sd_plsSD_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+void	sd_plsSD_k2()
+{
+	if (ns_var::edit8_tmp > 0)	ns_var::edit8_tmp--;
+	sd_view2_2();
+}
+void	sd_plsSD_k3()
+{
+	if (ns_var::edit8_tmp < ns_var::safeDelay_plsSD_max)	ns_var::edit8_tmp++;
+	sd_view2_2();
+}
+void	sd_plsSD_k4()
+{
+	ns_var::safeDelay_plsSD = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::safeDelay_plsSD_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+// ------------------------------------------------------
 // ------------------------------------------------------
 
 #endif // CONF_MENU

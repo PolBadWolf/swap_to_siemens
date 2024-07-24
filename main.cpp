@@ -59,6 +59,13 @@ int main(void)
 	//ochered[0][0]();
 	Core::init();
 
+// 	eot_k4();
+// ns_user::writeData->timerFast();
+// ns_user::writeData->timerFast();
+// ns_var::simulOn = 1;
+// ns_user::writeData->sendOn();
+// ns_user::writeData->timerFast();
+
 	sei();
 	
     /* Replace with your application code */

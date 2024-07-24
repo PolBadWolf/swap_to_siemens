@@ -35,6 +35,13 @@ void	user_menu_init();
 #define		_M_PINS				11
 #define		_M_WT_SCR1			12			// ожидание и переход на скрин1
 
+#define		_M_SD_minINT		13			// время интеграции
+#define		_M_SD_minSD			14			// время защитного интервала
+
+#define		_M_SD_plsINT		15
+#define		_M_SD_plsFD			16
+#define		_M_SD_plsSD			17
+
 
 void	menuUser_1Milisec();
 
@@ -120,6 +127,42 @@ void	pins_view();
 void	pins_k1();
 
 void wt_scr1_go();
+// =================
+void	sd_minInt_init();
+void	sd_minInt_k1();
+void	sd_minInt_k2();
+void	sd_minINT_k3();
+void	sd_minINT_k4();
+
+// =================
+void	sd_minSD_init();
+void	sd_minSD_k1();
+void	sd_minSD_k2();
+void	sd_minSD_k3();
+void	sd_minSD_k4();
+
+// =================
+void	sd_plsINT_init();
+void	sd_plsINT_k1();
+void	sd_plsINT_k2();
+void	sd_plsINT_k3();
+void	sd_plsINT_k4();
+
+// =================
+void	sd_plsFD_init();
+void	sd_plsFD_k1();
+void	sd_plsFD_k2();
+void	sd_plsFD_k3();
+void	sd_plsFD_k4();
+
+// =================
+void	sd_plsSD_init();
+void	sd_plsSD_k1();
+void	sd_plsSD_k2();
+void	sd_plsSD_k3();
+void	sd_plsSD_k4();
+
+// =================
 
 #endif // CONF_MENU
 #endif //__UMENU_H__

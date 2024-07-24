@@ -37,7 +37,19 @@
 {				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},
 	
 {				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},
-	
+// ===================
+//	LIST_MOD_sd_minINT	13
+{				dump,		sd_minInt_k1,		sd_minInt_k2,		sd_minINT_k3,		sd_minINT_k4,				dump,	  sd_minInt_init,				dump},
+//	LIST_MOD_sd_minSD	14
+{				dump,		 sd_minSD_k1,		 sd_minSD_k2,		 sd_minSD_k3,		 sd_minSD_k4,				dump,	   sd_minSD_init,				dump},
+//	LIST_MOD_sd_plsINT	15
+{				dump,		sd_plsINT_k1,		sd_plsINT_k2,		sd_plsINT_k3,		sd_plsINT_k4,				dump,	  sd_plsINT_init,				dump},
+//	LIST_MOD_sd_plsFD	16
+{				dump,		 sd_plsFD_k1,		 sd_plsFD_k2,		 sd_plsFD_k3,		 sd_plsFD_k4,				dump,	   sd_plsFD_init,				dump},
+//	LIST_MOD_sd_plsSD	17
+{				dump,		 sd_plsSD_k1,		 sd_plsSD_k2,		 sd_plsSD_k3,		 sd_plsSD_k4,				dump,	   sd_plsSD_init,				dump},
+// =====================	
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},

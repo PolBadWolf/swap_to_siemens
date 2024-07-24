@@ -11,16 +11,23 @@
 
 #include <avr/eeprom.h>
 
-#define LIST_MOD_view	0
-#define LIST_MOD_send	1
-#define LIST_MOD_read	2
-#define LIST_MOD_clr	3
-#define LIST_MOD_copy	4
-#define LIST_MOD_plus5	5
-#define LIST_MOD_eot	6
-#define LIST_MOD_pins	7
+#define LIST_MOD_view		0
+#define LIST_MOD_send		1
+#define LIST_MOD_read		2
+#define LIST_MOD_clr		3
+#define LIST_MOD_copy		4
+#define LIST_MOD_plus5		5
+#define LIST_MOD_eot		6
+#define LIST_MOD_pins		7
 
-#define LIST_MOD__MAX	8
+#define LIST_MOD_sd_minINT	8
+#define LIST_MOD_sd_minSD	9
+
+#define LIST_MOD_sd_plsINT	10
+#define LIST_MOD_sd_plsFD	11
+#define LIST_MOD_sd_plsSD	12
+
+#define LIST_MOD__MAX		13
 
 #define		OFFSET_WRITE	0x40
 
@@ -82,6 +89,40 @@ namespace	ns_var
 	
 	extern			unsigned	char			waitEndCount;
 	
+	
+	// ---------------------------
+#define		safeDelay_minINT_d		1.0
+#define		safeDelay_minSD_d		1.5
+#define		safeDelay_plsINT_d		1.0
+#define		safeDelay_plsFD_d		2.0
+#define		safeDelay_plsSD_d		3.0
+	// ---------------------------
+	extern			uint8_t const	safeDelay_minINT_max;
+	extern			uint8_t			safeDelay_minINT_e	EEMEM;
+	
+	extern			uint8_t const	safeDelay_minSD_max;
+	extern			uint8_t			safeDelay_minSD_e	EEMEM;
+
+
+	
+	extern			uint8_t const	safeDelay_plsINT_max;
+	extern			uint8_t			safeDelay_plsINT_e	EEMEM;
+	
+	extern			uint8_t const	safeDelay_plsFD_max;
+	extern			uint8_t			safeDelay_plsFD_e	EEMEM;
+	
+	extern			uint8_t const	safeDelay_plsSD_max;
+	extern			uint8_t			safeDelay_plsSD_e	EEMEM;
+	// ---------------------------
+	extern			uint8_t			safeDelay_minINT;
+	extern			uint8_t			safeDelay_minSD;
+	
+	extern			uint8_t			safeDelay_plsINT;
+	extern			uint8_t			safeDelay_plsFD;
+	extern			uint8_t			safeDelay_plsSD;
+	
+	
+	extern			uint8_t			edit8_tmp;
 
 }
 

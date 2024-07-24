@@ -11,6 +11,7 @@
 #include "core/core.h"
 #include "user/var.h"
 #include "user/line/Simulyation.h"
+#include <avr/eeprom.h>
 
 
 
@@ -41,9 +42,11 @@ void	ns_user::init()
 	// настроить порты на чтение с перфоленты
 	readData->initPorts();
 	
-// 	bufferRW[0] = 0x12;
-// 	bufferRW[1] = 0x58;
-// 	bufferRW[2] = 0x9b;
-// 	bufferRW[3] = 0xf4;
-// 	flash->writeArray(bufferRW, 4, 0x08);
+	// кофиценты
+	ns_var::safeDelay_minINT	= eeprom_read_byte(&ns_var::safeDelay_minINT_e);
+	ns_var::safeDelay_minSD		= eeprom_read_byte(&ns_var::safeDelay_minSD_e);
+	
+	ns_var::safeDelay_plsINT	= eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
+	ns_var::safeDelay_plsFD		= eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
+	ns_var::safeDelay_plsSD		= eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
 }

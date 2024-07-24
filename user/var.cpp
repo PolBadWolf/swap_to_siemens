@@ -8,6 +8,7 @@
 
 #include "var.h"
 #include <avr/pgmspace.h>
+#include "core/core_timers.h"
 
 namespace	ns_var
 {
@@ -38,13 +39,13 @@ namespace	ns_var
 			unsigned	char			simulOn;
 			unsigned	int				simulLenght;
 			
-			unsigned	char			buf_string[64];
-			unsigned	char			buf_string_adr;
-			unsigned	char			buf_string_lenght;
-			unsigned	char			fl_viewHex;
-			unsigned	char			back_lenght;
+			uint8_t						buf_string[64];
+			uint8_t						buf_string_adr;
+			uint8_t						buf_string_lenght;
+			uint8_t						fl_viewHex;
+			uint8_t						back_lenght;
 			
-			unsigned	char			waitEndCount;
+			uint8_t						waitEndCount;
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{
@@ -56,11 +57,43 @@ namespace	ns_var
 		{	5, "R+5 "	},
 		{	6, "test"	},
 		{	7, "PINS"	},
+		{	8, "-int"	},
+		{	9, "-SD "	},
+		{  10, "+int"	},
+		{  11, "+FD "	},
+		{  12, "+SD "	},
 	};
 	
-	unsigned char	flag_plus5 EEMEM = 0;
-	unsigned char	flag_eot   EEMEM = 0;
-	unsigned char	flag_plus5_m;
-	unsigned char	flag_eot_m;
-	unsigned char	pins_uk;
+	uint8_t			flag_plus5 EEMEM = 0;
+	uint8_t			flag_eot   EEMEM = 0;
+	uint8_t			flag_plus5_m;
+	uint8_t			flag_eot_m;
+	uint8_t			pins_uk;
+	// ---------------------------
+	uint8_t const	safeDelay_minINT_max		= (uint8_t)(((double)safeDelay_minINT_d) * timer0_FEQ / 1000);
+	uint8_t			safeDelay_minINT_e	EEMEM	= (uint8_t)(((double)0.5) * timer0_FEQ / 1000);
+	
+	uint8_t const	safeDelay_minSD_max			= (uint8_t)(((double)safeDelay_minSD_d) * timer0_FEQ / 1000);
+	uint8_t			safeDelay_minSD_e	EEMEM	= (uint8_t)(((double)0.75) * timer0_FEQ / 1000);
+
+
+
+	uint8_t const	safeDelay_plsINT_max		= (uint8_t)(((double)safeDelay_plsINT_d) * timer0_FEQ / 1000);
+	uint8_t			safeDelay_plsINT_e	EEMEM	= (uint8_t)(((double)0.5) * timer0_FEQ / 1000);
+	
+	uint8_t const	safeDelay_plsFD_max			= (uint8_t)(((double)safeDelay_plsFD_d) * timer0_FEQ / 1000);
+	uint8_t			safeDelay_plsFD_e	EEMEM	= (uint8_t)(((double)0.25) * timer0_FEQ / 1000);
+	
+	uint8_t const	safeDelay_plsSD_max			= (uint8_t)(((double)safeDelay_plsSD_d) * timer0_FEQ / 1000);
+	uint8_t			safeDelay_plsSD_e	EEMEM	= (uint8_t)(((double)0.5) * timer0_FEQ / 1000);
+	// ---------------------------
+	uint8_t			safeDelay_minINT;
+	uint8_t			safeDelay_minSD;
+
+	uint8_t			safeDelay_plsINT;
+	uint8_t			safeDelay_plsFD;
+	uint8_t			safeDelay_plsSD;
+	
+	// ---------------------------
+	uint8_t			edit8_tmp;
 }

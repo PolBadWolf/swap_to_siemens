@@ -154,7 +154,7 @@ void		WriteData::sendOn()
 			} 
 			else
 			{
-				startHeaderCount = 0x300;
+				startHeaderCount = 50;
 			}
 			
 			ns_var::error_parity = 0;
