@@ -23,7 +23,7 @@ public:
 		EndRead				= 3,		// конец приема
 		Wait_InitialState	= 4,		// ожидание исходного состояния для начала приема
 		Wait_StartRead		= 5,		// ожидание сигнала старт приема
-		Wait_ByteCompletion	= 6,		// ожидание завершение приема байта
+		Wait_ReadCompletion	= 6,		// ожидание завершение приема байта
 		Wait_ByteRead		= 7			// ожидание фронта для приема байта
 	};
 
@@ -49,10 +49,11 @@ public:
 	void		timerFast();				// таймер приема данных
 	void		initPorts();				// настройка портов на прием
 	void		setStatWork(StatWork statusWork);
+	static void int_readByte();
 	// -----------
 	uint8_t		getStatWork();						// статус работы программы приема
 	uint8_t		readOn(uint32_t freeSize);			// включение приема
-	uint8_t		readOff();
+	void		readOff();
 	void		cancel();							// отмена приема
 	void		reset();							// сброс ошибки или отмены
 	uint8_t		checkErrorParity(uint8_t dat);		// проверка четности
@@ -67,7 +68,7 @@ private:
 	// -------------------------------------
 	void	int_Wait_InitialState();	// ожидание исходного состояния для начала приема
 	void	int_Wait_StartRead();		// ожидание сигнала старт приема
-	void	int_Wait_ByteCompletion();	// ожидание завершение приема байта
+	void	int_Wait_ReadCompletion();	// ожидание завершение приема байта
 	void	int_Wait_ByteRead();		// ожидание фронта для приема байта
 	void	serialDataSend(uint8_t dat);
 	// --------

@@ -14,6 +14,8 @@
 #include "user/var.h"
 #include "user/line/Simulyation.h"
 
+#include <avr/interrupt.h>
+
 //#define BUSY_ON
 
 ReadData	*ReadData::obj = 0;
@@ -42,6 +44,7 @@ ReadData*	ReadData::init()
 	// init
 	CRITICAL_SECTION
 	{
+		bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывания
 		obj->blockRead	= 1;
 		obj->setStatWork(Offline);
 	}
@@ -63,11 +66,11 @@ void	ReadData::timerFast()
 	case	Wait_StartRead:				// ожидание сигнала старт приема
 		int_Wait_StartRead();
 	break;
-	case	Wait_ByteCompletion:		// ожидание завершение приема байта
-		int_Wait_ByteCompletion();
+	case	Wait_ReadCompletion:		// ожидание завершение приема байта
+		int_Wait_ReadCompletion();
 	break;
-	case	Wait_ByteRead:				// ожидание  приема байта
-		int_Wait_ByteRead();
+// 	case	Wait_ByteRead:				// ожидание  приема байта
+// 		int_Wait_ByteRead();
 	break;
 	default:
 	break;
@@ -77,37 +80,6 @@ void	ReadData::timerFast()
 void	ReadData::timerFast_irq()
 {
 	obj->timerFast();
-}
-
-uint8_t	ReadData::readOn(uint32_t freeSize)
-{
-	uint8_t	stat;
-	CRITICAL_SECTION
-	{
-		stat =  statWork;
-	}
-	if (stat != Offline)	return	1;
-	CRITICAL_SECTION
-	{
-		initPorts();
-		this->wr_freeSize = freeSize - 4;
-		setStatWork(Wait_InitialState);
-		blockRead	= 0;
-		wr_overSize	= 0;
-		ns_var::waitEndCount = 0;
-		wr_lenght = 0;
-	}
-	return 0;
-}
-
-uint8_t ReadData::readOff()
-{
-	CRITICAL_SECTION
-	{
-		setStatWork(Offline);
-		blockRead	= 1;
-	}
-	return	0;
 }
 
 void	ReadData::initPorts()
@@ -153,44 +125,40 @@ void	ReadData::int_Wait_StartRead()
 		(ns_pins::transfer_sprocket() == 0)
 	)
 	{
+		CRITICAL_SECTION
+		{
+			// включение внешнего прерывания int4
+			bit_is_byte(EIMSK).bit4 = 1;
+			// условия прерывания строб от 0 в 1
+			bit_is_byte(EICRB).bit0 = 1;
+			bit_is_byte(EICRB).bit1 = 1;
+		}
 		setStatWork(Wait_ByteRead);
 	}
 }
 
-void	ReadData::int_Wait_ByteCompletion()
+void	ReadData::int_Wait_ReadCompletion()
 {
 	// окончание сигнала "старт/стоп"
 	if (ns_pins::transfer_startStop() == 0)
 	{
-		blockRead	= 1;
+		CRITICAL_SECTION
+		{
+			bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывания
+			blockRead	= 1;
+		}
 		setStatWork(EndRead);
 		return;
 	}
 	if (wr_freeSize == 0)
 	{
-		blockRead	= 1;
+		CRITICAL_SECTION
+		{
+			bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывания
+			blockRead	= 1;
+		}
 		wr_overSize	= 1;
 		setStatWork(EndRead);
-	}
-	// ожидание спада строба
-	/*
-	if (ns_pins::transfer_sprocket() != 0)	return;
-	setStatWork(Wait_ByteRead);
-	*/
-	if (ns_pins::transfer_sprocket() == 0)
-	{
-		if (countSafeIntegr < ns_var::safeDelay_minINT)		{	countSafeIntegr++;	}
-		if (countSafeDelay  < ns_var::safeDelay_minSD )		{	countSafeDelay++;	}
-		if (countSafeDelay >= ns_var::safeDelay_minINT)
-		{
-			setStatWork(Wait_ByteRead);
-		}
-	}
-	else
-	{
-		if (countSafeIntegr  > 0)		{	countSafeIntegr--;	}
-		if (countSafeIntegr == 0)		{	countSafeDelay = 0;	}
-		if (countSafeDelay   > 0)		{	countSafeDelay--;	}
 	}
 }
 
@@ -209,7 +177,7 @@ void	ReadData::transfer_readByte()
 	if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системная программа или симуляция
 	{
 		serialDataSend(datDelay);
-		setStatWork(Wait_ByteCompletion);
+		setStatWork(Wait_ReadCompletion);
 		wr_lenght++;
 		return;
 	}
@@ -218,7 +186,7 @@ void	ReadData::transfer_readByte()
 	{
 		ns_var::error_parity |= checkErrorParity(datDelay);
 		serialDataSend(dat);
-		setStatWork(Wait_ByteCompletion);
+		setStatWork(Wait_ReadCompletion);
 		wr_lenght++;
 		switch (ns_var::waitEndCount)
 		{
@@ -254,103 +222,8 @@ void	ReadData::transfer_readByte()
 		ns_var::fl_puskRead = 1;
 		serialDataSend(dat);
 	}
-	setStatWork(Wait_ByteCompletion);
+	setStatWork(Wait_ReadCompletion);
 	return;
-}
-
-void	ReadData::int_Wait_ByteRead()
-{
-	/*
-	if (wr_freeSize == 0)
-	{
-		blockRead	= 1;
-		wr_overSize	= 1;
-		setStatWork(EndRead);
-	}
-	if (ns_pins::transfer_startStop() == 0)
-	{
-		blockRead	= 1;
-		setStatWork(EndRead);
-	}
-	*/
-	//
-	if (ns_pins::transfer_sprocket() != 0)
-	{
-		// integration
-		if (countSafeIntegr < ns_var::safeDelay_plsINT)		{	countSafeIntegr++;	}
-		// счетчик защитного интервала
-		if (countSafeDelay  < ns_var::safeDelay_plsSD)		{	countSafeDelay++;	}
-		// фиксирование данных
-		if (
-			(countSafeDelay == ns_var::safeDelay_plsFD)	||
-			(ns_var::safeDelay_plsFD == 0) )				{	datDelay = ns_pins::transfer_data();	}
-		// обработка байта после защитного интервала
-		if (countSafeDelay >= ns_var::safeDelay_plsSD)		{	transfer_readByte();	}
-	}
-	else
-	{
-		if (countSafeIntegr > 0)		{	countSafeIntegr--;	}
-		if (countSafeIntegr == 0)		{	countSafeDelay = 0;	}
-		if (countSafeDelay > 0)			{	countSafeDelay--;	}
-	}
-	
-	
-	/*
-	//
-	if (ns_pins::transfer_sprocket() != 0)
-	{
-		uint8_t dat = ns_pins::transfer_data();
-		if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системная программа или симуляция
-		{
-			serialDataSend(dat);
-			setStatWork(Wait_ByteCompletion);
-			wr_lenght++;
-			return;
-		}
-		if (ns_var::fl_puskRead != 0)	// рабочая программа
-		{
-			ns_var::error_parity |= checkErrorParity(dat);
-			uint8_t dt = dat & 0x7f;
-			serialDataSend(dt);
-			setStatWork(Wait_ByteCompletion);
-			wr_lenght++;
-			switch (ns_var::waitEndCount)
-			{
-				case 0:
-					if (dt == 0x0d)		ns_var::waitEndCount = 1;
-					else				ns_var::waitEndCount = 0;
-					break;
-				case 1:
-					if (dt == 0x0a)		ns_var::waitEndCount = 2;
-					else				ns_var::waitEndCount = 0;
-					break;
-				case 2:
-					if (dt == 0x0d)		ns_var::waitEndCount = 3;
-					else				ns_var::waitEndCount = 0;
-					break;
-				case 3:
-					if (dt == 0x0a)		ns_var::waitEndCount = 4;
-					else				ns_var::waitEndCount = 0;
-					break;
-				case 4:
-					if (dt == 0x0d)		ns_var::waitEndCount = 3;
-					else				ns_var::waitEndCount = 0;
-					break;
-				default:
-				ns_var::waitEndCount = 0;
-			}
-			return;
-		}
-		dat &= 0x7f;
-		if (dat == '%')	// ожидание начала рабочей программы
-		{
-			ns_var::fl_puskRead = 1;
-			serialDataSend(dat);
-		}
-		setStatWork(Wait_ByteCompletion);
-		return;
-	}
-	*/
 }
 
 void	ReadData::serialDataSend(uint8_t dat)
@@ -379,16 +252,47 @@ uint8_t		ReadData::getWrOverSize()
 	return	stat;
 }
 
-
 uint8_t	ReadData::getStatWork()
 {
 	return	statWork;
+}
+
+uint8_t	ReadData::readOn(uint32_t freeSize)
+{
+	uint8_t	stat;
+	CRITICAL_SECTION
+	{
+		stat =  statWork;
+	}
+	if (stat != Offline)	return	1;
+	CRITICAL_SECTION
+	{
+		initPorts();
+		this->wr_freeSize = freeSize - 4;
+		setStatWork(Wait_InitialState);
+		blockRead	= 0;
+		wr_overSize	= 0;
+		ns_var::waitEndCount = 0;
+		wr_lenght = 0;
+	}
+	return 0;
+}
+
+void ReadData::readOff()
+{
+	CRITICAL_SECTION
+	{
+		bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывания
+		setStatWork(Offline);
+		blockRead	= 1;
+	}
 }
 
 void	ReadData::cancel()
 {
 	CRITICAL_SECTION
 	{
+		bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывания
 		blockRead = 1;
 		setStatWork(Cancel);
 	}
@@ -403,4 +307,14 @@ void	ReadData::reset()
 	}
 }
 
+void	ReadData::int_readByte()
+{
+	obj->datDelay = ns_pins::transfer_data();
+	obj->transfer_readByte();
+}
 
+//внешнее прерывание. обработчик.
+ISR (INT4_vect)
+{
+	ReadData::int_readByte();
+}
