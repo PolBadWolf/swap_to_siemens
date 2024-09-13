@@ -41,6 +41,8 @@ private:
 	uint32_t		wr_freeSize;
 	uint8_t			wr_overSize;
 	uint8_t			datDelay;
+	
+	uint16_t		stopDelay;
 
 //functions
 public:

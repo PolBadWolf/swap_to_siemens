@@ -40,6 +40,7 @@ namespace ns_menu
 
 void	ns_menu::init()
 {
+	mode	= 0;
 	user_menu_init();
 	timeout = 0;
 }
@@ -62,7 +63,8 @@ void	ns_menu::mainCycle()
 	}
 	else
 	{
-		functMenu_aft(mode, keyStat);
+		uint8_t		lockal_mode = mode;
+		functMenu_aft(lockal_mode, keyStat);
 	}
 	/*scr->Hex(16, PINF);
 	uint8_t pin = 0;

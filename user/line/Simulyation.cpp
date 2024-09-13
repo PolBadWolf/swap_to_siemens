@@ -28,14 +28,14 @@ namespace	ns_simul
 // public vars
 namespace	ns_simul
 {
-	const	uint16_t	flsh_avr_startAdr	= 0x41;
+	const	uint16_t	flsh_avr_startAdr	= 0x40;
 	uint16_t	read_avr_adr;
 	uint16_t	read_lenght;
 	//
 	enum StatRead
 	{
 		OffLine		= 0,
-		Init		= 1,
+		Init		= 1,	// ( read_On )
 		StartInit	= 2,
 		SprkDown	= 3,
 		DataOut		= 4,
@@ -68,6 +68,7 @@ void	ns_simul::read_setDelay(uint16_t	tik)
 	}
 }
 
+// цикл по таймеру (вызывается из модуля чтения)
 void	ns_simul::read_cycle()
 {
 	uint16_t	readDelay_cur;
@@ -82,6 +83,7 @@ void	ns_simul::read_cycle()
 		case Init:
 			ns_pins::transfer_startStop(0);
 			ns_pins::transfer_sprocket(1);
+			ns_pins::transfer_strobe(0);
 			statRead = StartInit;
 		break;
 		case StartInit:
@@ -132,6 +134,9 @@ void	ns_simul::read_cycle()
 					read_lenght--;
 					__delay_us(150);
 					ns_pins::transfer_sprocket(1);
+					ns_pins::transfer_strobe(1);
+					__delay_us(90);
+					ns_pins::transfer_strobe(0);
 					read_setDelay(__read_sprocket_up);
 					statRead = SprkDown;
 				}

@@ -42,6 +42,10 @@ void	user_menu_init();
 #define		_M_SD_plsFD			16
 #define		_M_SD_plsSD			17
 
+#define		_M_SD_lenMinus		18
+
+// #define		_M_Simul			18
+
 
 void	menuUser_1Milisec();
 
@@ -128,39 +132,58 @@ void	pins_k1();
 
 void wt_scr1_go();
 // =================
+/*
 void	sd_minInt_init();
 void	sd_minInt_k1();
 void	sd_minInt_k2();
 void	sd_minINT_k3();
 void	sd_minINT_k4();
-
+*/
 // =================
+/*
 void	sd_minSD_init();
 void	sd_minSD_k1();
 void	sd_minSD_k2();
 void	sd_minSD_k3();
 void	sd_minSD_k4();
-
+*/
 // =================
+/*
 void	sd_plsINT_init();
 void	sd_plsINT_k1();
 void	sd_plsINT_k2();
 void	sd_plsINT_k3();
 void	sd_plsINT_k4();
-
+*/
 // =================
+/*
 void	sd_plsFD_init();
 void	sd_plsFD_k1();
 void	sd_plsFD_k2();
 void	sd_plsFD_k3();
 void	sd_plsFD_k4();
-
+*/
 // =================
+/*
 void	sd_plsSD_init();
 void	sd_plsSD_k1();
 void	sd_plsSD_k2();
 void	sd_plsSD_k3();
 void	sd_plsSD_k4();
+*/
+// =================
+void	len_minus_init();
+void	len_minus_k1();
+void	len_minus_k2();
+void	len_minus_k3();
+void	len_minus_k4();
+
+// =================
+void	sim_init();
+void	sim_k1();
+void	sim_k2();
+void	sim_k3();
+void	sim_k4();
 
 // =================
 

@@ -62,6 +62,8 @@ namespace	ns_var
 		{  10, "+int"	},
 		{  11, "+FD "	},
 		{  12, "+SD "	},
+		{  13, "len-"	},
+		{  14, "sim "	},
 	};
 	
 	uint8_t			flag_plus5 EEMEM = 0;
@@ -87,12 +89,19 @@ namespace	ns_var
 	uint8_t const	safeDelay_plsSD_max			= (uint8_t)(((double)safeDelay_plsSD_d) * timer0_FEQ / 1000);
 	uint8_t			safeDelay_plsSD_e	EEMEM	= (uint8_t)(((double)0.5) * timer0_FEQ / 1000);
 	// ---------------------------
-	uint8_t			safeDelay_minINT;
-	uint8_t			safeDelay_minSD;
+// 	uint8_t			safeDelay_minINT;
+// 	uint8_t			safeDelay_minSD;
 
-	uint8_t			safeDelay_plsINT;
-	uint8_t			safeDelay_plsFD;
-	uint8_t			safeDelay_plsSD;
+// 	uint8_t			safeDelay_plsINT;
+// 	uint8_t			safeDelay_plsFD;
+// 	uint8_t			safeDelay_plsSD;
+	
+	// ---------------------------
+	uint8_t			simul2_On;
+	
+	// ---------------------------
+	uint8_t			subOutLenght;
+	uint8_t			subOutLenght_e	EEMEM = 0;
 	
 	// ---------------------------
 	uint8_t			edit8_tmp;

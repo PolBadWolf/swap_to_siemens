@@ -27,7 +27,11 @@
 #define LIST_MOD_sd_plsFD	11
 #define LIST_MOD_sd_plsSD	12
 
-#define LIST_MOD__MAX		13
+#define LIST_MOD_len_minus	13
+
+#define LIST_MOD_simul		14
+
+#define LIST_MOD__MAX		15
 
 #define		OFFSET_WRITE	0x40
 
@@ -114,13 +118,17 @@ namespace	ns_var
 	extern			uint8_t const	safeDelay_plsSD_max;
 	extern			uint8_t			safeDelay_plsSD_e	EEMEM;
 	// ---------------------------
-	extern			uint8_t			safeDelay_minINT;
-	extern			uint8_t			safeDelay_minSD;
+// 	extern			uint8_t			safeDelay_minINT;
+// 	extern			uint8_t			safeDelay_minSD;
 	
-	extern			uint8_t			safeDelay_plsINT;
-	extern			uint8_t			safeDelay_plsFD;
-	extern			uint8_t			safeDelay_plsSD;
+// 	extern			uint8_t			safeDelay_plsINT;
+// 	extern			uint8_t			safeDelay_plsFD;
+// 	extern			uint8_t			safeDelay_plsSD;
+
+	extern			uint8_t			simul2_On;
 	
+	extern			uint8_t			subOutLenght;
+	extern			uint8_t			subOutLenght_e	EEMEM;
 	
 	extern			uint8_t			edit8_tmp;
 

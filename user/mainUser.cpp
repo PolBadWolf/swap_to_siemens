@@ -43,10 +43,13 @@ void	ns_user::init()
 	readData->initPorts();
 	
 	// кофиценты
-	ns_var::safeDelay_minINT	= eeprom_read_byte(&ns_var::safeDelay_minINT_e);
-	ns_var::safeDelay_minSD		= eeprom_read_byte(&ns_var::safeDelay_minSD_e);
+// 	ns_var::safeDelay_minINT	= eeprom_read_byte(&ns_var::safeDelay_minINT_e);
+// 	ns_var::safeDelay_minSD		= eeprom_read_byte(&ns_var::safeDelay_minSD_e);
 	
-	ns_var::safeDelay_plsINT	= eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
-	ns_var::safeDelay_plsFD		= eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
-	ns_var::safeDelay_plsSD		= eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
+// 	ns_var::safeDelay_plsINT	= eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
+// 	ns_var::safeDelay_plsFD		= eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
+// 	ns_var::safeDelay_plsSD		= eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
+	
+	// длина программы минус
+	ns_var::subOutLenght		= eeprom_read_byte(&ns_var::subOutLenght_e);
 }

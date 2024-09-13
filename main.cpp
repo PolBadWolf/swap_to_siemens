@@ -44,12 +44,15 @@ void fgh()
 	{
 		fgh
 	};
-void	read_string(uint32_t adr);
-void	viewBlock_view_1();
-void	viewBlock_init();
-void	view_read_forward();
-void	view_read_back();
-void	sendParty_init();
+	
+// void	read_string(uint32_t adr);
+// void	viewBlock_view_1();
+// void	viewBlock_init();
+// void	view_read_forward();
+// void	view_read_back();
+// void	sendParty_init();
+
+// void	screen1_k1();
 
 int main(void)
 {
@@ -65,6 +68,11 @@ int main(void)
 // ns_var::simulOn = 1;
 // ns_user::writeData->sendOn();
 // ns_user::writeData->timerFast();
+// 	ns_var::mxMod = 0;
+// 	do 
+// 	{
+// 		screen1_k1();
+// 	} while (true);
 
 	sei();
 	

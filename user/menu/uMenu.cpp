@@ -189,7 +189,7 @@ void	start_key2()
 {
 	start_setCount();
 	ns_var::simulOn		= 1;
-	ns_var::simulLenght	= 200;
+	ns_var::simulLenght	= 2000;
 	start_view();
 }
 
@@ -197,7 +197,7 @@ void	start_key3()
 {
 	start_setCount();
 	ns_var::simulOn		= 1;
-	ns_var::simulLenght	= 2000;
+	ns_var::simulLenght	= 18000;
 	start_view();
 }
 
@@ -505,12 +505,24 @@ void	screen1_k3()
 
 void	screen1_k1()
 {
-	ns_var::mxMod++;
-	if (ns_var::mxMod >= LIST_MOD__MAX)
+	uint8_t mx;
+	do 
 	{
-		ns_var::mxMod = 0;
-	}
-	screen1_vmod();
+		ns_var::mxMod++;
+		if (ns_var::mxMod >= LIST_MOD__MAX)
+		{
+			ns_var::mxMod = 0;
+		}
+		mx = ns_var::mxMod;
+		if (ns_var::mxMod	==	LIST_MOD_sd_minINT)			continue;
+		if (ns_var::mxMod	==	LIST_MOD_sd_minSD)			continue;
+		if (ns_var::mxMod	==	LIST_MOD_sd_plsINT)			continue;
+		if (ns_var::mxMod	==	LIST_MOD_sd_plsFD)			continue;
+		if (ns_var::mxMod	==	LIST_MOD_sd_plsSD)			continue;
+		break;
+	} while (true);
+	PORTA = mx;
+	//screen1_vmod();
 }
 
 void	screen1_k4()
@@ -542,6 +554,10 @@ void	screen1_k4()
 		case LIST_MOD_sd_plsFD:		ns_menu::functMenu_aft(_M_SD_plsFD, MENU_SETMODE);				break;
 		//
 		case LIST_MOD_sd_plsSD:		ns_menu::functMenu_aft(_M_SD_plsSD, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_len_minus:	ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);			break;
+		//
+// 		case LIST_MOD_simul:		ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);			break;
 		//
 		default:
 			ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
@@ -686,7 +702,7 @@ void	clear_no()
 
 void	clear_yes()
 {
-	scr->String_P(scr->SetPosition(2, 1), PSTR("clear"));
+	scr->String_P(scr->SetPosition(0, 1), PSTR("clear    "));
 	//
 	uint32_t	addr = adrRender(ns_var::n_prog);
 	if (ns_var::s_prog != 0)
@@ -879,6 +895,16 @@ void	readParty_init()
 	scr->DigitZ(3, ns_var::n_prog);
 	
 	scr->String_P(PSTR(" приЄм"));
+	//
+	if (ns_var::simulOn	!= 0)
+	{	// длина программы при симул€ции
+		uint32_t	tmp_x = ns_var::simulLenght;
+		scr->SetPosition2(7, 1);
+		scr->Hex( dWord_to_byte(tmp_x).Byte4 );
+		scr->Hex( dWord_to_byte(tmp_x).Byte3 );
+		scr->Hex( dWord_to_byte(tmp_x).Byte2 );
+		scr->Hex( dWord_to_byte(tmp_x).Byte1 );
+	}
 }
 
 void	readParty_endRead()
@@ -962,11 +988,11 @@ void	readParty_view()
 // 	scr->Digit(6, ((uint32_t)curAdr) - ((uint32_t)ns_var::ml_adr_base) - ((uint32_t)OFFSET_WRITE) );
 	scr->Digit(6, (ns_user::readData->getWrFreeSize()));
 	//
-	scr->PutChar(' ');
+// 	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_slewInc());
-	scr->PutChar('0' + ns_pins::transfer_startStop());
-	scr->PutChar(' ');
-	scr->PutChar('0' + ns_pins::transfer_sprocket());
+// 	scr->PutChar('0' + ns_pins::transfer_startStop());
+// 	scr->PutChar(' ');
+// 	scr->PutChar('0' + ns_pins::transfer_sprocket());
 	//
 // 	scr->PutChar(' ');
 // 	scr->DigitZ(3, ns_user::flash->wr_head);
@@ -1426,6 +1452,10 @@ void	sendParty_init()
 	// адрес и длина текущей части
 	ns_var::sendAdr		=	adrRender(ns_var::n_prog) + ns_var::ml_adr_bd[ns_var::ml_adr_n].offSet_adr + OFFSET_WRITE;
 	ns_var::sendLenght	=	ns_var::ml_adr_bd[ns_var::ml_adr_n].lenght_adr;
+	if (ns_var::s_prog != 0)	// системна€ программа
+	{
+		ns_var::sendLenght -= 1;
+	}
 	// установка начального индекса дл€ отображени€ отправки
 	// при включении режима отправки индекс обнул€етс€
 	// ------------------------------------------------------------------
@@ -1731,6 +1761,7 @@ void	sd_view2_2()
 }
 
 // ------------------------------------------------------
+/*
 //			safe delay complite
 void	sd_minInt_init()
 {
@@ -1767,8 +1798,9 @@ void	sd_minINT_k4()
 	eeprom_update_byte(&ns_var::safeDelay_minINT_e, ns_var::edit8_tmp);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
-
+*/
 // ------------------------------------------------------
+/*
 void	sd_minSD_init()
 {
 	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_minSD_e);
@@ -1803,9 +1835,10 @@ void	sd_minSD_k4()
 	eeprom_update_byte(&ns_var::safeDelay_minSD_e, ns_var::edit8_tmp);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
-
+*/
 // ------------------------------------------------------
 //			safe delay fix data
+/*
 void	sd_plsINT_init()
 {
 	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
@@ -1840,9 +1873,10 @@ void	sd_plsINT_k4()
 	eeprom_update_byte(&ns_var::safeDelay_plsINT_e, ns_var::edit8_tmp);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
-
+*/
 // ------------------------------------------------------
 //			safe delay read
+/*
 void	sd_plsFD_init()
 {
 	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
@@ -1874,9 +1908,10 @@ void	sd_plsFD_k4()
 	eeprom_update_byte(&ns_var::safeDelay_plsFD_e, ns_var::edit8_tmp);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
-
+*/
 // ------------------------------------------------------
 //			safe delay minus lenght
+/*
 void	sd_plsSD_init()
 {
 	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
@@ -1908,8 +1943,97 @@ void	sd_plsSD_k4()
 	eeprom_update_byte(&ns_var::safeDelay_plsSD_e, ns_var::edit8_tmp);
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
+*/
+// ------------------------------------------------------
+void	len_minus_view()
+{
+	scr->DigitZ(scr->SetPosition(7, 0), 1, ns_var::edit8_tmp);
+}
+
+void	len_minus_init()
+{
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::subOutLenght_e);
+	//
+	scr->Clear();
+	scr->String_P( PSTR("lenght-") );
+	len_minus_view();
+}
+
+void	len_minus_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	len_minus_k2()
+{
+	if (ns_var::edit8_tmp > 0)
+	{
+		ns_var::edit8_tmp--;
+		len_minus_view();
+	}
+}
+
+void	len_minus_k3()
+{
+	if (ns_var::edit8_tmp < 9)
+	{
+		ns_var::edit8_tmp++;
+		len_minus_view();
+	}
+}
+
+void	len_minus_k4()
+{
+	ns_var::subOutLenght = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::subOutLenght_e, ns_var::edit8_tmp);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
 
 // ------------------------------------------------------
+
+void	sim_view()
+{
+	uint8_t pos = scr->SetPosition(0, 1);
+	if (ns_var::edit8_tmp == 0)
+	{
+		scr->String_P(pos, PSTR("Off") );
+	} 
+	else
+	{
+		scr->String_P(pos, PSTR("On ") );
+	}
+}
+
+void	sim_init()
+{
+	scr->Clear();
+	scr->String_P( PSTR("simul On/Off : ") );
+	ns_var::edit8_tmp = ns_var::simul2_On;
+}
+
+void	sim_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
+void	sim_k2()
+{
+	ns_var::edit8_tmp = 0;
+	sim_view();
+}
+
+void	sim_k3()
+{
+	ns_var::edit8_tmp = 1;
+	sim_view();
+}
+
+void	sim_k4()
+{
+	ns_var::simul2_On = ns_var::edit8_tmp;
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+}
+
 // ------------------------------------------------------
 
 #endif // CONF_MENU

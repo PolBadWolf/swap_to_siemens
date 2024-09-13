@@ -88,7 +88,7 @@ void	ReadData::initPorts()
 	{
 		ns_pins::init_dataOut();
 		ns_pins::init_sprocketOut();
-		ns_pins::init_strobeInp();
+		ns_pins::init_strobeOut();
 		ns_pins::init_startStopOut();
 		ns_pins::init_eotOrRhuInp();
 	} 
@@ -132,6 +132,7 @@ void	ReadData::int_Wait_StartRead()
 			// услови€ прерывани€ строб от 0 в 1
 			bit_is_byte(EICRB).bit0 = 1;
 			bit_is_byte(EICRB).bit1 = 1;
+			stopDelay	= 100;
 		}
 		setStatWork(Wait_ByteRead);
 	}
@@ -139,6 +140,22 @@ void	ReadData::int_Wait_StartRead()
 
 void	ReadData::int_Wait_ReadCompletion()
 {
+	if (wr_freeSize == 0)
+	{
+		CRITICAL_SECTION
+		{
+			bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывани€
+			blockRead	= 1;
+		}
+		wr_overSize	= 1;
+		setStatWork(EndRead);
+	}
+	// -----------------------------------
+	if (stopDelay > 0)
+	{
+		stopDelay--;
+		return;
+	}
 	// окончание сигнала "старт/стоп"
 	if (ns_pins::transfer_startStop() == 0)
 	{
@@ -149,16 +166,6 @@ void	ReadData::int_Wait_ReadCompletion()
 		}
 		setStatWork(EndRead);
 		return;
-	}
-	if (wr_freeSize == 0)
-	{
-		CRITICAL_SECTION
-		{
-			bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывани€
-			blockRead	= 1;
-		}
-		wr_overSize	= 1;
-		setStatWork(EndRead);
 	}
 }
 
@@ -174,6 +181,7 @@ uint8_t	ReadData::checkErrorParity(uint8_t dat)
 
 void	ReadData::transfer_readByte()
 {
+	stopDelay	= 100;
 	if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
 	{
 		serialDataSend(datDelay);
@@ -274,6 +282,7 @@ uint8_t	ReadData::readOn(uint32_t freeSize)
 		wr_overSize	= 0;
 		ns_var::waitEndCount = 0;
 		wr_lenght = 0;
+		stopDelay	= 100;
 	}
 	return 0;
 }
