@@ -10,6 +10,9 @@
 #define __READDATA_H__
 
 #include "core/core.h"
+#include "core/core_timers.h"
+
+#define TIMER_IRQ_X		timer0_FEQ
 
 class ReadData
 {
@@ -43,6 +46,9 @@ private:
 	uint8_t			datDelay;
 	
 	uint16_t		stopDelay;
+	const			uint16_t		stopDelay_set = (double)100 * (double)TIMER_IRQ_X / (double)1000;
+	const			uint16_t		stopDelay_safe = stopDelay_set - ( (double)1.3 * (double)TIMER_IRQ_X / (double)1000 );
+	uint8_t			flag_read_stop;
 
 //functions
 public:

@@ -74,11 +74,80 @@ int main(void)
 // 		screen1_k1();
 // 	} while (true);
 
+	/*ns_var::buf_string_lenght = 57;
+	ns_var::buf_string[ 0] = '(';
+	ns_var::buf_string[ 1] = 'R';
+	ns_var::buf_string[ 2] = 'x';
+	ns_var::buf_string[ 3] = '=';
+	ns_var::buf_string[ 4] = '5';
+	ns_var::buf_string[ 5] = '7';
+	ns_var::buf_string[ 6] = '5';
+	ns_var::buf_string[ 7] = ' ';
+	ns_var::buf_string[ 8] = 'O';
+	ns_var::buf_string[ 9] = 'T';
+
+	ns_var::buf_string[10] = 'T';
+	ns_var::buf_string[11] = 'M';
+	ns_var::buf_string[12] = '-';
+	ns_var::buf_string[13] = '3';
+	ns_var::buf_string[14] = '2';
+	ns_var::buf_string[15] = '4';
+	ns_var::buf_string[16] = '/';
+	ns_var::buf_string[17] = '1';
+	ns_var::buf_string[18] = '0';
+	ns_var::buf_string[19] = ' ';
+
+	ns_var::buf_string[20] = 'K';
+	ns_var::buf_string[21] = '1';
+	ns_var::buf_string[22] = '-';
+	ns_var::buf_string[23] = '5';
+	ns_var::buf_string[24] = '2';
+	ns_var::buf_string[25] = ' ';
+	ns_var::buf_string[26] = 'P';
+	ns_var::buf_string[27] = ':';
+	ns_var::buf_string[28] = ' ';
+	ns_var::buf_string[29] = 'P';
+
+	ns_var::buf_string[30] = '?';
+	ns_var::buf_string[31] = 'P';
+	ns_var::buf_string[32] = '0';
+	ns_var::buf_string[33] = 'Q';
+	ns_var::buf_string[34] = 2;
+	ns_var::buf_string[35] = 'Q';
+	ns_var::buf_string[36] = 0;
+	ns_var::buf_string[37] = 'P';
+	ns_var::buf_string[38] = '>';
+	ns_var::buf_string[39] = 'P';
+
+	ns_var::buf_string[40] = '=';
+	ns_var::buf_string[41] = 'Q';
+	ns_var::buf_string[42] = 3;
+	ns_var::buf_string[43] = ' ';
+	ns_var::buf_string[44] = '2';
+	ns_var::buf_string[45] = '8';
+	ns_var::buf_string[46] = '/';
+	ns_var::buf_string[47] = '0';
+	ns_var::buf_string[48] = '2';
+	ns_var::buf_string[49] = '/';
+
+	ns_var::buf_string[50] = '2';
+	ns_var::buf_string[51] = '0';
+	ns_var::buf_string[52] = '0';
+	ns_var::buf_string[53] = '8';
+	ns_var::buf_string[54] = ')';
+	ns_var::buf_string[55] = 13;
+	ns_var::buf_string[56] = 10;
+	ns_var::buf_string[57] = 0;*/
+
 	sei();
 	
     /* Replace with your application code */
+// 	__delay_ms(500);
+// 	viewBlock_k3();
     while (1) 
     {
+// 		menuUser_1Milisec();
+// 		viewBlock_view();
 		Core::idleCycle();
     }
 }

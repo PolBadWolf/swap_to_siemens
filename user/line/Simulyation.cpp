@@ -39,7 +39,8 @@ namespace	ns_simul
 		StartInit	= 2,
 		SprkDown	= 3,
 		DataOut		= 4,
-		EndSend		= 5
+		AddStrb		= 5,
+		EndSend		= 6
 	};
 }
 
@@ -135,16 +136,24 @@ void	ns_simul::read_cycle()
 					__delay_us(150);
 					ns_pins::transfer_sprocket(1);
 					ns_pins::transfer_strobe(1);
-					__delay_us(90);
+					__delay_us(100);
 					ns_pins::transfer_strobe(0);
-					read_setDelay(__read_sprocket_up);
-					statRead = SprkDown;
+// 					read_setDelay(__read_sprocket_up);
+// 					statRead = SprkDown;
+					statRead = AddStrb;
 				}
 			}
 		break;
+		case AddStrb:
+					ns_pins::transfer_strobe(1);
+					__delay_us(100);
+					ns_pins::transfer_strobe(0);
+					read_setDelay(__read_sprocket_up);
+					statRead = SprkDown;
+		break;
+		case EndSend:
 					ns_pins::transfer_sprocket(1);
 					statRead = OffLine;
-		case EndSend:
 		break;
 		default:
 		break;

@@ -89,6 +89,7 @@ namespace	ns_var
 	
 	extern			unsigned	char			buf_string[];
 	extern			unsigned	char			buf_string_adr;
+	extern			unsigned	char			buf_string_adr_v2;
 	extern			unsigned	char			buf_string_lenght;
 	
 	extern			unsigned	char			waitEndCount;

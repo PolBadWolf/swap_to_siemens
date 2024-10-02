@@ -95,6 +95,7 @@ void	readParty_k4();
 void	viewBlock_init();
 void	viewBlock_view();
 void	viewBlock_view_1();
+void	viewBlock_view_2();
 void	viewBlock_k1();
 void	viewBlock_k2();
 void	viewBlock_k3();

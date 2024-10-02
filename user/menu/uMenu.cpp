@@ -234,6 +234,7 @@ void	user_menu_init()
 	ns_var::mxMod		= LIST_MOD_read;
 	//
 	ns_menu::functMenu_aft(_M_START, MENU_SETMODE);
+// 	ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);
 }
 // =================================================================
 const	uint8_t		progMax = 255 - (ns_var::blockBoundary * 15);
@@ -1032,13 +1033,14 @@ void	view_read_forward()
 		sim &= 0x7f;
 		adr_offset++;
 		if (fl_st == 2)	ns_var::buf_string[lenght] = sim;
-		if ((sim == 0) || (sim == 0x7f))
+// 		if ((sim == 0) || (sim == 0x7f))
+		if ((sim == 0x7f))
 		{
 			break;	// конец данных
 		}
-		if ((sim == 0x0d) || (sim == 0x0a))
+		if ((sim == 0x0d))
 		{
-			//lenght++;
+			lenght++;
 			if (fl_st == 2)
 			{
 				break;
@@ -1110,9 +1112,9 @@ void	viewBlock_init()
 		ns_var::ml_adr_offset_max = 65536 - 5;
 		ns_var::ml_adr_offset = 0;
 		ns_var::fl_viewHex = 1;
+		view_read_forward();
 	}
 	//scr->PutChar(' ');
-	view_read_forward();
 	viewBlock_view_1();
 }
 
@@ -1130,8 +1132,8 @@ void	viewBlock_view_2()
 		startCount = 250;
 	}
 	
-	scr->SetPosition2(0, 1);
-	for (uint8_t i = 0; i < LENGHT_RUN_STRING; i++) scr->PutChar(' ');
+// 	scr->SetPosition2(0, 1);
+// 	for (uint8_t i = 0; i < LENGHT_RUN_STRING; i++) scr->PutChar(' ');
 	scr->SetPosition2(0, 1);
 	uint8_t lenght = ns_var::buf_string_lenght;
 	scr->Hex(14, ns_var::buf_string_lenght);
@@ -1140,7 +1142,8 @@ void	viewBlock_view_2()
 		scr->String_P( PSTR("нет данных") );
 		return;
 	}
-	uint8_t fl_shift = (lenght >= LENGHT_RUN_STRING)?1:0;
+// 	uint8_t fl_shift = (lenght >= LENGHT_RUN_STRING)?1:0;
+	uint8_t fl_shift = 1;
 	uint8_t fl_end = 0;
 	uint8_t adr;
 	uint8_t sim;
@@ -1151,19 +1154,31 @@ void	viewBlock_view_2()
 	{
 		if (fl_end == 0)
 		{
-			sim = ns_var::buf_string[adr];
-			if ((sim == 0x00) || (sim == 0x0d) || (sim == 0x0a) || (sim == 0x7f))	fl_end = 1;
+			while ( (sim = ns_var::buf_string[adr]) == 0x0a )	adr++;
+			if ((sim == 0x0d) || (sim == 0x7f))
+			{
+				fl_end = 1;
+			}
+			//
+			if ( fl_end != 0)
+			{
+				scr->PutChar(' ');
+				//adr++;
+			}
 			else
 			{
-				if (sim >= ' ')
+				if (sim < ' ')
 				{
-					scr->PutChar(sim);
-					adr++;
-					continue;
+					sim = ' ';
 				}
+				scr->PutChar(sim);
+				adr++;
 			}
 		}
-		scr->PutChar(' ');
+		else
+		{
+			scr->PutChar(' ');
+		}
 	}
 	if (fl_shift != 0)
 	{
@@ -1179,7 +1194,7 @@ void	viewBlock_view_2()
 			ns_var::buf_string_adr  = 0;
 		}
 		else	ns_var::buf_string_adr += 1;
-		if (ns_var::buf_string_adr <= 1)
+		if (ns_var::buf_string_adr < 1)
 		{
 			CRITICAL_SECTION
 			{
@@ -1197,21 +1212,15 @@ void	viewBlock_view()
 {
 	if (fl_step_stop > 0) fl_step_stop--;
 	else	fl_step = 0;
-	scr->Hex(14, fl_step);
+// 	scr->Hex(14, fl_step);
 	uint8_t lenght = ns_var::buf_string_lenght;
 	if (lenght <= LENGHT_RUN_STRING)	return;
-	view_read_forward();
+// 	view_read_forward();
 	viewBlock_view_2();
 }
 
-void	viewBlock_view_1()
+void	viewBlock_view_1_hex()
 {
-	scr->SetPosition2(9, 0);
-	scr->Hex(word_to_byte(ns_var::ml_adr_offset).High); // ***************************************************************************************
-	scr->Hex(word_to_byte(ns_var::ml_adr_offset).Low);
-	//
-	if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
-	{
 		scr->SetPosition2(0, 1);
 		ns_user::flash->readArray(ns_user::flash->wr_buff, 5, ns_var::adrProg + ns_var::ml_adr_offset);
 		for (uint8_t i = 0; i < 5; i++)
@@ -1227,6 +1236,17 @@ void	viewBlock_view_1()
 			scr->Hex(ns_user::flash->wr_buff[i]);
 		}
 		scr->PutChar(' ');
+}
+
+void	viewBlock_view_1()
+{
+	scr->SetPosition2(9, 0);
+	scr->Hex(word_to_byte(ns_var::ml_adr_offset).High); // ***************************************************************************************
+	scr->Hex(word_to_byte(ns_var::ml_adr_offset).Low);
+	//
+	if ((ns_var::n_prog < ns_var::blockBoundary) || (ns_var::fl_viewHex != 0))
+	{
+		viewBlock_view_1_hex();
 	}
 	else
 	{

@@ -41,6 +41,7 @@ namespace	ns_var
 			
 			uint8_t						buf_string[64];
 			uint8_t						buf_string_adr;
+			uint8_t						buf_string_adr_v2;
 			uint8_t						buf_string_lenght;
 			uint8_t						fl_viewHex;
 			uint8_t						back_lenght;

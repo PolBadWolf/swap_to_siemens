@@ -16,7 +16,7 @@
 
 #include "core/core_timers.h"
 
-#define		TIMER_FEQ	timer2_FEQ
+#define		TIMER_FEQ	timer0_FEQ
 
 using namespace ns_pins;
 
@@ -44,7 +44,7 @@ using namespace ns_pins;
 // #define		WR_OUT_SPR_DN		2		// 1 mili sec
 // #define		WR_OUT_SPR_UP		4		// 2 mili sec
 #define		WR_OUT_DATA			200		// micro sec
-#define		WR_OUT_STROBE		200		// micro sec
+#define		WR_OUT_STROBE		300		// micro sec
 
 #define		WR_AFT_SPR_UP		50		// / 2	mili sec
 #define		WR_AFT_START_DN		10		// / 2	mili sec
@@ -271,12 +271,13 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	
 	transfer_data(dat);
 	__delay_us(WR_OUT_DATA);
-	//импульс строба
+	// импульс строба
 	transfer_strobe(1);
-	__delay_us(WR_OUT_STROBE);
-	transfer_strobe(0);
 	// sproket фронт
 	transfer_sprocket(1);
+	__delay_us(WR_OUT_STROBE);
+	// завершение импульса строба
+	transfer_strobe(0);
 	// -----------------------
 	if (ns_var::simulOn != 0)
 	{

@@ -132,7 +132,7 @@ void	ReadData::int_Wait_StartRead()
 			// услови€ прерывани€ строб от 0 в 1
 			bit_is_byte(EICRB).bit0 = 1;
 			bit_is_byte(EICRB).bit1 = 1;
-			stopDelay	= 100;
+			stopDelay	= stopDelay_set;
 		}
 		setStatWork(Wait_ByteRead);
 	}
@@ -149,6 +149,11 @@ void	ReadData::int_Wait_ReadCompletion()
 		}
 		wr_overSize	= 1;
 		setStatWork(EndRead);
+	}
+	// -----------------------------------
+	if (stopDelay == stopDelay_safe)
+	{
+		flag_read_stop = 0;
 	}
 	// -----------------------------------
 	if (stopDelay > 0)
@@ -181,7 +186,7 @@ uint8_t	ReadData::checkErrorParity(uint8_t dat)
 
 void	ReadData::transfer_readByte()
 {
-	stopDelay	= 100;
+	stopDelay	= stopDelay_set;
 	if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
 	{
 		serialDataSend(datDelay);
@@ -282,7 +287,8 @@ uint8_t	ReadData::readOn(uint32_t freeSize)
 		wr_overSize	= 0;
 		ns_var::waitEndCount = 0;
 		wr_lenght = 0;
-		stopDelay	= 100;
+		stopDelay	= stopDelay_set;
+		flag_read_stop = 0;
 	}
 	return 0;
 }
@@ -292,6 +298,7 @@ void ReadData::readOff()
 	CRITICAL_SECTION
 	{
 		bit_is_byte(EIMSK).bit4 = 0;	// отключение прерывани€
+		flag_read_stop = 1;
 		setStatWork(Offline);
 		blockRead	= 1;
 	}
@@ -319,7 +326,11 @@ void	ReadData::reset()
 void	ReadData::int_readByte()
 {
 	obj->datDelay = ns_pins::transfer_data();
-	obj->transfer_readByte();
+	if (obj->flag_read_stop == 0)
+	{
+		obj->transfer_readByte();
+	}
+	obj->flag_read_stop = 1;
 }
 
 //внешнее прерывание. обработчик.
