@@ -246,6 +246,19 @@ void	WriteData::mode_phaze2_1()	// sproket спад
 	modeDelay(phaze2_2, WR_OUT_SPR_DN);
 }
 
+void	WriteData::mode_phaze_send_strb(uint8_t dat)
+{
+		transfer_data(dat);
+		__delay_us(WR_OUT_DATA);
+		// импульс строба
+		transfer_strobe(1);
+		// sproket фронт
+		transfer_sprocket(1);
+		__delay_us(WR_OUT_STROBE);
+		// завершение импульса строба
+		transfer_strobe(0);
+}
+
 void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
 	// очередной байт
@@ -269,15 +282,7 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 		}
 	}
 	
-	transfer_data(dat);
-	__delay_us(WR_OUT_DATA);
-	// импульс строба
-	transfer_strobe(1);
-	// sproket фронт
-	transfer_sprocket(1);
-	__delay_us(WR_OUT_STROBE);
-	// завершение импульса строба
-	transfer_strobe(0);
+	mode_phaze_send_strb(dat);
 	// -----------------------
 	if (ns_var::simulOn != 0)
 	{
@@ -311,6 +316,8 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	{
 		// конец передачи
 		modeDelay(phaze3_1, WR_AFT_SPR_UP);
+		//
+		postSend_var = postSend_const;
 	} 
 	else
 	{
@@ -326,13 +333,24 @@ void	WriteData::mode_phaze2_3()
 
 void	WriteData::mode_phaze3_1()
 {
-//	transfer_startStop(0);
+	mode_phaze_send_strb(0);
 	modeDelay(phaze3_2, WR_AFT_START_DN);
 }
 
 void	WriteData::mode_phaze3_2()
 {
-	modeDelay(sendEnd, WR_AFT_BUSY_UP);
+	//
+	if (postSend_var > 0)
+	{
+		postSend_var--;
+		modeDelay(phaze3_1, WR_OUT_SPR_UP);
+	} 
+	else
+	{
+		// end send
+		modeDelay(sendEnd, WR_AFT_BUSY_UP);
+	}
+	//
 }
 
 

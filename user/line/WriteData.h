@@ -54,6 +54,9 @@ private:
 	//uint32_t				sendAdr
 // 	static	uint16_t		f_timer;
 	volatile	uint8_t		fl_reset;			// флаг сброса работы модуля
+	// пост выдача нулей
+	uint16_t				postSend_var;
+	const uint16_t			postSend_const = 5000;
 //functions
 public:
 	static	WriteData*		init();
@@ -83,6 +86,8 @@ public:
 	//
 	void	mode_phaze3_1();
 	void	mode_phaze3_2();
+	//
+	void	mode_phaze_send_strb(uint8_t dat);
 	
 
 }; //WriteData
