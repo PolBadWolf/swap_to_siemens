@@ -59,6 +59,8 @@ public:
 	void	_interruptAccept();
 	bool	sendByte(uint8_t	dat);
 	bool	readByte(uint8_t	*dat);
+	void	device_off();
+	void	device_on();
 protected:
 private:
 	RS232();

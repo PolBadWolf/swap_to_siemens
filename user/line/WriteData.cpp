@@ -26,8 +26,8 @@ using namespace ns_pins;
 #define		WR_PRE_BUSY_DN		1		// / 2	mili sec
 #define		WR_PRE_START_UP		1		// micro sec
 
-#define		WR_OUT_SPR_DN		2		// / 2	 mili sec
-#define		WR_OUT_SPR_UP		4		// / 2	 mili sec
+#define		WR_OUT_SPR_DN		1		// 2		// 2	 mili sec
+#define		WR_OUT_SPR_UP		2		// 4		// 2	 mili sec
 #define		WR_OUT_DATA			1		// micro sec
 #define		WR_OUT_STROBE		1		// micro sec
 
@@ -46,9 +46,9 @@ using namespace ns_pins;
 #define		WR_OUT_DATA			200		// micro sec
 #define		WR_OUT_STROBE		300		// micro sec
 
-#define		WR_AFT_SPR_UP		50		// / 2	mili sec
-#define		WR_AFT_START_DN		10		// / 2	mili sec
-#define		WR_AFT_BUSY_UP		50		// / 2	mili sec
+#define		WR_AFT_SPR_UP		2		// 50		// 2	mili sec
+#define		WR_AFT_START_DN		1		// 10		// 2	mili sec
+#define		WR_AFT_BUSY_UP		2		// 100		// 2	mili sec
 #endif
 
 WriteData	*WriteData::obj = 0;
@@ -83,10 +83,12 @@ void	WriteData::initPorts()
 {
 	// =================== data trand ==================
 	init_dataOut();
-	// =================== spocket =====================
+	// =================== sprocket =====================
 	init_sprocketOut();
 	// =================== strobe ======================
 	init_strobeOut();
+	// =================== readyBusy ===================
+	init_readyBusyOut();
 	// ================== startStop ==================
 	init_startStopInp();
 	// ================== eot or rhu ==================
@@ -158,6 +160,11 @@ void		WriteData::sendOn()
 			}
 			
 			ns_var::error_parity = 0;
+			// отключение готовности до сигнала старт
+			transfer_readyBusy(1);
+			// спрокет и строб в нуль
+			transfer_sprocket(0);
+			transfer_strobe(0);
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
 		}
@@ -166,6 +173,7 @@ void		WriteData::sendOn()
 
 void		WriteData::sendOff()
 {
+	transfer_readyBusy(1);
 	CRITICAL_SECTION
 	{	// сброс работы модуля
 		fl_reset = 1;
@@ -235,9 +243,9 @@ void	WriteData::mode_phaze1()
 	uint8_t simulOn		= ns_var::simulOn;
 	if ( (startStop == 0) && (simulOn == 0) )		return;
 	// ------------
-	__delay_us(WR_PRE_START_UP);
-//	transfer_startStop(1);
-	modeDelay(phaze2_1, WR_OUT_SPR_DN);
+	transfer_readyBusy(0);
+// 	__delay_us(WR_PRE_START_UP); // ???
+	modeDelay(phaze2_2, WR_OUT_SPR_DN);
 }
 
 void	WriteData::mode_phaze2_1()	// sproket спад
@@ -311,7 +319,7 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	//
 	if (
 	(stat == 0)
-	//|| (transfer_startStop() == 0)
+		|| (transfer_startStop() == 0)
 	)
 	{
 		// конец передачи
@@ -339,14 +347,22 @@ void	WriteData::mode_phaze3_1()
 
 void	WriteData::mode_phaze3_2()
 {
+	if (transfer_startStop() == 0)
+	{
+		transfer_readyBusy(1);
+		modeDelay(sendEnd, WR_AFT_BUSY_UP);
+		return;
+	}
 	//
 	if (postSend_var > 0)
 	{
 		postSend_var--;
 		modeDelay(phaze3_1, WR_OUT_SPR_UP);
+		transfer_sprocket(0);
 	} 
 	else
 	{
+		transfer_readyBusy(1);
 		// end send
 		modeDelay(sendEnd, WR_AFT_BUSY_UP);
 	}

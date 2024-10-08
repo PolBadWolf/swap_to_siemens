@@ -20,7 +20,7 @@ namespace	ns_pins
 	void	transfer_data(uint8_t dat);
 	uint8_t	transfer_data();
 	
-	// ============== spocket =====================
+	// ============== sprocket =====================
 	void	init_sprocketInp();
 	void	init_sprocketOut();
 	uint8_t	transfer_sprocket();
@@ -32,6 +32,12 @@ namespace	ns_pins
 	uint8_t	transfer_strobe();
 	void	transfer_strobe(uint8_t dat);
 	
+	// ====================== readyBusy =======================
+	void	init_readyBusyInp();
+	void	init_readyBusyOut();
+	uint8_t	transfer_readyBusy();
+	void	transfer_readyBusy(uint8_t dat);
+
 	// ================== startStop ==================
 	void	init_startStopInp();
 	void	init_startStopOut();

@@ -56,7 +56,7 @@ private:
 	volatile	uint8_t		fl_reset;			// флаг сброса работы модуля
 	// пост выдача нулей
 	uint16_t				postSend_var;
-	const uint16_t			postSend_const = 5000;
+	const uint16_t			postSend_const = 50;
 //functions
 public:
 	static	WriteData*		init();

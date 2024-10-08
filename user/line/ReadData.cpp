@@ -89,6 +89,7 @@ void	ReadData::initPorts()
 		ns_pins::init_dataOut();
 		ns_pins::init_sprocketOut();
 		ns_pins::init_strobeOut();
+		ns_pins::init_readyBusyInp();
 		ns_pins::init_startStopOut();
 		ns_pins::init_eotOrRhuInp();
 	} 
@@ -98,6 +99,7 @@ void	ReadData::initPorts()
 		ns_pins::init_dataInp();
 		ns_pins::init_sprocketInp();
 		ns_pins::init_strobeInp();
+		ns_pins::init_readyBusyInp();
 		ns_pins::init_startStopInp();
 		ns_pins::init_eotOrRhuInp();
 	}

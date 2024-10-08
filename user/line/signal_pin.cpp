@@ -135,6 +135,12 @@
 #define		strobe_out			bit_is_byte(PORTE).strobe_bit
 #define		strobe_inp			bit_is_byte(PINE).strobe_bit
 
+// ============== readyBusy ===================
+#define		readyBusy_bit		bit7
+#define		readyBusy_ddr		bit_is_byte(DDRD).readyBusy_bit
+#define		readyBusy_out		bit_is_byte(PORTD).readyBusy_bit
+#define		readyBusy_inp		bit_is_byte(PIND).readyBusy_bit
+
 // ================= startStop ==================
 #define		startStop_bit		bit5
 #define		startStop_ddr		bit_is_byte(DDRE).startStop_bit
@@ -210,7 +216,7 @@ namespace	ns_pins
 		d_bit7_ddr = 1;
 	}
 
-	// ============== spocket =====================
+	// ============== sprocket =====================
 	void	init_sprocketInp()
 	{
 		sprocket_out = eeprom_read_byte(&ns_var::flag_plus5);
@@ -248,6 +254,26 @@ namespace	ns_pins
 	void	transfer_strobe(uint8_t dat)
 	{
 		strobe_out = dat;
+	}
+
+	// ====================== readyBusy =======================
+	void	init_readyBusyInp()
+	{
+		readyBusy_out = eeprom_read_byte(&ns_var::flag_plus5);
+		readyBusy_ddr = 0;
+	}
+	void	init_readyBusyOut()
+	{
+		readyBusy_out = 1;
+		readyBusy_ddr = 1;
+	}
+	uint8_t	transfer_readyBusy()
+	{
+		return	readyBusy_inp;
+	}
+	void	transfer_readyBusy(uint8_t dat)
+	{
+		readyBusy_out = dat;
 	}
 
 	// ================== startStop ==================

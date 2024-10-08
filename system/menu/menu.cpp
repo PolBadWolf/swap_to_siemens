@@ -66,20 +66,6 @@ void	ns_menu::mainCycle()
 		uint8_t		lockal_mode = mode;
 		functMenu_aft(lockal_mode, keyStat);
 	}
-	/*scr->Hex(16, PINF);
-	uint8_t pin = 0;
-	bit_is_byte(pin).bit7 = ns_pins::transfer_sprocket();
-	bit_is_byte(pin).bit6 = ns_pins::transfer_strobe();
-	bit_is_byte(pin).bit5 = ns_pins::transfer_dataEnable();
-	bit_is_byte(pin).bit4 = ns_pins::transfer_readyBusy();
-	bit_is_byte(pin).bit3 = ns_pins::transfer_slewInc();
-	bit_is_byte(pin).bit2 = ns_pins::transfer_leftRight();
-	bit_is_byte(pin).bit1 = ns_pins::transfer_startStop();
-	bit_is_byte(pin).bit0 = ns_pins::transfer_eotOrRhu();
-	scr->Hex(18, pin);
-	scr->PutChar(20, '0' + bit_is_byte(pin).bit1);
-	scr->PutChar(21, '0' + bit_is_byte(pin).bit0);
-	*/
 }
 
 void	ns_menu::functMenu_aft(uint8_t mode, uint8_t stat)
