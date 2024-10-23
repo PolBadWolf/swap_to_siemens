@@ -14,6 +14,7 @@
 // ***************** CONFIG PINS ******************
 // #define		__MB_DEBUG__
 
+/*
 #ifdef		__MB_DEBUG__
 // ============== data ===============
 #define		d_bit0_bit			bit0
@@ -81,6 +82,7 @@
 #define		eotOrRhu_inp		bit_is_byte(PIND).eotOrRhu_bit
 // -------------------------------------------------------------
 #else
+*/
 // ==================******************************============================= //
 // ============== data ===============
 #define		d_bit0_bit			bit0
@@ -123,7 +125,7 @@
 #define		d_bit7_out			bit_is_byte(PORTF).d_bit7_bit
 #define		d_bit7_inp			bit_is_byte(PINF).d_bit7_bit
 
-// ============== spocket =====================
+// ============== sprocket =====================
 #define		sprocket_bit		bit2
 #define		sprocket_ddr		bit_is_byte(DDRE).sprocket_bit
 #define		sprocket_out		bit_is_byte(PORTE).sprocket_bit
@@ -152,8 +154,15 @@
 #define		eotOrRhu_ddr		bit_is_byte(DDRE).eotOrRhu_bit
 #define		eotOrRhu_out		bit_is_byte(PORTE).eotOrRhu_bit
 #define		eotOrRhu_inp		bit_is_byte(PINE).eotOrRhu_bit
+
+// ================= LeftRight ==================
+#define		leftRight_bit		bit5
+#define		leftRight_ddr		bit_is_byte(DDRD).leftRight_bit
+#define		leftRight_out		bit_is_byte(PORTD).leftRight_bit
+#define		leftRight_inp		bit_is_byte(PIND).leftRight_bit
+
 // -------------------------------------------------------------
-#endif
+//#endif
 
 // ********************************************************************
 namespace	ns_pins
@@ -299,7 +308,7 @@ namespace	ns_pins
 	// ================== eot or rhu ==================
 	void	init_eotOrRhuInp()
 	{
-		eotOrRhu_out	= eeprom_read_byte(&ns_var::flag_plus5);
+		eotOrRhu_out	= eeprom_read_byte(&ns_var::flag_eot);
 		eotOrRhu_ddr	= 0;
 	}
 	void	init_eotOrRhuOut()
@@ -316,6 +325,25 @@ namespace	ns_pins
 		eotOrRhu_out	= dat;
 	}
 	
+	// ================== left / right ==================
+	void	init_leftRightInp()
+	{
+		leftRight_out	= 0;
+		leftRight_ddr	= 0;
+	}
+	void	init_leftRightOut()
+	{
+		leftRight_out	= 0;
+		leftRight_ddr	= 1;
+	}
+	uint8_t	transfer_leftRight()
+	{
+		return	leftRight_inp;
+	}
+	void	transfer_leftRight(uint8_t dat)
+	{
+		leftRight_out = dat;
+	}
 }
 
 

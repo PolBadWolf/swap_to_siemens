@@ -12,46 +12,37 @@
 // 7		:	timeout
 
 //				view				key1				key2				key3				key4				m key				init			timeout
-{		 start_count,		  start_key1,		  start_key2,		  start_key3,		  start_key4,				dump,		  start_init,				dump},
+{		 start_count,		  start_key1,		  start_key2,		  start_key3,		  start_key4,				dump,		  start_init,				dump},		//	0
 	// screen1
-{	   screen1_check,		  screen1_k1,		  screen1_k2,		  screen1_k3,		  screen1_k4,				dump,		screen1_init,				dump},
+{	   screen1_check,		  screen1_k1,		  screen1_k2,		  screen1_k3,		  screen1_k4,				dump,		screen1_init,				dump},		//	1
 	// copy
-{				dump,			 copy_k1,			 copy_k2,			 copy_k3,			 copy_k4,				dump,		   copy_init,				dump},
+{				dump,			 copy_k1,			 copy_k2,			 copy_k3,			 copy_k4,				dump,		   copy_init,				dump},		//	2
 	// clear
-{				dump,			clear_no,			clear_no,		   clear_yes,				dump,				dump,		  clear_init,				dump},
+{				dump,			clear_no,			clear_no,		   clear_yes,				dump,				dump,		  clear_init,				dump},		//	3
 	// reqeRead запуск чтения части программы (чтение с ленты)
-{	  reqeRead_check,				dump,		 reqeRead_k2,		 reqeRead_k3,				dump,				dump,	   reqeRead_init,				dump},
+{	  reqeRead_check,				dump,		 reqeRead_k2,		 reqeRead_k3,				dump,				dump,	   reqeRead_init,				dump},		//	4
 	// чтение части программы
-{	  readParty_view,				dump,				dump,				dump,		readParty_k4,				dump,	  readParty_init,				dump},
+{	  readParty_view,				dump,				dump,				dump,		readParty_k4,				dump,	  readParty_init,				dump},		//	5
 	// просмотр блока/сектора памяти
-{	  viewBlock_view,		viewBlock_k1,		viewBlock_k2,		viewBlock_k3,		viewBlock_k4,				dump,	  viewBlock_init,				dump},
+{	  viewBlock_view,		viewBlock_k1,		viewBlock_k2,		viewBlock_k3,		viewBlock_k4,				dump,	  viewBlock_init,				dump},		//	6
 	// выбор части программы для записи
-{	  reqeSend_check,				dump,		 reqeSend_k2,		 reqeSend_k3,				dump,				dump,	   reqeSend_init,				dump},
+{	  reqeSend_check,				dump,		 reqeSend_k2,		 reqeSend_k3,				dump,				dump,	   reqeSend_init,				dump},		//	7
 	// запись(отправка) части программы
-{	  sendParty_view,	    sendParty_k1,				dump,				dump,				dump,				dump,	  sendParty_init,				dump},
+{	  sendParty_view,	    sendParty_k1,				dump,				dump,				dump,				dump,	  sendParty_init,				dump},		//	8
 	
-{				dump,			plus5_k1,			plus5_k2,			plus5_k3,			plus5_k4,				dump,		  plus5_init,				dump},
+{				dump,			plus5_k1,			plus5_k2,			plus5_k3,			plus5_k4,				dump,		  plus5_init,				dump},		//	9
 	
-{				dump,			  eot_k1,			  eot_k2,			  eot_k3,			  eot_k4,				dump,			eot_init,				dump},
+{				dump,		leftRight_k1,		leftRight_k2,		leftRight_k3,		leftRight_k4,				dump,	  leftRight_init,				dump},		//	10
 	
-{				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},
+{				dump,			  eot_k1,			  eot_k2,			  eot_k3,			  eot_k4,				dump,			eot_init,				dump},		//	11
 	
-{				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},
-// ===================
-//	LIST_MOD_sd_minINT	13
-{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},		//		sd_minInt_k1,		sd_minInt_k2,		sd_minINT_k3,		sd_minINT_k4,				dump,	  sd_minInt_init,				dump},
-//	LIST_MOD_sd_minSD	14
-{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},		// 		 sd_minSD_k1,		 sd_minSD_k2,		 sd_minSD_k3,		 sd_minSD_k4,				dump,	   sd_minSD_init,				dump},
-//	LIST_MOD_sd_plsINT	15
-{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},		// 		sd_plsINT_k1,		sd_plsINT_k2,		sd_plsINT_k3,		sd_plsINT_k4,				dump,	  sd_plsINT_init,				dump},
-//	LIST_MOD_sd_plsFD	16
-{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},		// 		 sd_plsFD_k1,		 sd_plsFD_k2,		 sd_plsFD_k3,		 sd_plsFD_k4,				dump,	   sd_plsFD_init,				dump},
-//	LIST_MOD_sd_plsSD	17
-{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},		// 		 sd_plsSD_k1,		 sd_plsSD_k2,		 sd_plsSD_k3,		 sd_plsSD_k4,				dump,	   sd_plsSD_init,				dump},
+{				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},		//	12
+	
+{				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},		//	13
 // =====================	
-//	LIST_MOD_len_minus	18
-{				dump,		len_minus_k1,		len_minus_k2,		len_minus_k3,		len_minus_k4,				dump,	  len_minus_init,				dump},
+//	LIST_MOD_len_minus
+{				dump,		len_minus_k1,		len_minus_k2,		len_minus_k3,		len_minus_k4,				dump,	  len_minus_init,				dump},		//	14
 // =====================
-{				dump,			  sim_k1,			  sim_k2,			  sim_k3,			  sim_k4,				dump,			sim_init,				dump},
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},

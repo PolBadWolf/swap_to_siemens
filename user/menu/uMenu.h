@@ -31,20 +31,13 @@ void	user_menu_init();
 #define		_M_WRITE_PART		8			// запись(отправка) части программы
 //
 #define		_M_PLUS5			9			// подтяжка входов вкл/выкл
-#define		_M_EOT				10			// логический уровень выхода eot
-#define		_M_PINS				11
-#define		_M_WT_SCR1			12			// ожидание и переход на скрин1
+#define		_M_LEFT_RIGHT_INV	10
+#define		_M_EOT				11			// логический уровень выхода eot
+#define		_M_PINS				12
+#define		_M_WT_SCR1			13			// ожидание и переход на скрин1
 
-#define		_M_SD_minINT		13			// время интеграции
-#define		_M_SD_minSD			14			// время защитного интервала
+#define		_M_SD_lenMinus		14			//	количество байт минус
 
-#define		_M_SD_plsINT		15
-#define		_M_SD_plsFD			16
-#define		_M_SD_plsSD			17
-
-#define		_M_SD_lenMinus		18
-
-// #define		_M_Simul			18
 
 
 void	menuUser_1Milisec();
@@ -133,46 +126,6 @@ void	pins_k1();
 
 void wt_scr1_go();
 // =================
-/*
-void	sd_minInt_init();
-void	sd_minInt_k1();
-void	sd_minInt_k2();
-void	sd_minINT_k3();
-void	sd_minINT_k4();
-*/
-// =================
-/*
-void	sd_minSD_init();
-void	sd_minSD_k1();
-void	sd_minSD_k2();
-void	sd_minSD_k3();
-void	sd_minSD_k4();
-*/
-// =================
-/*
-void	sd_plsINT_init();
-void	sd_plsINT_k1();
-void	sd_plsINT_k2();
-void	sd_plsINT_k3();
-void	sd_plsINT_k4();
-*/
-// =================
-/*
-void	sd_plsFD_init();
-void	sd_plsFD_k1();
-void	sd_plsFD_k2();
-void	sd_plsFD_k3();
-void	sd_plsFD_k4();
-*/
-// =================
-/*
-void	sd_plsSD_init();
-void	sd_plsSD_k1();
-void	sd_plsSD_k2();
-void	sd_plsSD_k3();
-void	sd_plsSD_k4();
-*/
-// =================
 void	len_minus_init();
 void	len_minus_k1();
 void	len_minus_k2();
@@ -180,12 +133,11 @@ void	len_minus_k3();
 void	len_minus_k4();
 
 // =================
-void	sim_init();
-void	sim_k1();
-void	sim_k2();
-void	sim_k3();
-void	sim_k4();
-
+void	leftRight_init();
+void	leftRight_k1();
+void	leftRight_k2();
+void	leftRight_k3();
+void	leftRight_k4();
 // =================
 
 #endif // CONF_MENU

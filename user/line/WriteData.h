@@ -60,11 +60,13 @@ private:
 //functions
 public:
 	static	WriteData*		init();
+	static	WriteData*		getObj();
 	static	void			timerFast_irq();
 	void		sendOn();
 	void		sendOff();
 	uint8_t		getStatusWork();
 	uint16_t	getSendCountByte();
+	static	void	switchStart(uint8_t stat);
 protected:
 private:
 public:
@@ -88,6 +90,8 @@ public:
 	void	mode_phaze3_2();
 	//
 	void	mode_phaze_send_strb(uint8_t dat);
+	//
+	uint8_t	mode_chkFlagSend();
 	
 
 }; //WriteData

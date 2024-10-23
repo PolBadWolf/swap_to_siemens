@@ -50,21 +50,17 @@ namespace	ns_var
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{
-		{	0, "view"	},
-		{	1, "send"	},
-		{	2, "read"	},
-		{	3, "clr "	},
-		{	4, "copy"	},
-		{	5, "R+5 "	},
-		{	6, "test"	},
-		{	7, "PINS"	},
-		{	8, "-int"	},
-		{	9, "-SD "	},
-		{  10, "+int"	},
-		{  11, "+FD "	},
-		{  12, "+SD "	},
-		{  13, "len-"	},
-		{  14, "sim "	},
+		{	LIST_MOD_view,			"view"	},
+		{	LIST_MOD_send,			"send"	},
+		{	LIST_MOD_read,			"read"	},
+		{	LIST_MOD_clr,			"clr "	},
+		{	LIST_MOD_copy,			"copy"	},
+		{	LIST_MOD_plus5,			"R+5 "	},
+		{	LIST_MOD_leftRight,		"lR o"	},
+		{	LIST_MOD_eot,			"test"	},
+		{	LIST_MOD_pins,			"PINS"	},
+		{   LIST_MOD_len_minus,		"len-"	},
+// 		{   9, "sim "	},
 	};
 	
 	uint8_t			flag_plus5 EEMEM = 0;
@@ -98,12 +94,13 @@ namespace	ns_var
 // 	uint8_t			safeDelay_plsSD;
 	
 	// ---------------------------
-	uint8_t			simul2_On;
-	
-	// ---------------------------
 	uint8_t			subOutLenght;
 	uint8_t			subOutLenght_e	EEMEM = 0;
 	
 	// ---------------------------
 	uint8_t			edit8_tmp;
+	
+	// ---------------------------
+	uint8_t			leftRight_stat_e	EEMEM		= 0;	// 0 - off;		1 - on;		2 - inv
+	uint8_t			leftRight_stat;
 }

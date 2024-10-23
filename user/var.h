@@ -16,22 +16,15 @@
 #define LIST_MOD_read		2
 #define LIST_MOD_clr		3
 #define LIST_MOD_copy		4
+
 #define LIST_MOD_plus5		5
-#define LIST_MOD_eot		6
-#define LIST_MOD_pins		7
+#define LIST_MOD_leftRight	6
+#define LIST_MOD_eot		7
+#define LIST_MOD_pins		8
 
-#define LIST_MOD_sd_minINT	8
-#define LIST_MOD_sd_minSD	9
+#define LIST_MOD_len_minus	9
 
-#define LIST_MOD_sd_plsINT	10
-#define LIST_MOD_sd_plsFD	11
-#define LIST_MOD_sd_plsSD	12
-
-#define LIST_MOD_len_minus	13
-
-#define LIST_MOD_simul		14
-
-#define LIST_MOD__MAX		15
+#define LIST_MOD__MAX		10
 
 #define		OFFSET_WRITE	0x40
 
@@ -126,12 +119,13 @@ namespace	ns_var
 // 	extern			uint8_t			safeDelay_plsFD;
 // 	extern			uint8_t			safeDelay_plsSD;
 
-	extern			uint8_t			simul2_On;
-	
 	extern			uint8_t			subOutLenght;
 	extern			uint8_t			subOutLenght_e	EEMEM;
 	
 	extern			uint8_t			edit8_tmp;
+	
+	extern			uint8_t			leftRight_stat_e	EEMEM;
+	extern			uint8_t			leftRight_stat;
 
 }
 

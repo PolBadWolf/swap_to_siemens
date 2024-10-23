@@ -92,6 +92,7 @@ void	ReadData::initPorts()
 		ns_pins::init_readyBusyInp();
 		ns_pins::init_startStopOut();
 		ns_pins::init_eotOrRhuInp();
+		ns_pins::init_leftRightInp();
 	} 
 	else
 	{
@@ -102,6 +103,7 @@ void	ReadData::initPorts()
 		ns_pins::init_readyBusyInp();
 		ns_pins::init_startStopInp();
 		ns_pins::init_eotOrRhuInp();
+		ns_pins::init_leftRightInp();
 	}
 }
 
@@ -130,10 +132,11 @@ void	ReadData::int_Wait_StartRead()
 		CRITICAL_SECTION
 		{
 			// включение внешнего прерывания int4
-			bit_is_byte(EIMSK).bit4 = 1;
+			bit_is_byte(EIMSK).EIMSK_INT4 = 1;
 			// условия прерывания строб от 0 в 1
-			bit_is_byte(EICRB).bit0 = 1;
-			bit_is_byte(EICRB).bit1 = 1;
+			set_EISR_B.EISC4 = EISR::HighLevel;
+// 			bit_is_byte(EICRB).bit0 = 1;
+// 			bit_is_byte(EICRB).bit1 = 1;
 			stopDelay	= stopDelay_set;
 		}
 		setStatWork(Wait_ByteRead);
@@ -142,6 +145,7 @@ void	ReadData::int_Wait_StartRead()
 
 void	ReadData::int_Wait_ReadCompletion()
 {
+	// закончилось место для приема
 	if (wr_freeSize == 0)
 	{
 		CRITICAL_SECTION

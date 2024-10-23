@@ -8,10 +8,12 @@
 
 #include "mainUser.h"
 
+#include <avr/eeprom.h>
+
 #include "core/core.h"
 #include "user/var.h"
 #include "user/line/Simulyation.h"
-#include <avr/eeprom.h>
+#include "user/line/StartReady.h"
 
 
 
@@ -42,14 +44,13 @@ void	ns_user::init()
 	// настроить порты на чтение с перфоленты
 	readData->initPorts();
 	
-	// кофиценты
-// 	ns_var::safeDelay_minINT	= eeprom_read_byte(&ns_var::safeDelay_minINT_e);
-// 	ns_var::safeDelay_minSD		= eeprom_read_byte(&ns_var::safeDelay_minSD_e);
-	
-// 	ns_var::safeDelay_plsINT	= eeprom_read_byte(&ns_var::safeDelay_plsINT_e);
-// 	ns_var::safeDelay_plsFD		= eeprom_read_byte(&ns_var::safeDelay_plsFD_e);
-// 	ns_var::safeDelay_plsSD		= eeprom_read_byte(&ns_var::safeDelay_plsSD_e);
-	
 	// длина программы минус
 	ns_var::subOutLenght		= eeprom_read_byte(&ns_var::subOutLenght_e);
+	
+	// режим работы с сигналом left/right
+	ns_var::leftRight_stat		= eeprom_read_byte(&ns_var::leftRight_stat_e);
+	
+	// настройка работы сигнала Start/Stop по прерыванию
+	 StartReady::init();
+	
 }

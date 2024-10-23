@@ -9,10 +9,35 @@
 #ifndef BITS_H_
 #define BITS_H_
 
+enum EISR
+{
+	LowLevel	= 0
+	,TwoLevel	= 1
+	,DelLevel	= 2
+	,HighLevel	= 3
+};
+
+
 #define bit_is_byte(x)		(*((volatile BYTE_BITFIELD*)(&x)))
 #define bit_is_word(x)		(*((volatile WORD_BITFIELD*)(&x)))
 #define word_to_byte(x)		(*((volatile DOUBLE_BYTE*)(&x)))
 #define dWord_to_byte(x)	(*((volatile TETRA_BYTE*)(&x)))
+#define set_EISR_A			(*((volatile EISR_A_BITFIELD*)(&EICRA)))
+#define set_EISR_B			(*((volatile EISR_B_BITFIELD*)(&EICRB)))
+
+typedef struct {
+	unsigned	EISC4:2;
+	unsigned	EISC5:2;
+	unsigned	EISC6:2;
+	unsigned	EISC7:2;
+} EISR_B_BITFIELD;
+
+typedef struct {
+	unsigned	EISC0:2;
+	unsigned	EISC1:2;
+	unsigned	EISC2:2;
+	unsigned	EISC3:2;
+} EISR_A_BITFIELD;
 
 typedef struct {
 	unsigned bit0:1;

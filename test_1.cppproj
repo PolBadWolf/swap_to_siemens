@@ -325,6 +325,12 @@
     <Compile Include="user\line\Simulyation.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="user\line\StartReady.cpp">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="user\line\StartReady.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="user\line\WriteData.cpp">
       <SubType>compile</SubType>
     </Compile>

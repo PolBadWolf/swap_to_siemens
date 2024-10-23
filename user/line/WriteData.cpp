@@ -15,6 +15,9 @@
 #include <avr/pgmspace.h>
 
 #include "core/core_timers.h"
+#include "user/line/StartReady.h"
+
+#include "indication/Lcd_hard.h"
 
 #define		TIMER_FEQ	timer0_FEQ
 
@@ -79,6 +82,11 @@ WriteData*		WriteData::init()
 	return	obj;
 }
 
+WriteData*		WriteData::getObj()
+{
+	return	obj;
+}
+
 void	WriteData::initPorts()
 {
 	// =================== data trand ==================
@@ -93,6 +101,8 @@ void	WriteData::initPorts()
 	init_startStopInp();
 	// ================== eot or rhu ==================
 	init_eotOrRhuOut();
+	// ================== left / right ==================
+	init_leftRightInp();
 }
 
 void	WriteData::timerFast_irq()
@@ -167,12 +177,53 @@ void		WriteData::sendOn()
 			transfer_strobe(0);
 			// включение режима передачи **********************
 			modeDelay(phaze1, WR_PRE_BUSY_DN);
+			// включение прерывани€ по сигналу Start/Stop
+			{
+				StartReady	*objX = StartReady::getObj();
+				if (objX != 0)
+				{
+					objX->irqOn(switchStart);
+				}
+			}
 		}
+	}
+}
+
+// 	static	uint16_t	x1	= 0;
+// 	static	uint16_t	x2	= 0;
+	
+void		WriteData::switchStart(uint8_t stat)
+{
+// 	if (stat == STARTREADY_STAT_OFF)	x1++;
+// 
+// 	if (stat == STARTREADY_STAT_ON)		x2++;
+// 
+// 	uint8_t	pos = scr->SetPosition(6, 1);
+// 	
+// 	scr->DigitZ(&pos, 3, x1);
+// 	scr->PutChar(&pos, ' ');
+// 	scr->DigitZ(&pos, 3, x2);
+
+// 	WriteData	*obj = WriteData::getObj();
+	if (stat == STARTREADY_STAT_OFF)
+	{
+		transfer_readyBusy(1);
+// 		CRITICAL_SECTION
+// 		{
+// 			scr->Clear();
+// 			scr->String_P( PSTR("прерывание") );
+// 			for (;;)
+// 			{
+// 				((Lcd_hard *)scr)->Interrupt_static();
+// 				__delay_ms(1);
+// 			}
+// 		}
 	}
 }
 
 void		WriteData::sendOff()
 {
+	StartReady::irqOff();
 	transfer_readyBusy(1);
 	CRITICAL_SECTION
 	{	// сброс работы модул€
@@ -248,88 +299,124 @@ void	WriteData::mode_phaze1()
 	modeDelay(phaze2_2, WR_OUT_SPR_DN);
 }
 
+void	WriteData::mode_phaze_send_strb(uint8_t dat)
+{
+	transfer_data(dat);
+	__delay_us(WR_OUT_DATA);
+	// импульс строба
+	transfer_strobe(1);
+	// sproket фронт
+	transfer_sprocket(1);
+	__delay_us(WR_OUT_STROBE);
+	// завершение импульса строба
+	transfer_strobe(0);
+}
+
+uint8_t	WriteData::mode_chkFlagSend()
+{
+	uint8_t		flag_send		= 0;
+	uint8_t		st_leftRight	= ns_pins::transfer_leftRight();
+
+	// контроль сигнала lift/right отключен
+	if (ns_var::leftRight_stat == 0)
+	{
+		flag_send = 1;
+	}
+	
+	if ( (ns_var::leftRight_stat == 1) && (st_leftRight == 0) )
+	{
+		flag_send = 1;
+	}
+
+	if ( (ns_var::leftRight_stat == 2) && (st_leftRight != 0) )
+	{
+		flag_send = 1;
+	}
+	// ------------------
+	return	flag_send;
+}
+
 void	WriteData::mode_phaze2_1()	// sproket спад
 {
 	transfer_sprocket(0);
 	modeDelay(phaze2_2, WR_OUT_SPR_DN);
 }
 
-void	WriteData::mode_phaze_send_strb(uint8_t dat)
-{
-		transfer_data(dat);
-		__delay_us(WR_OUT_DATA);
-		// импульс строба
-		transfer_strobe(1);
-		// sproket фронт
-		transfer_sprocket(1);
-		__delay_us(WR_OUT_STROBE);
-		// завершение импульса строба
-		transfer_strobe(0);
-}
-
 void	WriteData::mode_phaze2_2()	// вывод данных, строб
 {
+	uint8_t		flag_send		= mode_chkFlagSend();
+	// ------------------------------------------------------------
 	// очередной байт
 	uint8_t	dat, stat;
 	
-	if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
+	// разрешение передачи
+	if (flag_send != 0)
 	{
-		stat = ns_user::flash->fRd_readByte(&dat);
-	}
-	else
-	{
-		if (startHeaderCount > 0)
+		if ((ns_var::s_prog != 0) || (ns_var::simulOn != 0))	// системна€ программа или симул€ци€
 		{
-			stat = 1;
-			dat  = 0;
+			stat = ns_user::flash->fRd_readByte(&dat);
 		}
 		else
 		{
-			stat = ns_user::flash->fRd_readByte(&dat);
-			dat = odd_plus_7bit(dat);
-		}
-	}
-	
-	mode_phaze_send_strb(dat);
-	// -----------------------
-	if (ns_var::simulOn != 0)
-	{
-		{
-			uint8_t dat_chk;
-#ifdef	__ADR_TO_DATA
-			dat_chk = word_to_byte(sim_adr).Low;
-#else
-			dat_chk = pgm_read_byte(sim_adr);
-#endif
-			if (dat != dat_chk)
+			if (startHeaderCount > 0)
 			{
-				if (error_sim == 0)
-				{
-					error_sim_adr = sim_adr;
-					error_sim_dat = dat_chk;
-				}
-				error_sim = 1;
+				stat = 1;
+				dat  = 0;
 			}
-			sim_adr++;
+			else
+			{
+				stat = ns_user::flash->fRd_readByte(&dat);
+				dat = odd_plus_7bit(dat);
+			}
 		}
+		// отправка байта
+		mode_phaze_send_strb(dat);
+		// -----------------------
+		// проверка переданных данных
+		if (ns_var::simulOn != 0)
+		{
+			{
+				uint8_t dat_chk;
+				#ifdef	__ADR_TO_DATA
+				dat_chk = word_to_byte(sim_adr).Low;
+				#else
+				dat_chk = pgm_read_byte(sim_adr);
+				#endif
+				if (dat != dat_chk)
+				{
+					if (error_sim == 0)
+					{
+						error_sim_adr = sim_adr;
+						error_sim_dat = dat_chk;
+					}
+					error_sim = 1;
+				}
+				sim_adr++;
+			}
+		}
+		// --------------------------------
+		// счетчик переданных байтов ( без заголовок )
+		if (startHeaderCount > 0)	startHeaderCount --;
+		else						sendCountByte++;
 	}
-	//
-	if (startHeaderCount > 0)	startHeaderCount --;
-	else						sendCountByte++;
-	//
+
+	// ---------------------------------
+	// завершение передачи
 	if (
 	(stat == 0)
-		|| (transfer_startStop() == 0)
+	|| ((transfer_startStop() == 0)	&& (ns_var::simulOn == 0))
 	)
 	{
 		// конец передачи
 		modeDelay(phaze3_1, WR_AFT_SPR_UP);
 		//
 		postSend_var = postSend_const;
-	} 
-	else
+		return;
+	}
+
+	// формирование площадки sproket , если разрешена работа
+	if (flag_send != 0)
 	{
-		// формирование площадки sproket
 		modeDelay(phaze2_1, WR_OUT_SPR_UP);
 	}
 }
@@ -341,7 +428,11 @@ void	WriteData::mode_phaze2_3()
 
 void	WriteData::mode_phaze3_1()
 {
-	mode_phaze_send_strb(0);
+	uint8_t	flag = mode_chkFlagSend();
+	if (flag != 0)
+	{
+		mode_phaze_send_strb(0);
+	}
 	modeDelay(phaze3_2, WR_AFT_START_DN);
 }
 
@@ -349,6 +440,7 @@ void	WriteData::mode_phaze3_2()
 {
 	if (transfer_startStop() == 0)
 	{
+		StartReady::irqOff();
 		transfer_readyBusy(1);
 		modeDelay(sendEnd, WR_AFT_BUSY_UP);
 		return;

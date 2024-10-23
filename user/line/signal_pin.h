@@ -49,6 +49,12 @@ namespace	ns_pins
 	void	init_eotOrRhuOut();
 	uint8_t	transfer_eotOrRhu();
 	void	transfer_eotOrRhu(uint8_t dat);
+
+	// ================== left / right ==================
+	void	init_leftRightInp();
+	void	init_leftRightOut();
+	uint8_t	transfer_leftRight();
+	void	transfer_leftRight(uint8_t dat);
 	
 }
 

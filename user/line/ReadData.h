@@ -53,11 +53,11 @@ private:
 //functions
 public:
 	static	ReadData*	init();
-	static	void	timerFast_irq();		// таймер приема данных
-	void		timerFast();				// таймер приема данных
-	void		initPorts();				// настройка портов на прием
-	void		setStatWork(StatWork statusWork);
-	static void int_readByte();
+	static	void		timerFast_irq();			// таймер приема данных
+	void				timerFast();				// таймер приема данных
+	void				initPorts();				// настройка портов на прием
+	void				setStatWork(StatWork statusWork);
+	static void			int_readByte();
 	// -----------
 	uint8_t		getStatWork();						// статус работы программы приема
 	uint8_t		readOn(uint32_t freeSize);			// включение приема

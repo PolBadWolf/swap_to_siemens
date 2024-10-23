@@ -12,6 +12,8 @@
 
 #include <avr\pgmspace.h>
 #include <avr\eeprom.h>
+#include <avr/wdt.h>
+
 #include "core\core.h"
 #include "core\bits.h"
 #include "core\delay.h"
@@ -23,28 +25,14 @@
 
 #include "user/line/signal_pin.h"
 #include "system/indication/Lcd_hard.h"
-#include <avr/wdt.h>
 #include "core/core_timers.h"
+
+#include "user/line/StartReady.h"
 
 uint16_t	startCount;
 
 #define		LENGHT_RUN_STRING	0x10
 
-// #define __MENU_DEBUG__
-
-/*	const volatile uint8_t ms[] PROGMEM =
-	{
-		0xa5, 0x8d, 0x0a,
-		0x28, 0xd2, 0x78, 0xbd, 0x35, 0xb7, 0x35, 0xa0,
-		0x42, 0x41, 0xd4, 0xd4, 0xd2, 0xc5, 0x53, 0x53, 0x2d, 0x33, 0xb2, 0xb4, 0xaf, 0xb1, 0x30, 0xa0,
-		0xeb, 0x2e, 0xb1, 0x2d, 0x35, 0x30, 0xa0,
-		0xb2, 0xb7, 0xaf, 0xb1, 0xb2, 0xaf, 0xb2, 0x30, 0xb1, 0xb2, 0xa9, 0x8d, 0x0a,
-		0x4e, 0xb1, 0x30, 0x30, 0x30, 0xa0, 0x47, 0x39, 0x30, 0x8d, 0x0a,
-		0x4e, 0xb1, 0x30, 0xb1, 0x30, 0xa0, 0x47, 0x30, 0x30, 0xa0, 0xd8, 0x30, 0xa0, 0x5a, 0x30, 0xa0, 0x4d, 0x30, 0x33, 0x8d, 0x0a,
-		0x4e, 0xb1, 0x30, 0xb2, 0x30, 0xa0, 0x47, 0x39, 0xb1, 0x8d, 0x0a,
-		0x8d, 0x0a
-	};*/
-// 	const volatile uint8_t ms[1057] PROGMEM = {
 	const volatile uint8_t ms[] PROGMEM = {
 		"%\r\n"
 		"(Rx=575 BATTRESS-324/10 k.1-50 27/12/2012)\r\n"
@@ -331,15 +319,6 @@ void	screen1_vmem(uint32_t adr_f)
 		}
 	}
 	
-	/*
-	scr->SetPosition2(0, 1);
-	for (uint8_t i = 0; i < 3; i++)
-	{
-		scr->PutChar(' ');
-		scr->Hex(ns_var::buf_string[i]);
-	}
-	scr->Digit(3, ns_var::s_prog);
-	*/
 }
 
 uint16_t	count_check = 0;
@@ -470,6 +449,8 @@ void	screen1_init()
 {
 	// настройка портов на чтение
 	ns_user::readData->initPorts();
+	// выключение обработки сигнала Start/Stop по прерыванию
+	StartReady::irqOff();
 	// -------------------------------------
 	ns_var::mxMod = 0;
 	scr->Clear();
@@ -515,11 +496,11 @@ void	screen1_k1()
 			ns_var::mxMod = 0;
 		}
 		mx = ns_var::mxMod;
-		if (ns_var::mxMod	==	LIST_MOD_sd_minINT)			continue;
-		if (ns_var::mxMod	==	LIST_MOD_sd_minSD)			continue;
-		if (ns_var::mxMod	==	LIST_MOD_sd_plsINT)			continue;
-		if (ns_var::mxMod	==	LIST_MOD_sd_plsFD)			continue;
-		if (ns_var::mxMod	==	LIST_MOD_sd_plsSD)			continue;
+// 		if (ns_var::mxMod	==	LIST_MOD_sd_minINT)			continue;
+// 		if (ns_var::mxMod	==	LIST_MOD_sd_minSD)			continue;
+// 		if (ns_var::mxMod	==	LIST_MOD_sd_plsINT)			continue;
+// 		if (ns_var::mxMod	==	LIST_MOD_sd_plsFD)			continue;
+// 		if (ns_var::mxMod	==	LIST_MOD_sd_plsSD)			continue;
 		break;
 	} while (true);
 	PORTA = mx;
@@ -530,35 +511,25 @@ void	screen1_k4()
 {
 	switch (ns_var::mxMod)
 	{
-		case LIST_MOD_view:		ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);				break;
+		case LIST_MOD_view:				ns_menu::functMenu_aft(_M_VIEW_BLOCK, MENU_SETMODE);				break;
 		//
-		case LIST_MOD_send:		reqeSend_begin();													break;
+		case LIST_MOD_send:				reqeSend_begin();													break;
 		//
-		case LIST_MOD_clr:		ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);						break;
+		case LIST_MOD_clr:				ns_menu::functMenu_aft(_M_CLEAR, MENU_SETMODE);						break;
 		//
-		case LIST_MOD_copy:		ns_menu::functMenu_aft(_M_COPY, MENU_SETMODE);						break;
+		case LIST_MOD_copy:				ns_menu::functMenu_aft(_M_COPY, MENU_SETMODE);						break;
 		//
-		case LIST_MOD_read:		reqeRead_begin();													break;
+		case LIST_MOD_read:				reqeRead_begin();													break;
 		//
-		case LIST_MOD_plus5:	ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);						break;
+		case LIST_MOD_plus5:			ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);						break;
 		//
-		case LIST_MOD_eot:		ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);						break;
+		case LIST_MOD_leftRight:		ns_menu::functMenu_aft(_M_LEFT_RIGHT_INV, MENU_SETMODE);			break;
 		//
-		case LIST_MOD_pins:		ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);						break;
+		case LIST_MOD_eot:				ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);						break;
+		//
+		case LIST_MOD_pins:				ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);						break;
 		// ------------------------------------------------------------------------------------------------
-		case LIST_MOD_sd_minINT:	ns_menu::functMenu_aft(_M_SD_minINT, MENU_SETMODE);				break;
-		//
-		case LIST_MOD_sd_minSD:		ns_menu::functMenu_aft(_M_SD_minSD, MENU_SETMODE);				break;
-		//
-		case LIST_MOD_sd_plsINT:	ns_menu::functMenu_aft(_M_SD_plsINT, MENU_SETMODE);				break;
-		//
-		case LIST_MOD_sd_plsFD:		ns_menu::functMenu_aft(_M_SD_plsFD, MENU_SETMODE);				break;
-		//
-		case LIST_MOD_sd_plsSD:		ns_menu::functMenu_aft(_M_SD_plsSD, MENU_SETMODE);				break;
-		//
-		case LIST_MOD_len_minus:	ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);			break;
-		//
-// 		case LIST_MOD_simul:		ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);			break;
+		case LIST_MOD_len_minus:		ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);				break;
 		//
 		default:
 			ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
@@ -1545,8 +1516,8 @@ void	sendParty_view()
 	// количество отправленных байт
 	scr->SetPosition2(0, 1);
 	scr->Digit(5, ns_user::writeData->getSendCountByte());
-	scr->String_P(PSTR(" из "));
-	scr->Digit(5, ns_var::sendLenght);
+// 	scr->String_P(PSTR(" из "));
+// 	scr->Digit(5, ns_var::sendLenght);
 	// проверка окончания передачи
 	uint8_t	stat = ns_user::writeData->getStatusWork();
 	if (stat == ns_user::writeData->sendEnd)
@@ -2010,47 +1981,54 @@ void	len_minus_k4()
 }
 
 // ------------------------------------------------------
-
-void	sim_view()
+void	leftRight_view()
 {
-	uint8_t pos = scr->SetPosition(0, 1);
-	if (ns_var::edit8_tmp == 0)
+	scr->SetPosition2(0, 1);
+	switch(ns_var::edit8_tmp)
 	{
-		scr->String_P(pos, PSTR("Off") );
-	} 
-	else
-	{
-		scr->String_P(pos, PSTR("On ") );
+		case	1:
+			scr->String_P( PSTR("Вкл. ") );
+			break;
+		case	2:
+			scr->String_P( PSTR("Инв. ") );
+			break;
+		default:
+			ns_var::edit8_tmp = 0;
+			scr->String_P( PSTR("Выкл.") );
+			break;
 	}
 }
 
-void	sim_init()
+void	leftRight_init()
 {
 	scr->Clear();
-	scr->String_P( PSTR("simul On/Off : ") );
-	ns_var::edit8_tmp = ns_var::simul2_On;
+	scr->String_P( PSTR("left/right stat:") );
+	ns_var::edit8_tmp = eeprom_read_byte(&ns_var::leftRight_stat_e);
+	leftRight_view();
 }
 
-void	sim_k1()
+void	leftRight_k1()
 {
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
 
-void	sim_k2()
+void	leftRight_k2()
 {
-	ns_var::edit8_tmp = 0;
-	sim_view();
+	if (ns_var::edit8_tmp > 0)		ns_var::edit8_tmp--;
+	leftRight_view();
 }
 
-void	sim_k3()
+void	leftRight_k3()
 {
-	ns_var::edit8_tmp = 1;
-	sim_view();
+	if (ns_var::edit8_tmp < 2)		ns_var::edit8_tmp++;
+	else							ns_var::edit8_tmp = 2;
+	leftRight_view();
 }
 
-void	sim_k4()
+void	leftRight_k4()
 {
-	ns_var::simul2_On = ns_var::edit8_tmp;
+	eeprom_update_byte(&ns_var::leftRight_stat_e, ns_var::edit8_tmp);
+	ns_var::leftRight_stat	= ns_var::edit8_tmp;
 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
 }
 
