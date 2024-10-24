@@ -55,7 +55,6 @@ namespace	ns_var
 		{	LIST_MOD_read,			"read"	},
 		{	LIST_MOD_clr,			"clr "	},
 		{	LIST_MOD_copy,			"copy"	},
-		{	LIST_MOD_plus5,			"R+5 "	},
 		{	LIST_MOD_leftRight,		"lR o"	},
 		{	LIST_MOD_eot,			"test"	},
 		{	LIST_MOD_pins,			"PINS"	},
@@ -63,9 +62,7 @@ namespace	ns_var
 // 		{   9, "sim "	},
 	};
 	
-	uint8_t			flag_plus5 EEMEM = 0;
 	uint8_t			flag_eot   EEMEM = 0;
-	uint8_t			flag_plus5_m;
 	uint8_t			flag_eot_m;
 	uint8_t			pins_uk;
 	// ---------------------------

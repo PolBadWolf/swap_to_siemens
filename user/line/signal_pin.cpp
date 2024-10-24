@@ -194,15 +194,6 @@ namespace	ns_pins
 	}
 	void	init_dataInp()
 	{
-		uint8_t		r = eeprom_read_byte(&ns_var::flag_plus5);
-		if (r == 0)
-		{
-			transfer_data(0);
-		} 
-		else
-		{
-			transfer_data(0xff);
-		}
 		d_bit0_ddr = 0;
 		d_bit1_ddr = 0;
 		d_bit2_ddr = 0;
@@ -228,7 +219,7 @@ namespace	ns_pins
 	// ============== sprocket =====================
 	void	init_sprocketInp()
 	{
-		sprocket_out = eeprom_read_byte(&ns_var::flag_plus5);
+		sprocket_out = 0;
 		sprocket_ddr = 0;
 	}
 	void	init_sprocketOut()
@@ -248,7 +239,7 @@ namespace	ns_pins
 	// ============== strobe =====================
 	void	init_strobeInp()
 	{
-		strobe_out	= eeprom_read_byte(&ns_var::flag_plus5);
+		strobe_out	= 0;
 		strobe_ddr	= 0;
 	}
 	void	init_strobeOut()
@@ -268,7 +259,7 @@ namespace	ns_pins
 	// ====================== readyBusy =======================
 	void	init_readyBusyInp()
 	{
-		readyBusy_out = eeprom_read_byte(&ns_var::flag_plus5);
+		readyBusy_out = 0;
 		readyBusy_ddr = 0;
 	}
 	void	init_readyBusyOut()
@@ -288,7 +279,7 @@ namespace	ns_pins
 	// ================== startStop ==================
 	void	init_startStopInp()
 	{
-		startStop_out = eeprom_read_byte(&ns_var::flag_plus5);
+		startStop_out = 0;
 		startStop_ddr = 0;
 	}
 	void	init_startStopOut()

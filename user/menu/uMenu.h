@@ -30,13 +30,12 @@ void	user_menu_init();
 #define		_M_REQE_WRITE		7			// выбор части программы для записи
 #define		_M_WRITE_PART		8			// запись(отправка) части программы
 //
-#define		_M_PLUS5			9			// подтяжка входов вкл/выкл
-#define		_M_LEFT_RIGHT_INV	10
-#define		_M_EOT				11			// логический уровень выхода eot
-#define		_M_PINS				12
-#define		_M_WT_SCR1			13			// ожидание и переход на скрин1
+#define		_M_LEFT_RIGHT_INV	9
+#define		_M_EOT				10			// логический уровень выхода eot
+#define		_M_PINS				11
+#define		_M_WT_SCR1			12			// ожидание и переход на скрин1
 
-#define		_M_SD_lenMinus		14			//	количество байт минус
+#define		_M_SD_lenMinus		13			//	количество байт минус
 
 
 
@@ -104,13 +103,6 @@ void	reqeSend_check();
 void	sendParty_init();
 void	sendParty_view();
 void	sendParty_k1();
-
-// === plus5 ====
-void	plus5_init();
-void	plus5_k1();
-void	plus5_k2();
-void	plus5_k3();
-void	plus5_k4();
 
 // === eot ===
 void	eot_init();

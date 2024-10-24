@@ -24,7 +24,7 @@
 
 #define LIST_MOD_len_minus	9
 
-#define LIST_MOD__MAX		10
+#define LIST_MOD__MAX		9
 
 #define		OFFSET_WRITE	0x40
 
@@ -57,9 +57,7 @@ namespace	ns_var
 	extern			unsigned	char			read_fistEnter;				// первый пуск на чтение
 	extern			unsigned	long			sendAdr;					// адрес данных для передачи
 	extern			unsigned	int				sendLenght;					// длина данных для передачи
-	extern			unsigned	char			flag_plus5 EEMEM;
 	extern			unsigned	char			flag_eot   EEMEM;
-	extern			unsigned	char			flag_plus5_m;
 	extern			unsigned	char			flag_eot_m;
 	extern			unsigned	char			pins_uk;
 	//===========================================================

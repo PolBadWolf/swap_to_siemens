@@ -521,8 +521,6 @@ void	screen1_k4()
 		//
 		case LIST_MOD_read:				reqeRead_begin();													break;
 		//
-		case LIST_MOD_plus5:			ns_menu::functMenu_aft(_M_PLUS5, MENU_SETMODE);						break;
-		//
 		case LIST_MOD_leftRight:		ns_menu::functMenu_aft(_M_LEFT_RIGHT_INV, MENU_SETMODE);			break;
 		//
 		case LIST_MOD_eot:				ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);						break;
@@ -1547,51 +1545,6 @@ void	sendParty_k1()
 }
 
 // ==================================================================
-void	plus5_view()
-{
-	if (ns_var::flag_plus5_m == 0)
-	{
-		scr->String_P(7, PSTR("Off"));
-	}
-	else
-	{
-		ns_var::flag_plus5_m = 1;
-		scr->String_P(7, PSTR("On "));
-	}
-}
-
-void	plus5_init()
-{
-	scr->Clear();
-	scr->String_P(PSTR("R+5v : "));
-	ns_var::flag_plus5_m = eeprom_read_byte(&ns_var::flag_plus5);
-	plus5_view();
-}
-
-void	plus5_k1()
-{
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
-}
-
-void	plus5_k2()
-{
-	ns_var::flag_plus5_m = 0;
-	plus5_view();
-}
-
-void	plus5_k3()
-{
-	ns_var::flag_plus5_m = 1;
-	plus5_view();
-}
-
-void	plus5_k4()
-{
-	eeprom_update_byte(&ns_var::flag_plus5, ns_var::flag_plus5_m);
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
-}
-
-// ----------------------------------------------------
 
 void	eot_view()
 {
