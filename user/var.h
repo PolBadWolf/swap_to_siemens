@@ -19,10 +19,9 @@
 
 #define LIST_MOD_plus5		5
 #define LIST_MOD_leftRight	6
-#define LIST_MOD_eot		7
-#define LIST_MOD_pins		8
+#define LIST_MOD_pins		7
 
-#define LIST_MOD_len_minus	9
+#define LIST_MOD_len_minus	8
 
 #define LIST_MOD__MAX		9
 
@@ -57,8 +56,8 @@ namespace	ns_var
 	extern			unsigned	char			read_fistEnter;				// первый пуск на чтение
 	extern			unsigned	long			sendAdr;					// адрес данных для передачи
 	extern			unsigned	int				sendLenght;					// длина данных для передачи
-	extern			unsigned	char			flag_eot   EEMEM;
-	extern			unsigned	char			flag_eot_m;
+// 	extern			unsigned	char			flag_eot   EEMEM;
+// 	extern			unsigned	char			flag_eot_m;
 	extern			unsigned	char			pins_uk;
 	//===========================================================
 	extern			unsigned	char			error_parity;

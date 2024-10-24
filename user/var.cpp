@@ -56,14 +56,11 @@ namespace	ns_var
 		{	LIST_MOD_clr,			"clr "	},
 		{	LIST_MOD_copy,			"copy"	},
 		{	LIST_MOD_leftRight,		"lR o"	},
-		{	LIST_MOD_eot,			"test"	},
 		{	LIST_MOD_pins,			"PINS"	},
 		{   LIST_MOD_len_minus,		"len-"	},
 // 		{   9, "sim "	},
 	};
 	
-	uint8_t			flag_eot   EEMEM = 0;
-	uint8_t			flag_eot_m;
 	uint8_t			pins_uk;
 	// ---------------------------
 	uint8_t const	safeDelay_minINT_max		= (uint8_t)(((double)safeDelay_minINT_d) * timer0_FEQ / 1000);

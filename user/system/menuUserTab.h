@@ -32,14 +32,12 @@
 	
 {				dump,		leftRight_k1,		leftRight_k2,		leftRight_k3,		leftRight_k4,				dump,	  leftRight_init,				dump},		//	9
 	
-{				dump,			  eot_k1,			  eot_k2,			  eot_k3,			  eot_k4,				dump,			eot_init,				dump},		//	10
+{				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},		//	10
 	
-{				pins_view,		 pins_k1,				dump,				dump,				dump,				dump,		   pins_init,				dump},		//	11
-	
-{				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},		//	12
+{				dump,				dump,				dump,				dump,		  wt_scr1_go,				dump,				dump,				dump},		//	11
 // =====================	
 //	LIST_MOD_len_minus
-{				dump,		len_minus_k1,		len_minus_k2,		len_minus_k3,		len_minus_k4,				dump,	  len_minus_init,				dump},		//	13
+{				dump,		len_minus_k1,		len_minus_k2,		len_minus_k3,		len_minus_k4,				dump,	  len_minus_init,				dump},		//	12
 // =====================
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},

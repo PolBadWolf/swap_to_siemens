@@ -31,11 +31,10 @@ void	user_menu_init();
 #define		_M_WRITE_PART		8			// запись(отправка) части программы
 //
 #define		_M_LEFT_RIGHT_INV	9
-#define		_M_EOT				10			// логический уровень выхода eot
-#define		_M_PINS				11
-#define		_M_WT_SCR1			12			// ожидание и переход на скрин1
+#define		_M_PINS				10
+#define		_M_WT_SCR1			11			// ожидание и переход на скрин1
 
-#define		_M_SD_lenMinus		13			//	количество байт минус
+#define		_M_SD_lenMinus		12			//	количество байт минус
 
 
 
@@ -103,13 +102,6 @@ void	reqeSend_check();
 void	sendParty_init();
 void	sendParty_view();
 void	sendParty_k1();
-
-// === eot ===
-void	eot_init();
-void	eot_k1();
-void	eot_k2();
-void	eot_k3();
-void	eot_k4();
 
 // === pins ===
 void	pins_init();

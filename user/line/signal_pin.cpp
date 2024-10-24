@@ -299,12 +299,12 @@ namespace	ns_pins
 	// ================== eot or rhu ==================
 	void	init_eotOrRhuInp()
 	{
-		eotOrRhu_out	= eeprom_read_byte(&ns_var::flag_eot);
+		eotOrRhu_out	= 0;
 		eotOrRhu_ddr	= 0;
 	}
 	void	init_eotOrRhuOut()
 	{
-		eotOrRhu_out	= eeprom_read_byte(&ns_var::flag_eot);
+		eotOrRhu_out	= 0;
 		eotOrRhu_ddr	= 1;
 	}
 	uint8_t	transfer_eotOrRhu()

@@ -523,8 +523,6 @@ void	screen1_k4()
 		//
 		case LIST_MOD_leftRight:		ns_menu::functMenu_aft(_M_LEFT_RIGHT_INV, MENU_SETMODE);			break;
 		//
-		case LIST_MOD_eot:				ns_menu::functMenu_aft(_M_EOT, MENU_SETMODE);						break;
-		//
 		case LIST_MOD_pins:				ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);						break;
 		// ------------------------------------------------------------------------------------------------
 		case LIST_MOD_len_minus:		ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);				break;
@@ -1546,84 +1544,84 @@ void	sendParty_k1()
 
 // ==================================================================
 
-void	eot_view()
-{
-	if (ns_var::flag_eot_m == 0)
-	{
-		scr->String_P(13, PSTR("Off"));
-	} 
-	else
-	{
-		ns_var::flag_eot_m = 1;
-		scr->String_P(13, PSTR("On "));
-	}
-}
-
-void	eot_init()
-{
-	scr->Clear();
-	scr->String_P(PSTR("eot or rhu : "));
-	ns_var::flag_eot_m = eeprom_read_byte(&ns_var::flag_eot);
-	eot_view();
-}
-
-void	eot_k1()
-{
-	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
-}
-
-void	eot_k2()
-{
-// 	ns_var::flag_eot_m = 0;
+// void	eot_view()
+// {
+// 	if (ns_var::flag_eot_m == 0)
+// 	{
+// 		scr->String_P(13, PSTR("Off"));
+// 	} 
+// 	else
+// 	{
+// 		ns_var::flag_eot_m = 1;
+// 		scr->String_P(13, PSTR("On "));
+// 	}
+// }
+// 
+// void	eot_init()
+// {
+// 	scr->Clear();
+// 	scr->String_P(PSTR("eot or rhu : "));
+// 	ns_var::flag_eot_m = eeprom_read_byte(&ns_var::flag_eot);
 // 	eot_view();
-}
-
-void	eot_k3()
-{
-// 	ns_var::flag_eot_m = 1;
-// 	eot_view();
-}
-
-void	eot_k4()
-{
-// 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
-	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
-	uint8_t cod, status;
-	uint16_t lenght_array = sizeof(ms) - 1;
-// 	lenght_array = 0x280;
-	ns_user::flash->fWr_init(adr + OFFSET_WRITE, OFFSET_WRITE);
-	for (uint16_t i = 0; i < lenght_array; i++)
-	{
-		cod = pgm_read_byte(&ms[i]);
-// 		cod = odd_plus_7bit(cod);
-		status = ns_user::flash->fWr_dataSend(cod);
-// 		scr->Hex(scr->SetPosition(0, 1), cod);
-		scr->PutChar(scr->SetPosition(3, 1), cod);
-// 		__delay_ms(1);
-		if (status != 0)
-		scr->PutChar(30, '@');
-	}
-	ns_user::flash->fWr_endSend();
-	__delay_ms(500);
-	ns_user::flash->wr_buff[0] = 1;
-	ns_user::flash->wr_buff[1] = 0xff;
-	ns_user::flash->wr_buff[2] = 0xff;
-	ns_user::flash->wr_buff[3] = 0xff;
-	ns_user::flash->wr_buff[4] = 0;
-	ns_user::flash->wr_buff[5] = 0;
-	ns_user::flash->wr_buff[6] = word_to_byte(lenght_array).Low;
-	ns_user::flash->wr_buff[7] = word_to_byte(lenght_array).High;
-	ns_user::flash->wr_buff[8] = 0xff;
-	ns_user::flash->wr_buff[9] = 0xff;
-	ns_user::flash->writeArray(ns_user::flash->wr_buff, 10, adr);
+// }
+// 
+// void	eot_k1()
+// {
 // 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
-	ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
-	
-	for (uint8_t i = 0; i < 16; i++)
-	{
-		scr->PutChar(scr->SetPosition(i, 1), ns_user::flash->fistBf[i]);
-	}
-}
+// }
+// 
+// void	eot_k2()
+// {
+// // 	ns_var::flag_eot_m = 0;
+// // 	eot_view();
+// }
+// 
+// void	eot_k3()
+// {
+// // 	ns_var::flag_eot_m = 1;
+// // 	eot_view();
+// }
+// 
+// void	eot_k4()
+// {
+// // 	eeprom_update_byte(&ns_var::flag_eot, ns_var::flag_eot_m);
+// 	uint32_t adr = adrRender(ns_var::n_prog); // + OFFSET_WRITE;
+// 	uint8_t cod, status;
+// 	uint16_t lenght_array = sizeof(ms) - 1;
+// // 	lenght_array = 0x280;
+// 	ns_user::flash->fWr_init(adr + OFFSET_WRITE, OFFSET_WRITE);
+// 	for (uint16_t i = 0; i < lenght_array; i++)
+// 	{
+// 		cod = pgm_read_byte(&ms[i]);
+// // 		cod = odd_plus_7bit(cod);
+// 		status = ns_user::flash->fWr_dataSend(cod);
+// // 		scr->Hex(scr->SetPosition(0, 1), cod);
+// 		scr->PutChar(scr->SetPosition(3, 1), cod);
+// // 		__delay_ms(1);
+// 		if (status != 0)
+// 		scr->PutChar(30, '@');
+// 	}
+// 	ns_user::flash->fWr_endSend();
+// 	__delay_ms(500);
+// 	ns_user::flash->wr_buff[0] = 1;
+// 	ns_user::flash->wr_buff[1] = 0xff;
+// 	ns_user::flash->wr_buff[2] = 0xff;
+// 	ns_user::flash->wr_buff[3] = 0xff;
+// 	ns_user::flash->wr_buff[4] = 0;
+// 	ns_user::flash->wr_buff[5] = 0;
+// 	ns_user::flash->wr_buff[6] = word_to_byte(lenght_array).Low;
+// 	ns_user::flash->wr_buff[7] = word_to_byte(lenght_array).High;
+// 	ns_user::flash->wr_buff[8] = 0xff;
+// 	ns_user::flash->wr_buff[9] = 0xff;
+// 	ns_user::flash->writeArray(ns_user::flash->wr_buff, 10, adr);
+// // 	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+// 	ns_menu::functMenu_aft(_M_WT_SCR1, MENU_SETMODE);
+// 	
+// 	for (uint8_t i = 0; i < 16; i++)
+// 	{
+// 		scr->PutChar(scr->SetPosition(i, 1), ns_user::flash->fistBf[i]);
+// 	}
+// }
 // ------------------------------
 void	pins_init()
 {
