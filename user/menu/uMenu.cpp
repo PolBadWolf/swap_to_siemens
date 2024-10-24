@@ -1515,7 +1515,8 @@ void	sendParty_view()
 {
 	// количество отправленных байт
 	scr->SetPosition2(0, 1);
-	scr->Digit(5, ns_user::writeData->getSendCountByte());
+// 	scr->Digit(5, ns_user::writeData->getSendCountByte());
+	scr->Digit(5, ns_user::flash->get_rd_lenght());
 // 	scr->String_P(PSTR(" из "));
 // 	scr->Digit(5, ns_var::sendLenght);
 	// проверка окончания передачи

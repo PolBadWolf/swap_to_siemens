@@ -57,6 +57,8 @@ private:
 	// пост выдача нулей
 	uint16_t				postSend_var;
 	const uint16_t			postSend_const = 50;
+	// ---------------
+	uint16_t				startStopDelaySimulCount;
 //functions
 public:
 	static	WriteData*		init();

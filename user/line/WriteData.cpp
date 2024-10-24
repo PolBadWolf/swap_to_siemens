@@ -98,7 +98,8 @@ void	WriteData::initPorts()
 	// =================== readyBusy ===================
 	init_readyBusyOut();
 	// ================== startStop ==================
-	init_startStopInp();
+	if (ns_var::simulOn != 0)	init_startStopOut();
+	else						init_startStopInp();
 	// ================== eot or rhu ==================
 	init_eotOrRhuOut();
 	// ================== left / right ==================
@@ -148,10 +149,15 @@ void	WriteData::timerFast()
 	//
 }
 
+	static	uint16_t	x1	= 0;
+	static	uint16_t	x2	= 0;
+
 void		WriteData::sendOn()
 {
 	CRITICAL_SECTION
 	{
+		x1 = 0;
+		x2 = 0;
 		// проверка режима
 		if (statWork == offline)
 		{
@@ -168,7 +174,9 @@ void		WriteData::sendOn()
 			{
 				startHeaderCount = 50;
 			}
-			
+			// ---------------
+			startStopDelaySimulCount = 1.5 * TIMER_FEQ;			// задержка сигнала Start/stop при симуляции
+			// ---------------
 			ns_var::error_parity = 0;
 			// отключение готовности до сигнала старт
 			transfer_readyBusy(1);
@@ -189,25 +197,25 @@ void		WriteData::sendOn()
 	}
 }
 
-// 	static	uint16_t	x1	= 0;
-// 	static	uint16_t	x2	= 0;
 	
 void		WriteData::switchStart(uint8_t stat)
 {
-// 	if (stat == STARTREADY_STAT_OFF)	x1++;
-// 
-// 	if (stat == STARTREADY_STAT_ON)		x2++;
-// 
-// 	uint8_t	pos = scr->SetPosition(6, 1);
-// 	
-// 	scr->DigitZ(&pos, 3, x1);
+	if (stat == STARTREADY_STAT_OFF)	x1++;
+
+	if (stat == STARTREADY_STAT_ON)		x2++;
+
+	uint8_t	pos = scr->SetPosition(6, 1);
+	
+	scr->DigitZ(&pos, 3, x1);
 // 	scr->PutChar(&pos, ' ');
-// 	scr->DigitZ(&pos, 3, x2);
+	pos++;
+	scr->DigitZ(&pos, 3, x2);
 
 // 	WriteData	*obj = WriteData::getObj();
 	if (stat == STARTREADY_STAT_OFF)
 	{
-		transfer_readyBusy(1);
+ 		transfer_readyBusy(1);
+// 		 __delay_ms(5000);
 // 		CRITICAL_SECTION
 // 		{
 // 			scr->Clear();
@@ -292,7 +300,16 @@ void	WriteData::mode_phaze1()
 {
 	uint8_t	startStop	= transfer_startStop();
 	uint8_t simulOn		= ns_var::simulOn;
-	if ( (startStop == 0) && (simulOn == 0) )		return;
+	if (simulOn != 0)
+	{
+		if (startStopDelaySimulCount > 0)
+		{
+			startStopDelaySimulCount--;
+			return;
+		}
+		transfer_startStop(1);
+	}
+	if (startStop == 0)		return;
 	// ------------
 	transfer_readyBusy(0);
 // 	__delay_us(WR_PRE_START_UP); // ???
@@ -340,6 +357,14 @@ void	WriteData::mode_phaze2_1()	// sproket спад
 {
 	transfer_sprocket(0);
 	modeDelay(phaze2_2, WR_OUT_SPR_DN);
+	if (ns_var::simulOn != 0)
+	{
+		uint16_t l = ns_user::flash->get_rd_lenght();
+		if (l == 200)
+		{
+			ns_pins::transfer_startStop(0);
+		}
+	}
 }
 
 void	WriteData::mode_phaze2_2()	// вывод данных, строб
@@ -404,7 +429,7 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 	// завершение передачи
 	if (
 	(stat == 0)
-	|| ((transfer_startStop() == 0)	&& (ns_var::simulOn == 0))
+	|| ((transfer_startStop() == 0)	/*&& (ns_var::simulOn == 0)*/)
 	)
 	{
 		// конец передачи
@@ -442,7 +467,8 @@ void	WriteData::mode_phaze3_2()
 	{
 		StartReady::irqOff();
 		transfer_readyBusy(1);
-		modeDelay(sendEnd, WR_AFT_BUSY_UP);
+// 		modeDelay(sendEnd, WR_AFT_BUSY_UP);
+		modeDelay(sendEnd, 9000);
 		return;
 	}
 	//

@@ -83,6 +83,8 @@ public:
 	void		serialRead_begin(uint32_t adr);
 	void		serialRead_end();
 	uint8_t		serialReadByte();
+	// ---
+	uint16_t	get_rd_lenght();
 protected:
 private:
 	MX25L8005();

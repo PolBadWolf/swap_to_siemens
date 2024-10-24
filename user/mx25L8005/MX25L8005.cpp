@@ -595,6 +595,11 @@ void	MX25L8005::fRd_init(uint32_t adr, uint16_t lenght)
 	rd_point	= 128; // ********************
 }
 
+uint16_t	MX25L8005::get_rd_lenght()
+{
+	return	rd_lenght;
+}
+
 uint8_t	MX25L8005::fRd_readByte(uint8_t	*dat)
 {
 	if (rd_lenght == 0)	return 0;
