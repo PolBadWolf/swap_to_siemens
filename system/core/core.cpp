@@ -128,6 +128,7 @@ TaskQueueUnit::crTask(ns_menu::interrupt, (uint8_t)(1 * ((double)timer2_FEQ / 10
 TaskQueueUnit	Core::taskQueueIdle[] = {
 
 #ifdef CONF_MENU
+// вход 1 раз в 10 м—ек.
 TaskQueueUnit::crTask(ns_menu::mainCycle, (uint8_t)(10 * ((double)timer0_FEQ / 1000.0)), 0),
 #endif // CONF_MENU
 

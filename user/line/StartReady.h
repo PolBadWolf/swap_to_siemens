@@ -28,7 +28,7 @@ private:
 	uint8_t		stat_st;
 	uint8_t		stat_fl;
 	StartReadyTypeMetod		externMetod;
-	uint8_t		fStart;
+	uint8_t		fStart;			// х.з. зачем задумывал
 //functions
 public:
 	~StartReady();

@@ -50,14 +50,18 @@ namespace	ns_var
 	//
 	const	ModStruct	listMod[]	PROGMEM =
 	{
-		{	LIST_MOD_view,			"view"	},
-		{	LIST_MOD_send,			"send"	},
-		{	LIST_MOD_read,			"read"	},
-		{	LIST_MOD_clr,			"clr "	},
-		{	LIST_MOD_copy,			"copy"	},
-		{	LIST_MOD_leftRight,		"lR o"	},
-		{	LIST_MOD_pins,			"PINS"	},
-		{   LIST_MOD_len_minus,		"len-"	},
+		{	LIST_MOD_view,			"view"	},	// 0
+		{	LIST_MOD_send,			"send"	},	// 1
+		{	LIST_MOD_read,			"read"	},	// 2
+		{	LIST_MOD_clr,			"clr "	},	// 3
+		{	LIST_MOD_copy,			"copy"	},	// 4
+		{	LIST_MOD_pins,			"PINS"	},	// 5
+		{   LIST_MOD_len_minus,		"len-"	},	// 6
+		{   LIST_MOD_spr_dn,		"SPdn"	},	// 7
+		{   LIST_MOD_spr_up,		"SPup"	},	// 8
+		{   LIST_MOD_pre_bs,		"PrBs"	},	// 9
+		{   LIST_MOD_aft_bs,		"AfBs"	},	// 10
+		{   LIST_MOD_spr_dn,		"----"	},	// 11
 // 		{   9, "sim "	},
 	};
 	
@@ -93,8 +97,21 @@ namespace	ns_var
 	
 	// ---------------------------
 	uint8_t			edit8_tmp;
+	uint16_t		edit16_tmp;
 	
 	// ---------------------------
 	uint8_t			leftRight_stat_e	EEMEM		= 0;	// 0 - off;		1 - on;		2 - inv
 	uint8_t			leftRight_stat;
+	// ---------------------------------------------------
+	// Sprocked
+	float			wr_Out_Spr_Dn_e		EEMEM		= 1.25;
+	uint16_t		wr_Out_Spr_Dn_k;
+	float			wr_Out_Spr_Up_e		EEMEM		= 2.00;
+	uint16_t		wr_Out_Spr_Up_k;
+	// Ready/Busy
+	float			wr_Pre_Busy_Dn_e	EEMEM		= 500.0;
+	uint16_t		wr_Pre_Busy_Dn_k;
+	float			wr_Pre_Busy_Up_e	EEMEM		= 500.0;
+	uint16_t		wr_Pre_Busy_Up_k;
+
 }

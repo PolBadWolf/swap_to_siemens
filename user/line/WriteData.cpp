@@ -15,6 +15,8 @@
 #include <avr/pgmspace.h>
 
 #include "core/core_timers.h"
+// #include "user/mainUserCore.h"
+
 #include "user/line/StartReady.h"
 
 #include "indication/Lcd_hard.h"
@@ -37,21 +39,30 @@ using namespace ns_pins;
 #define		WR_AFT_SPR_UP		1		// / 2	mili sec
 #define		WR_AFT_START_DN		1		// / 2	mili sec
 #define		WR_AFT_BUSY_UP		1		// / 2	mili sec
+#error lock tree
 // -------------------------------------------------------------------------------------------------------------------------
 #else
-#define		WR_PRE_BUSY_DN		500		// / 2	mili sec
-#define		WR_PRE_START_UP		300		// micro sec
 
-#define		WR_OUT_SPR_DN		(uint8_t)(((double)1.0) * ((double)TIMER_FEQ) / ((double)1000))		// 1 mili sec
-#define		WR_OUT_SPR_UP		(uint8_t)(((double)2.0) * ((double)TIMER_FEQ) / ((double)1000))		// 2 mili sec
-// #define		WR_OUT_SPR_DN		2		// 1 mili sec
-// #define		WR_OUT_SPR_UP		4		// 2 mili sec
-#define		WR_OUT_DATA			200		// micro sec
-#define		WR_OUT_STROBE		300		// micro sec
+// коэффицент в тиках (точность кратна WRITEDATA_TimerFast), (uint8_t)(((double)mSec) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
 
-#define		WR_AFT_SPR_UP		2		// 50		// 2	mili sec
-#define		WR_AFT_START_DN		1		// 10		// 2	mili sec
-#define		WR_AFT_BUSY_UP		2		// 100		// 2	mili sec
+// 500 mSec
+// #define		WR_PRE_BUSY_DN		(uint8_t)(((double)500.00) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+#define		WR_PRE_BUSY_DN		ns_var::wr_Pre_Busy_Dn_k
+
+// #define		WR_PRE_START_UP		300		// ????
+
+// #define		WR_OUT_SPR_DN		(uint8_t)(((double)1.25) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+#define		WR_OUT_SPR_DN		ns_var::wr_Out_Spr_Dn_k
+// #define		WR_OUT_SPR_UP		(uint8_t)(((double)2.00) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+#define		WR_OUT_SPR_UP		ns_var::wr_Out_Spr_Up_k
+
+#define		WR_OUT_DATA			100		// micro sec
+#define		WR_OUT_STROBE		100		// micro sec
+
+// #define		WR_AFT_SPR_UP		(uint8_t)(((double)2.00) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+// #define		WR_AFT_START_DN		(uint8_t)(((double)1.00) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+//#define		WR_AFT_BUSY_UP		(uint8_t)(((double)2.00) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+#define		WR_AFT_BUSY_UP		ns_var::wr_Pre_Busy_Up_k
 #endif
 
 WriteData	*WriteData::obj = 0;
@@ -65,7 +76,7 @@ WriteData::WriteData()
 WriteData::~WriteData()
 {
 } //~WriteData
-
+uint32_t xx2;
 // ---------------------------------------------
 WriteData*		WriteData::init()
 {
@@ -73,11 +84,13 @@ WriteData*		WriteData::init()
 	// настройка портов
 	obj->initPorts();
 	//
-//	f_timer = Core::timer0->F_TIMER;
 	obj->fl_reset = 0;
 	// текущее состояние модуля передачи
 	obj->statWork = offline;
 	obj->countTikDelay = 0;
+	// настройка коэфицентов
+	obj->read_wr_kof();
+	
 	// режим офф
 	return	obj;
 }
@@ -119,20 +132,19 @@ void	WriteData::timerFast()
 		eventOn	= 0;
 		switch (statWork)
 		{
-			case offline:							break;
-			case modOff:							break;
-			case sendEnd:							break;
-			case delay:			mode_delay();		break;
+			case offline:									break;
+			case modOff:									break;
+			case sendEnd:									break;
+			case delay:				mode_delay();			break;
 			// ------------------------
-			case phaze1:		mode_phaze1();		break;
-			case phaze2_1:		mode_phaze2_1();	break;
-			case phaze2_2:		mode_phaze2_2();	break;
-			case phaze2_3:		mode_phaze2_3();	break;
-			case phaze3_1:		mode_phaze3_1();	break;
-			case phaze3_2:		mode_phaze3_2();	break;
+			case stat_init:			mode_stat_init();		break;	// исходное состояние
+			case stat_sprocket_dn:	mode_sprocket_dn();		break;	// sprocket спад
+			case stat_sendByte:		mode_sendByte();		break;	// передача байта данных, проверка окончания передачи
+			case phaze3_1:			mode_phaze3_1();		break;
+			case phaze3_2:			mode_phaze3_2();		break;
 			// ------------------------
-			case error:								break;
-			case error_delay:						break;
+			case error:										break;
+			case error_delay:								break;
 			// ------------------------
 			default:
 			statWork = error;
@@ -171,20 +183,24 @@ void		WriteData::sendOn()
 				startHeaderCount = 0;
 			} 
 			else
-			{
+			{	// заголовое из "0" перед передачей
 				startHeaderCount = 50;
 			}
+			// длина хвоста из "0" после окончания передачи
+			postSend_var = postSend_const;
 			// ---------------
-			startStopDelaySimulCount = 1.5 * TIMER_FEQ;			// задержка сигнала Start/stop при симуляции
+			startStopDelaySimulCount = 1.5 * WRITEDATA_TimerFast;			// задержка сигнала Start/stop при симуляции на 1.5 секунды
 			// ---------------
 			ns_var::error_parity = 0;
+			// исходное состояние перед передачей :
 			// отключение готовности до сигнала старт
 			transfer_readyBusy(1);
-			// спрокет и строб в нуль
-			transfer_sprocket(0);
+			// спрокет и строб в начальное состояние
+			transfer_sprocket(1);
 			transfer_strobe(0);
 			// включение режима передачи **********************
-			modeDelay(phaze1, WR_PRE_BUSY_DN);
+			// время установки исходного состояния перед передачей; stat_init на следущем цикле
+			modeDelay(stat_init, WR_PRE_BUSY_DN);
 			// включение прерывания по сигналу Start/Stop
 			{
 				StartReady	*objX = StartReady::getObj();
@@ -197,24 +213,25 @@ void		WriteData::sendOn()
 	}
 }
 
-	
+
+const uint8_t	pos_switchStart_const	= scr->SetPosition(6, 1);
 void		WriteData::switchStart(uint8_t stat)
 {
 	if (stat == STARTREADY_STAT_OFF)	x1++;
 
 	if (stat == STARTREADY_STAT_ON)		x2++;
 
-	uint8_t	pos = scr->SetPosition(6, 1);
+	uint8_t	pos = pos_switchStart_const;
 	
-	scr->DigitZ(&pos, 3, x1);
+	scr->DigitZ(&pos, 2, x1);
 // 	scr->PutChar(&pos, ' ');
 	pos++;
-	scr->DigitZ(&pos, 3, x2);
+	scr->DigitZ(&pos, 2, x2);
 
 // 	WriteData	*obj = WriteData::getObj();
-	if (stat == STARTREADY_STAT_OFF)
-	{
- 		transfer_readyBusy(1);
+// 	if (stat == STARTREADY_STAT_OFF)
+// 	{
+//  		transfer_readyBusy(1);
 // 		 __delay_ms(5000);
 // 		CRITICAL_SECTION
 // 		{
@@ -226,7 +243,7 @@ void		WriteData::switchStart(uint8_t stat)
 // 				__delay_ms(1);
 // 			}
 // 		}
-	}
+// 	}
 }
 
 void		WriteData::sendOff()
@@ -296,8 +313,9 @@ void	WriteData::mode_delay()
 	}
 }
 
-void	WriteData::mode_phaze1()
+void	WriteData::mode_stat_init()		// начальное состояние
 {
+	// чтение сигнала "start"
 	uint8_t	startStop	= transfer_startStop();
 	uint8_t simulOn		= ns_var::simulOn;
 	if (simulOn != 0)
@@ -309,11 +327,14 @@ void	WriteData::mode_phaze1()
 		}
 		transfer_startStop(1);
 	}
+	// ожидание начала передачи
 	if (startStop == 0)		return;
 	// ------------
 	transfer_readyBusy(0);
 // 	__delay_us(WR_PRE_START_UP); // ???
-	modeDelay(phaze2_2, WR_OUT_SPR_DN);
+	
+// 	modeDelay(stat_sendByte, WR_OUT_SPR_DN);
+	modeDelay(stat_sprocket_dn, WR_OUT_SPR_DN);
 }
 
 void	WriteData::mode_phaze_send_strb(uint8_t dat)
@@ -331,7 +352,8 @@ void	WriteData::mode_phaze_send_strb(uint8_t dat)
 
 uint8_t	WriteData::mode_chkFlagSend()
 {
-	uint8_t		flag_send		= 0;
+	uint8_t		flag_send		= 1;
+/*
 	uint8_t		st_leftRight	= ns_pins::transfer_leftRight();
 
 	// контроль сигнала lift/right отключен
@@ -349,14 +371,16 @@ uint8_t	WriteData::mode_chkFlagSend()
 	{
 		flag_send = 1;
 	}
+*/
 	// ------------------
 	return	flag_send;
 }
 
-void	WriteData::mode_phaze2_1()	// sproket спад
+void	WriteData::mode_sprocket_dn()	// sproket спад
 {
 	transfer_sprocket(0);
-	modeDelay(phaze2_2, WR_OUT_SPR_DN);
+	modeDelay(stat_sendByte, WR_OUT_SPR_DN);
+	// при симуляции
 	if (ns_var::simulOn != 0)
 	{
 		uint16_t l = ns_user::flash->get_rd_lenght();
@@ -367,7 +391,7 @@ void	WriteData::mode_phaze2_1()	// sproket спад
 	}
 }
 
-void	WriteData::mode_phaze2_2()	// вывод данных, строб
+void	WriteData::mode_sendByte()	// вывод данных, строб
 {
 	uint8_t		flag_send		= mode_chkFlagSend();
 	// ------------------------------------------------------------
@@ -394,6 +418,16 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 				dat = odd_plus_7bit(dat);
 			}
 		}
+		uint8_t								fl_end = 0;
+		if (stat == 0)						fl_end = 1;
+		if (transfer_startStop() == 0)		fl_end = 1;
+		//
+		if (fl_end == 0)	postSend_var = postSend_const;
+		else
+		{
+			if (postSend_var > 0)	postSend_var--;
+		}
+		//
 		// отправка байта
 		mode_phaze_send_strb(dat);
 		// -----------------------
@@ -427,42 +461,42 @@ void	WriteData::mode_phaze2_2()	// вывод данных, строб
 
 	// ---------------------------------
 	// завершение передачи
-	if (
+	/*if (
 	(stat == 0)
-	|| ((transfer_startStop() == 0)	/*&& (ns_var::simulOn == 0)*/)
-	)
+	|| ((transfer_startStop() == 0)	)
+	)*/
+	if (postSend_var == 0)
 	{
 		// конец передачи
-		modeDelay(phaze3_1, WR_AFT_SPR_UP);
-		//
-		postSend_var = postSend_const;
+		modeDelay(sendEnd, WR_AFT_BUSY_UP);
+		StartReady::irqOff();
+		transfer_readyBusy(1);
 		return;
 	}
 
 	// формирование площадки sproket , если разрешена работа
 	if (flag_send != 0)
 	{
-		modeDelay(phaze2_1, WR_OUT_SPR_UP);
+		modeDelay(stat_sprocket_dn, WR_OUT_SPR_UP);
 	}
 }
 
-void	WriteData::mode_phaze2_3()
-{
-	//modeDelay(phaze2_1, 0);
-}
 
 void	WriteData::mode_phaze3_1()
 {
+/*
 	uint8_t	flag = mode_chkFlagSend();
 	if (flag != 0)
 	{
 		mode_phaze_send_strb(0);
 	}
 	modeDelay(phaze3_2, WR_AFT_START_DN);
+*/
 }
 
 void	WriteData::mode_phaze3_2()
 {
+/*
 	if (transfer_startStop() == 0)
 	{
 		StartReady::irqOff();
@@ -485,6 +519,37 @@ void	WriteData::mode_phaze3_2()
 		modeDelay(sendEnd, WR_AFT_BUSY_UP);
 	}
 	//
+*/
 }
 
+// #define		WR_OUT_SPR_DN		(uint8_t)(((double)1.25) * ((double)WRITEDATA_TimerFast) / ((double)1000.0))
+uint16_t	WriteData::convFloatToTik(double ms)
+{
+	uint16_t	tik = 0;
+	tik = ms / unitTimerTik;
+	return	tik;
+}
+
+double		WriteData::convTikToFloat(uint16_t tik)
+{
+	double	ms = 0;
+	ms = tik * unitTimerTik;
+	return ms;
+}
+
+void	WriteData::read_wr_kof()
+{
+	// wr_Out_Spr_Dn
+	ns_var::wr_Out_Spr_Dn_k		= convFloatToTik(eeprom_read_float(&ns_var::wr_Out_Spr_Dn_e));
+	
+	// wr_Out_Spr_Up
+	ns_var::wr_Out_Spr_Up_k		= convFloatToTik(eeprom_read_float(&ns_var::wr_Out_Spr_Up_e));
+
+	// wr_Pre_Busy_Dn
+	ns_var::wr_Pre_Busy_Dn_k	= convFloatToTik(eeprom_read_float(&ns_var::wr_Pre_Busy_Dn_e));
+
+	// wr_Pre_Busy_Up
+	ns_var::wr_Pre_Busy_Up_k	= convFloatToTik(eeprom_read_float(&ns_var::wr_Pre_Busy_Up_e));
+	
+}
 

@@ -71,6 +71,8 @@ public:
 	// --
 	uint8_t SetPosition(uint8_t x, uint8_t y);
 	void	SetPosition2(uint8_t x, uint8_t y);
+	uint8_t	SetPosition3();
+	void	SetPosition3(uint8_t pos);
 	uint8_t GetStolbcov();
 	// --
 // 	virtual void Interrupt();

@@ -39,6 +39,14 @@
 //	LIST_MOD_len_minus
 {				dump,		len_minus_k1,		len_minus_k2,		len_minus_k3,		len_minus_k4,				dump,	  len_minus_init,				dump},		//	12
 // =====================
+{				dump,		spr_lenDn_k1,		spr_lenDn_k2,		spr_lenDn_k3,		spr_lenDn_k4,				dump,	  spr_lenDn_init,				dump},		//  13
+{				dump,		spr_lenUp_k1,		spr_lenUp_k2,		spr_lenUp_k3,		spr_lenUp_k4,				dump,	  spr_lenUp_init,				dump},		//  14
+	//
+{				dump,	  buse_lenPre_k1,	  buse_lenPre_k2,	  buse_lenPre_k3,	  buse_lenPre_k4,				dump,	buse_lenPre_init,				dump},		//	15
+{				dump,	  buse_lenAft_k1,	  buse_lenAft_k2,	  buse_lenAft_k3,	  buse_lenAft_k4,				dump,	buse_lenAft_init,				dump},		//  16
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
+{				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},
 {				dump,				dump,				dump,				dump,				dump,				dump,				dump,				dump},

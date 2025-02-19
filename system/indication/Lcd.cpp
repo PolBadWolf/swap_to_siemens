@@ -223,4 +223,14 @@ uint8_t Lcd::GetStolbcov()
 	return c_stolbcov;
 }
 
+uint8_t	Lcd::SetPosition3()
+{
+	return	pos;
+}
+
+void	Lcd::SetPosition3(uint8_t pos)
+{
+	this->pos = pos;
+}
+
 #endif // CONF_LCD

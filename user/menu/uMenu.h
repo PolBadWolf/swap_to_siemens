@@ -36,6 +36,12 @@ void	user_menu_init();
 
 #define		_M_SD_lenMinus		12			//	количество байт минус
 
+#define		_M_SPR_lenDn		13			//	длительность сигнала SPR в 0 состояниии
+#define		_M_SPR_lenUp		14			//	длительность сигнала SPR в 1 состояниии
+
+#define		_M_Buse_lenPre		15			//	длительность сигнала BUSY в до
+#define		_M_Buse_lenAft		16			//	длительность сигнала BUSY в после
+
 
 
 void	menuUser_1Milisec();
@@ -123,6 +129,39 @@ void	leftRight_k2();
 void	leftRight_k3();
 void	leftRight_k4();
 // =================
+void	spr_lenDn_init();
+void	spr_lenDn_view();
+void	spr_lenDn_k1();
+void	spr_lenDn_k2();
+void	spr_lenDn_k3();
+void	spr_lenDn_k4();
+
+// =================
+void	spr_lenUp_init();
+void	spr_lenUp_view();
+void	spr_lenUp_k1();
+void	spr_lenUp_k2();
+void	spr_lenUp_k3();
+void	spr_lenUp_k4();
+
+// =================
+void	buse_lenPre_init();
+void	buse_lenPre_view();
+void	buse_lenPre_k2();
+void	buse_lenPre_k3();
+void	buse_lenPre_k4();
+void	buse_lenPre_k1();
+
+// =================
+void	buse_lenAft_init();
+void	buse_lenAft_view();
+void	buse_lenAft_k2();
+void	buse_lenAft_k3();
+void	buse_lenAft_k4();
+void	buse_lenAft_k1();
+
+// =================
+
 
 #endif // CONF_MENU
 #endif //__UMENU_H__

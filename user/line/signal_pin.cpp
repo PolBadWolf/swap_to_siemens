@@ -125,37 +125,37 @@
 #define		d_bit7_out			bit_is_byte(PORTF).d_bit7_bit
 #define		d_bit7_inp			bit_is_byte(PINF).d_bit7_bit
 
-// ============== sprocket =====================
+// ============== sprocket =====================		4
 #define		sprocket_bit		bit2
 #define		sprocket_ddr		bit_is_byte(DDRE).sprocket_bit
 #define		sprocket_out		bit_is_byte(PORTE).sprocket_bit
 #define		sprocket_inp		bit_is_byte(PINE).sprocket_bit
 
-// ============== strobe ======================
+// ============== strobe ======================			10
 #define		strobe_bit			bit4
 #define		strobe_ddr			bit_is_byte(DDRE).strobe_bit
 #define		strobe_out			bit_is_byte(PORTE).strobe_bit
 #define		strobe_inp			bit_is_byte(PINE).strobe_bit
 
-// ============== readyBusy ===================
+// ============== readyBusy ===================			J
 #define		readyBusy_bit		bit7
 #define		readyBusy_ddr		bit_is_byte(DDRD).readyBusy_bit
 #define		readyBusy_out		bit_is_byte(PORTD).readyBusy_bit
 #define		readyBusy_inp		bit_is_byte(PIND).readyBusy_bit
 
-// ================= startStop ==================
+// ================= startStop ==================		H
 #define		startStop_bit		bit5
 #define		startStop_ddr		bit_is_byte(DDRE).startStop_bit
 #define		startStop_out		bit_is_byte(PORTE).startStop_bit
 #define		startStop_inp		bit_is_byte(PINE).startStop_bit
 
-// ================= eotOrRhu ===================
+// ================= eotOrRhu ===================		L
 #define		eotOrRhu_bit		bit3
 #define		eotOrRhu_ddr		bit_is_byte(DDRE).eotOrRhu_bit
 #define		eotOrRhu_out		bit_is_byte(PORTE).eotOrRhu_bit
 #define		eotOrRhu_inp		bit_is_byte(PINE).eotOrRhu_bit
 
-// ================= LeftRight ==================
+// ================= LeftRight ==================		D
 #define		leftRight_bit		bit5
 #define		leftRight_ddr		bit_is_byte(DDRD).leftRight_bit
 #define		leftRight_out		bit_is_byte(PORTD).leftRight_bit

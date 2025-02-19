@@ -491,7 +491,7 @@ void	screen1_k1()
 	do 
 	{
 		ns_var::mxMod++;
-		if (ns_var::mxMod >= LIST_MOD__MAX)
+		if (ns_var::mxMod > LIST_MOD__MAX)
 		{
 			ns_var::mxMod = 0;
 		}
@@ -521,11 +521,19 @@ void	screen1_k4()
 		//
 		case LIST_MOD_read:				reqeRead_begin();													break;
 		//
-		case LIST_MOD_leftRight:		ns_menu::functMenu_aft(_M_LEFT_RIGHT_INV, MENU_SETMODE);			break;
+// 		case LIST_MOD_leftRight:		ns_menu::functMenu_aft(_M_LEFT_RIGHT_INV, MENU_SETMODE);			break;
 		//
 		case LIST_MOD_pins:				ns_menu::functMenu_aft(_M_PINS, MENU_SETMODE);						break;
 		// ------------------------------------------------------------------------------------------------
 		case LIST_MOD_len_minus:		ns_menu::functMenu_aft(_M_SD_lenMinus, MENU_SETMODE);				break;
+		// ------------------------------------------------------------------------------------------------
+		case LIST_MOD_spr_dn:			ns_menu::functMenu_aft(_M_SPR_lenDn, MENU_SETMODE);					break;
+		//
+		case LIST_MOD_spr_up:			ns_menu::functMenu_aft(_M_SPR_lenUp, MENU_SETMODE);					break;
+		//
+		case LIST_MOD_pre_bs:			ns_menu::functMenu_aft(_M_Buse_lenPre, MENU_SETMODE);				break;
+		//
+		case LIST_MOD_aft_bs:			ns_menu::functMenu_aft(_M_Buse_lenAft, MENU_SETMODE);				break;
 		//
 		default:
 			ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
@@ -933,6 +941,9 @@ void	readParty_endRead()
 		ns_menu::functMenu_pre(_M_REQE_READ, MENU_SETMODE);
 }
 
+
+const	uint8_t		readParty_pos1 = scr->SetPosition( 0, 1);
+const	uint8_t		readParty_pos2 = scr->SetPosition(14, 1);
 void	readParty_view()
 {
 // 	uint32_t	curAdr = ns_user::flash->get_wr_adr();
@@ -944,7 +955,10 @@ void	readParty_view()
 		//
 		return;
 	}
-	scr->SetPosition2(0, 1);
+// 	scr->SetPosition2(0, 1);
+
+	scr->SetPosition3(readParty_pos1);
+	
 // 	scr->Hex(word_to_byte(adr).High);
 // 	scr->Hex(word_to_byte(adr).Low);
 	// ***********************
@@ -958,7 +972,8 @@ void	readParty_view()
 	//
 // 	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_slewInc());
-// 	scr->PutChar('0' + ns_pins::transfer_startStop());
+	scr->SetPosition3(readParty_pos2);
+ 	scr->PutChar('0' + ns_pins::transfer_startStop());
 // 	scr->PutChar(' ');
 // 	scr->PutChar('0' + ns_pins::transfer_sprocket());
 	//
@@ -1668,6 +1683,15 @@ void	pins_view()
 		case 9:
 		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_strobe());
 		break;
+		//
+		case 11:
+		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_readyBusy());
+		break;
+		//
+		case 13:
+		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_leftRight());
+		break;
+		//
 		case 14:
 		scr->PutChar(scr->SetPosition(ns_var::pins_uk, 0), '0' + ns_pins::transfer_startStop());
 		break;
@@ -1985,6 +2009,217 @@ void	leftRight_k4()
 }
 
 // ------------------------------------------------------
+uint8_t	spr_lenDn_pos_cel;
+uint8_t	spr_lenDn_pos_drop;
+void	spr_lenDn_init()
+{
+	scr->Clear();
+	scr->String_P(                          PSTR("Sprocket zero") );
+	scr->String_P( scr->SetPosition( 0, 1), PSTR("lenght ___.__ ms") );
+	spr_lenDn_pos_cel  = scr->SetPosition( 7, 1);
+	spr_lenDn_pos_drop = scr->SetPosition(11, 1);
+	float	tempFloat;
+	tempFloat = eeprom_read_float(&ns_var::wr_Out_Spr_Dn_e);
+	ns_var::edit16_tmp = ns_user::writeData->convFloatToTik(tempFloat);
+	spr_lenDn_view();
+}
+
+void	spr_lenDn_view()
+{
+	float zn = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	uint16_t cel = zn;
+	uint8_t drob = (zn - cel) * 100;
+	scr->Digit (spr_lenDn_pos_cel, 3, cel);
+	scr->DigitZ(spr_lenDn_pos_drop, 2, drob);
+}
+
+void	spr_lenDn_k2()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z > 0.5)	ns_var::edit16_tmp--;
+	spr_lenDn_view();
+}
+
+void	spr_lenDn_k3()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z < 20)	ns_var::edit16_tmp++;
+	spr_lenDn_view();
+}
+
+void	spr_lenDn_k4()
+{
+	ns_var::wr_Out_Spr_Dn_k = ns_var::edit16_tmp;
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	eeprom_update_float(&ns_var::wr_Out_Spr_Dn_e, z);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_spr_dn;
+}
+
+void	spr_lenDn_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_spr_dn;
+}
+
+// ------------------------------------------------------
+void	spr_lenUp_init()
+{
+	scr->Clear();
+	scr->String_P(                          PSTR("Sprocket one") );
+	scr->String_P( scr->SetPosition( 0, 1), PSTR("lenght ___.__ ms") );
+	spr_lenDn_pos_cel  = scr->SetPosition( 7, 1);
+	spr_lenDn_pos_drop = scr->SetPosition(11, 1);
+	float	tempFloat;
+	tempFloat = eeprom_read_float(&ns_var::wr_Out_Spr_Up_e);
+	ns_var::edit16_tmp = ns_user::writeData->convFloatToTik(tempFloat);
+	spr_lenUp_view();
+}
+
+void	spr_lenUp_view()
+{
+	float zn = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	uint16_t cel = zn;
+	uint8_t drob = (zn - cel) * 100;
+	scr->Digit (spr_lenDn_pos_cel, 3, cel);
+	scr->DigitZ(spr_lenDn_pos_drop, 2, drob);
+}
+
+void	spr_lenUp_k2()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z > 0.5)	ns_var::edit16_tmp--;
+	spr_lenUp_view();
+}
+
+void	spr_lenUp_k3()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z < 20)	ns_var::edit16_tmp++;
+	spr_lenUp_view();
+}
+
+void	spr_lenUp_k4()
+{
+	ns_var::wr_Out_Spr_Up_k = ns_var::edit16_tmp;
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	eeprom_update_float(&ns_var::wr_Out_Spr_Up_e, z);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_spr_up;
+}
+
+void	spr_lenUp_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_spr_up;
+}
+
+// ------------------------------------------------------
+void	buse_lenPre_init()
+{
+	scr->Clear();
+	scr->String_P(                          PSTR("Busy pre") );
+	scr->String_P( scr->SetPosition( 0, 1), PSTR("lenght ____.__ ms") );
+	spr_lenDn_pos_cel  = scr->SetPosition( 7, 1);
+	spr_lenDn_pos_drop = scr->SetPosition(12, 1);
+	float	tempFloat;
+	tempFloat = eeprom_read_float(&ns_var::wr_Pre_Busy_Dn_e);
+	ns_var::edit16_tmp = ns_user::writeData->convFloatToTik(tempFloat);
+	buse_lenPre_view();
+}
+
+void	buse_lenPre_view()
+{
+	float zn = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	uint16_t cel = zn;
+	uint8_t drob = (zn - cel) * 100;
+	scr->Digit (spr_lenDn_pos_cel, 4, cel);
+	scr->DigitZ(spr_lenDn_pos_drop, 2, drob);
+}
+
+void	buse_lenPre_k2()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z > 0.5)	ns_var::edit16_tmp--;
+	buse_lenPre_view();
+}
+
+void	buse_lenPre_k3()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z < 2500)	ns_var::edit16_tmp++;
+	buse_lenPre_view();
+}
+
+void	buse_lenPre_k4()
+{
+	ns_var::wr_Pre_Busy_Dn_k = ns_var::edit16_tmp;
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	eeprom_update_float(&ns_var::wr_Pre_Busy_Dn_e, z);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_pre_bs;
+}
+
+void	buse_lenPre_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_pre_bs;
+}
+
+// ------------------------------------------------------
+void	buse_lenAft_init()
+{
+	scr->Clear();
+	scr->String_P(                          PSTR("Busy after") );
+	scr->String_P( scr->SetPosition( 0, 1), PSTR("lenght ____.__ ms") );
+	spr_lenDn_pos_cel  = scr->SetPosition( 7, 1);
+	spr_lenDn_pos_drop = scr->SetPosition(12, 1);
+	float	tempFloat;
+	tempFloat = eeprom_read_float(&ns_var::wr_Pre_Busy_Up_e);
+	ns_var::edit16_tmp = ns_user::writeData->convFloatToTik(tempFloat);
+	buse_lenAft_view();
+}
+
+void	buse_lenAft_view()
+{
+	float zn = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	uint16_t cel = zn;
+	uint8_t drob = (zn - cel) * 100;
+	scr->Digit (spr_lenDn_pos_cel, 4, cel);
+	scr->DigitZ(spr_lenDn_pos_drop, 2, drob);
+}
+
+void	buse_lenAft_k2()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z > 0.5)	ns_var::edit16_tmp--;
+	buse_lenAft_view();
+}
+
+void	buse_lenAft_k3()
+{
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	if (z < 2500)	ns_var::edit16_tmp++;
+	buse_lenAft_view();
+}
+
+void	buse_lenAft_k4()
+{
+	ns_var::wr_Pre_Busy_Up_k = ns_var::edit16_tmp;
+	float z = ns_user::writeData->convTikToFloat(ns_var::edit16_tmp);
+	eeprom_update_float(&ns_var::wr_Pre_Busy_Up_e, z);
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_aft_bs;
+}
+
+void	buse_lenAft_k1()
+{
+	ns_menu::functMenu_aft(_M_SCREEN1, MENU_SETMODE);
+	ns_var::mxMod = LIST_MOD_aft_bs;
+}
+
+// ------------------------------------------------------
+
 
 #endif // CONF_MENU
 

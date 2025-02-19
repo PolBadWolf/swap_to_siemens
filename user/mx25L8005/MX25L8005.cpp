@@ -602,7 +602,11 @@ uint16_t	MX25L8005::get_rd_lenght()
 
 uint8_t	MX25L8005::fRd_readByte(uint8_t	*dat)
 {
-	if (rd_lenght == 0)	return 0;
+	if (rd_lenght == 0)
+	{
+		*dat = 0;
+		return 0;
+	}
 	// загрузка буффера
 	if (rd_point >=128)
 	{
@@ -617,16 +621,16 @@ uint8_t	MX25L8005::fRd_readByte(uint8_t	*dat)
 	*dat = wr_buff[rd_point];
 	rd_point++;
 	rd_adr++;
-	uint8_t fl_out;
+// 	uint8_t fl_out;
 	CRITICAL_SECTION
 	{
 		if (rd_lenght > 0)
 		{
 			rd_lenght--;
 		}
-		fl_out = rd_lenght > 0;
+// 		fl_out = rd_lenght > 0;
 	}
-	return	fl_out;
+	return	1;	// fl_out;
 }
 
 void	MX25L8005::fRd_end()

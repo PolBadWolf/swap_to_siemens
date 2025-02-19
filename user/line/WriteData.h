@@ -10,6 +10,7 @@
 #define __WRITEDATA_H__
 
 #include "core/core.h"
+#include "user/mainUserCore.h"
 
 class WriteData
 {
@@ -17,23 +18,22 @@ class WriteData
 public:
 	enum StatWork
 	{
-		offline		= 0,			// отключено
-		modOff		= 1,			// ожидание фазы начала для отмены
-		sendEnd		= 2,			// передача завершена штатным образом
-		delay		= 3,			// ожидание следущего режима
+		offline				= 0,	// отключено
+		modOff				= 1,	// ожидание фазы начала для отмены
+		sendEnd				= 2,	// передача завершена штатным образом
+		delay				= 3,	// ожидание следущего режима
 		// --------
-		phaze1		= 11,			// готовность спад
-		//phaze1_2	= 12,			// старт фронт
+		stat_init			= 11,	// готовность спад
+		//phaze1_2			= 12,	// старт фронт
 		//
-		phaze2_1	= 21,			// sproket спад
-		phaze2_2	= 22,			// вывод данных, строб
-		phaze2_3	= 23,			// sproket фронт
+		stat_sprocket_dn	= 21,	// sproket спад
+		stat_sendByte		= 22,	// вывод данных, строб, sproket фронт
 		//
-		phaze3_1	= 31,			// старт спад
-		phaze3_2	= 32,			// готовность фронт
+		phaze3_1			= 31,	// старт спад
+		phaze3_2			= 32,	// готовность фронт
 		// -------------
-		error		= 128,			// не известная ошибка системы
-		error_delay	= 129			// ошибка в модуле задержки
+		error				= 128,	// не известная ошибка системы
+		error_delay			= 129	// ошибка в модуле задержки
 	};
 //variables
 public:
@@ -41,7 +41,8 @@ public:
 	uint16_t				error_sim_adr;
 	uint8_t					error_sim_dat;
 	uint16_t				sim_adr;
-	uint16_t				startHeaderCount;
+	uint16_t				startHeaderCount;	// заголовок из "0" перед передачей
+	const double			unitTimerTik = 1000.0 / WRITEDATA_TimerFast;
 protected:
 private:
 	static	WriteData		*obj;
@@ -55,8 +56,8 @@ private:
 // 	static	uint16_t		f_timer;
 	volatile	uint8_t		fl_reset;			// флаг сброса работы модуля
 	// пост выдача нулей
-	uint16_t				postSend_var;
-	const uint16_t			postSend_const = 50;
+	uint16_t				postSend_var;		// хвост из "0" после передачи
+	const uint16_t			postSend_const = 10;
 	// ---------------
 	uint16_t				startStopDelaySimulCount;
 //functions
@@ -69,6 +70,9 @@ public:
 	uint8_t		getStatusWork();
 	uint16_t	getSendCountByte();
 	static	void	switchStart(uint8_t stat);
+	// ------------
+	uint16_t	convFloatToTik(double ms);
+	double		convTikToFloat(uint16_t tik);
 protected:
 private:
 public:
@@ -80,21 +84,23 @@ public:
 	void		initPorts();
 	void		modeDelay(StatWork mode, uint16_t	tik);
 	// -----
-	void	mode_delay();
+	void		mode_delay();
 	// -----
-	void	mode_phaze1();			// старт
+	void		mode_stat_init();			// старт
 	//
-	void	mode_phaze2_1();
-	void	mode_phaze2_2();
-	void	mode_phaze2_3();
+	void		mode_sprocket_dn();
+	void		mode_sendByte();
+// 	void		mode_phaze2_3();
 	//
-	void	mode_phaze3_1();
-	void	mode_phaze3_2();
+	void		mode_phaze3_1();
+	void		mode_phaze3_2();
 	//
-	void	mode_phaze_send_strb(uint8_t dat);
+	void		mode_phaze_send_strb(uint8_t dat);
 	//
-	uint8_t	mode_chkFlagSend();
+	uint8_t		mode_chkFlagSend();
 	
+	//
+	void		read_wr_kof();
 
 }; //WriteData
 

@@ -17,13 +17,17 @@
 #define LIST_MOD_clr		3
 #define LIST_MOD_copy		4
 
-#define LIST_MOD_plus5		5
-#define LIST_MOD_leftRight	6
-#define LIST_MOD_pins		7
+#define LIST_MOD_pins		5
 
-#define LIST_MOD_len_minus	8
+#define LIST_MOD_len_minus	6
 
-#define LIST_MOD__MAX		9
+#define LIST_MOD_spr_dn		7
+#define LIST_MOD_spr_up		8
+
+#define LIST_MOD_pre_bs		9
+#define LIST_MOD_aft_bs		10
+
+#define LIST_MOD__MAX		10
 
 #define		OFFSET_WRITE	0x40
 
@@ -120,9 +124,21 @@ namespace	ns_var
 	extern			uint8_t			subOutLenght_e	EEMEM;
 	
 	extern			uint8_t			edit8_tmp;
+	extern			uint16_t		edit16_tmp;
 	
 	extern			uint8_t			leftRight_stat_e	EEMEM;
 	extern			uint8_t			leftRight_stat;
+	// ---------------------------------------------------
+// Sprocked
+	extern			float			wr_Out_Spr_Dn_e		EEMEM;
+	extern			uint16_t		wr_Out_Spr_Dn_k;
+	extern			float			wr_Out_Spr_Up_e		EEMEM;
+	extern			uint16_t		wr_Out_Spr_Up_k;
+//	Ready/Busy
+	extern			float			wr_Pre_Busy_Dn_e	EEMEM;
+	extern			uint16_t		wr_Pre_Busy_Dn_k;
+	extern			float			wr_Pre_Busy_Up_e	EEMEM;
+	extern			uint16_t		wr_Pre_Busy_Up_k;
 
 }
 
